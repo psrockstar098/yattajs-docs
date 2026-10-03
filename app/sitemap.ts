@@ -10,7 +10,7 @@ const referenceModules = apiModules;
  * for everything under /docs.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://yattajs-docs.vercel.app";
+  const base = "https://yatta.js.org";
 
   const pages = [
     { path: "/", priority: 1.0, frequency: "weekly" as const },
