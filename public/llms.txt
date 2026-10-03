@@ -1,0 +1,35 @@
+# Yatta JS
+
+Yatta JS is a backend-as-a-server framework for building full-stack applications
+without provisioning a separate backend server.
+
+- Website: https://yattajs-docs.vercel.app
+- Documentation: https://yattajs-docs.vercel.app/docs
+- GitHub: https://github.com/psrockstar098/yatta.js
+- Author: Dominic Rockson (psrockstar098)
+
+## What it is
+
+Yatta gives your application a built-in backend runtime with database,
+authentication, mail, storage, APIs, background jobs, realtime communication,
+and built-in observability — all embedded directly inside the native Bun runtime.
+
+## Key features
+
+- Bun-native runtime: database, authentication, mail, storage, APIs, jobs,
+  realtime and observation built in
+- SQLite in WAL mode for the embedded database
+- Passkeys and MFA authentication
+- S3-compatible and local file storage
+- Native WebSockets for realtime communication
+- Durable background job queues
+- Transactional mail
+- Multi-tier SWR cache
+- Typed file-based routing with zero-codegen type safety
+- Token-family replay defense and AES-256-GCM for security
+- Starts in under 10ms
+
+## Install
+
+Yatta JS launches October 4, 2026. See the documentation site for install
+instructions and guides once released.
