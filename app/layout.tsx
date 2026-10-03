@@ -48,12 +48,21 @@ export const metadata: Metadata = {
     description:
       "A production-grade backend framework for Bun. Database, auth, jobs, cache, storage, mail and realtime — embedded in your application process.",
     url: "/",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "YATTA — Your Backend. Inside Your App",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "YATTA — Your Backend. Inside Your App",
     description:
       "A production-grade backend framework for Bun. Database, auth, jobs, cache, storage, mail and realtime — embedded in your application process.",
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
