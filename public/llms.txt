@@ -3,8 +3,8 @@
 Yatta JS is a backend-as-a-server framework for building full-stack applications
 without provisioning a separate backend server.
 
-- Website: https://yattajs-docs.vercel.app
-- Documentation: https://yattajs-docs.vercel.app/docs
+- Website: https://yatta.js.org
+- Documentation: https://yatta.js.org/docs
 - GitHub: https://github.com/psrockstar098/yatta.js
 - Author: Dominic Rockson (psrockstar098)
 
