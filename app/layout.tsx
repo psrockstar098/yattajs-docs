@@ -21,7 +21,7 @@ const dash = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://yatta.dev"),
+  metadataBase: new URL("https://yattajs-docs.vercel.app"),
   title: {
     default: "YATTA — Your Backend. Inside Your App",
     template: "%s — YATTA",
