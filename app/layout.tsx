@@ -21,7 +21,7 @@ const dash = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://yattajs-docs.vercel.app"),
+  metadataBase: new URL("https://yatta.js.org"),
   title: {
     default: "YATTA — Your Backend. Inside Your App",
     template: "%s — YATTA",
@@ -84,7 +84,7 @@ const jsonLd = {
   operatingSystem: "Any",
   description:
     "A production-grade backend framework for Bun. Database, auth, jobs, cache, storage, mail and realtime — embedded in your application process.",
-  url: "https://yattajs-docs.vercel.app",
+  url: "https://yatta.js.org",
   codeRepository: "https://github.com/psrockstar098/yatta.js",
   programmingLanguage: "TypeScript",
   author: {
