@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://yatta.dev/sitemap.xml",
+    sitemap: "https://yattajs-docs.vercel.app/sitemap.xml",
   };
 }
