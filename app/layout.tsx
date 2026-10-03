@@ -67,12 +67,40 @@ export const viewport = {
   initialScale: 1,
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Yatta JS",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Any",
+  description:
+    "A production-grade backend framework for Bun. Database, auth, jobs, cache, storage, mail and realtime — embedded in your application process.",
+  url: "https://yattajs-docs.vercel.app",
+  codeRepository: "https://github.com/psrockstar098/yatta.js",
+  programmingLanguage: "TypeScript",
+  author: {
+    "@type": "Person",
+    name: "Dominic Rockson",
+    url: "https://github.com/psrockstar098",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+  },
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${bebasNeue.variable} ${roboto.variable} ${dash.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
