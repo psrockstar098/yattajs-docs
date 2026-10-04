@@ -1,6 +1,6 @@
 # yatta-docs
 
-Marketing and documentation site for [Yatta](https://github.com/yatta-dev/yatta) — a production-grade backend framework for [Bun](https://bun.com).
+Marketing and documentation site for [Yatta](https://github.com/psrockstar098/yatta.js) — a production-grade backend framework for [Bun](https://bun.com).
 
 Built with Next.js 16 (App Router, Turbopack), Tailwind CSS v4, GSAP + ScrollTrigger, and Lenis for smooth scrolling.
 
