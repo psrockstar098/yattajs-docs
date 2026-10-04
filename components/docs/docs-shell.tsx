@@ -34,7 +34,7 @@ export default function DocsShell({ children }: { children: ReactNode }) {
           matter how long the article gets. */}
       <section
         className={[
-          "relative h-full shrink-0 overflow-hidden bg-[#f3eed7]/[0.035] transition-[width] duration-300",
+          " max-sm:w-14 relative h-full shrink-0 overflow-hidden bg-[#f3eed7]/[0.035] transition-[width] duration-300",
           railCollapsed ? "w-12" : "w-[216px]",
         ].join(" ")}
       >

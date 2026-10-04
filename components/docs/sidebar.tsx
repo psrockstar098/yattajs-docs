@@ -47,7 +47,8 @@ function activeHref(
 ): string | undefined {
   const covering = items.filter((i) => isActive(pathname, i.href));
   if (covering.length === 0) return undefined;
-  return covering.reduce((a, b) => (b.href.length > a.href.length ? b : a)).href;
+  return covering.reduce((a, b) => (b.href.length > a.href.length ? b : a))
+    .href;
 }
 
 export default function DocsSidebar({
@@ -196,7 +197,7 @@ export default function DocsSidebar({
                     setOpen((o) => ({ ...o, [section.title]: !expanded }))
                   }
                   aria-expanded={expanded}
-                  className="group flex w-full items-center gap-1.5 rounded px-1 py-1 text-left transition-colors hover:bg-[#f3eed7]/[0.05]"
+                  className="text-nowrap group flex w-full items-center gap-1.5 rounded px-1 py-1 text-left transition-colors hover:bg-[#f3eed7]/[0.05]"
                 >
                   <svg
                     aria-hidden
@@ -250,9 +251,7 @@ export default function DocsSidebar({
                               aria-hidden
                               className={[
                                 "shrink-0",
-                                active
-                                  ? "text-[#f3eed7]"
-                                  : "text-[#f3eed7]/40",
+                                active ? "text-[#f3eed7]" : "text-[#f3eed7]/40",
                               ].join(" ")}
                             />
 
