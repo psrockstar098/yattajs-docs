@@ -61,7 +61,7 @@ export default function RuntimeDocsPage() {
 
       <CodeBlock
         title="yatta/main.ts"
-        code={`import { createRuntime, defineSubsystem } from "yatta/runtime";
+        code={`import { createRuntime, defineSubsystem } from "yatta.js/runtime";
 
 const runtime = createRuntime({ taskTimeoutMs: 30_000 });
 await runtime.start();

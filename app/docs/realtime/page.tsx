@@ -27,7 +27,7 @@ export default function RealtimeDocsPage() {
 
       <CodeBlock
         title="yatta/func/realtime.ts"
-        code={`import { createRealtime } from "yatta/realtime";
+        code={`import { createRealtime } from "yatta.js/realtime";
 
 export const realtime = createRealtime({
   handlers: {
@@ -166,8 +166,8 @@ tenant.to("orders").publish("updated", { id: 1 });`}
 
       <CodeBlock
         title="yatta/backend/ai.ts"
-        code={`import { API, createAPI } from "yatta/api";
-import { SSEClient } from "yatta/realtime";
+        code={`import { API, createAPI } from "yatta.js/api";
+import { SSEClient } from "yatta.js/realtime";
 
 const api = createAPI();
 
@@ -210,7 +210,7 @@ tracker.fail(new Error("Upload failed"));`}
 
       <CodeBlock
         title="Browser"
-        code={`import { Realtime } from "yatta/realtime";
+        code={`import { Realtime } from "yatta.js/realtime";
 
 const rt = new Realtime("/realtime");
 

@@ -45,7 +45,7 @@ export default function ReliabilityDocsPage() {
 
       <CodeBlock
         title="What a caller sees"
-        code={`import { WorkerCrashError } from "yatta/runtime";
+        code={`import { WorkerCrashError } from "yatta.js/runtime";
 
 try {
   await runtime.execute(graphId, "computeReceipt", payload);
@@ -92,7 +92,7 @@ defineSubsystem({ name: "worker", ..., timeoutMs: 0 });`}
 
       <CodeBlock
         title="Catching a timeout"
-        code={`import { TaskTimeoutError } from "yatta/runtime";
+        code={`import { TaskTimeoutError } from "yatta.js/runtime";
 
 try {
   await runtime.execute(graphId, "export", payload);
@@ -164,7 +164,7 @@ console.log(runtime.getActiveTaskCount()); // in flight + queued`}
       <H2>Error types</H2>
 
       <CodeBlock
-        title="import { WorkerCrashError, TaskTimeoutError } from 'yatta/runtime'"
+        title="import { WorkerCrashError, TaskTimeoutError } from 'yatta.js/runtime'"
         lang="ts"
         code={`class WorkerCrashError extends Error {
   workerId: string;

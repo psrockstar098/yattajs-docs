@@ -35,7 +35,7 @@ export default function AuthMiddlewareGuidePage() {
 
       <CodeBlock
         title="yatta/func/session.ts"
-        code={`import type { AuthSession } from "yatta/auth";
+        code={`import type { AuthSession } from "yatta.js/auth";
 import { auth } from "./auth";
 
 /** Reads the session from the Authorization header, or the cookie. */
@@ -60,7 +60,7 @@ function readCookie(header: string | null, name: string): string | null {
 
       <CodeBlock
         title="yatta/backend/me.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { getSession } from "../func/session";
 
 const api = createAPI();
@@ -87,7 +87,7 @@ export default api;`}
 
       <CodeBlock
         title="yatta/backend/dashboard/index.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { getSession } from "../../func/session";
 
 const api = createAPI();
@@ -177,7 +177,7 @@ if (post.authorId !== user.id && !user.roles.includes("admin")) {
 
       <CodeBlock
         title="yatta/backend/login.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { auth } from "../func/auth";
 
 const api = createAPI();

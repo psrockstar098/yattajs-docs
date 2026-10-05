@@ -36,7 +36,7 @@ export default function NotificationHubExample() {
 
       <CodeBlock
         title="yatta/backend/notify.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { notify } from "../func/notify";
 import { withSession } from "../func/middleware";
 

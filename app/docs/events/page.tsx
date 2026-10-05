@@ -37,7 +37,7 @@ export default function EventsDocsPage() {
 
       <CodeBlock
         title="yatta/func/events.ts"
-        code={`import { createEvents } from "yatta/jobs";
+        code={`import { createEvents } from "yatta.js/jobs";
 import { jobs } from "./jobs";
 
 export interface AppEvents {
@@ -46,7 +46,7 @@ export interface AppEvents {
   "payment.failed": { orderId: string; reason: string };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface EventRegister extends AppEvents {}
 }
 

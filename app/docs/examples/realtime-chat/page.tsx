@@ -44,7 +44,7 @@ export default function RealtimeChatExample() {
 
       <CodeBlock
         title="yatta/func/realtime.ts"
-        code={`import { createRealtime } from "yatta/realtime";
+        code={`import { createRealtime } from "yatta.js/realtime";
 import { auth } from "./auth";
 import { db } from "./db";
 
@@ -54,7 +54,7 @@ export interface AppRealtime {
   "chat:presence": { roomId: string; users: string[] };
 }
 
-declare module "yatta/realtime" {
+declare module "yatta.js/realtime" {
   interface RealtimeRegister {
     data: { userId: string; name: string };
     events: AppRealtime;
@@ -215,7 +215,7 @@ export function presenceCount(topic: string): number {
 
       <CodeBlock
         title="yatta/backend/moderation.ts"
-        code={`import { and } from "yatta/db";
+        code={`import { and } from "yatta.js/db";
 import { realtime } from "../func/realtime";
 import { requireRole } from "../func/middleware";
 
@@ -328,7 +328,7 @@ ws.addEventListener("open", () => {
 
       <CodeBlock
         title="yatta/func/realtime.ts"
-        code={`import { InMemoryPubSubAdapter } from "yatta/realtime";
+        code={`import { InMemoryPubSubAdapter } from "yatta.js/realtime";
 
 export const realtime = createRealtime({
   // Default. Correct for a single process or a cluster behind one socket

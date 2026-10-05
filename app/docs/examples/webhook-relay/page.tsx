@@ -36,7 +36,7 @@ export default function WebhookRelayExample() {
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   endpoints: {
@@ -120,7 +120,7 @@ export function verifyPayload(
 
       <CodeBlock
         title="yatta/func/events.ts"
-        code={`import { createEvents } from "yatta/jobs";
+        code={`import { createEvents } from "yatta.js/jobs";
 import { jobs } from "./jobs";
 
 export interface AppEvents {
@@ -128,7 +128,7 @@ export interface AppEvents {
   "user.created":  { userId: string; tenantId: string };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface EventRegister extends AppEvents {}
 }
 
@@ -159,7 +159,7 @@ events.on("order.paid", async (data) => {
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs } from "yatta/jobs";
+        code={`import { createJobs } from "yatta.js/jobs";
 import { signPayload } from "./webhook-signing";
 
 export const jobs = createJobs();

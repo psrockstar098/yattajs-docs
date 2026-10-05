@@ -90,7 +90,7 @@ export const defaultWorker = jobs.worker("default", {
 
       <CodeBlock
         title="yatta/backend/signup.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { db } from "../func/db";
 import { jobs } from "../func/jobs";
 

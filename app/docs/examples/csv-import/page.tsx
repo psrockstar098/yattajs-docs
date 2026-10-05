@@ -36,11 +36,11 @@ export default function CsvImportExample() {
 
       <CodeBlock
         title="yatta/backend/imports.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
 import { storage } from "../func/storage";
 import { jobs } from "../func/jobs";
 import { requireAuth } from "../func/middleware";
-import { and } from "yatta/db";
+import { and } from "yatta.js/db";
 import { db } from "../func/db";
 
 const route = createAPI("/imports");

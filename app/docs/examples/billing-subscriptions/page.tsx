@@ -173,7 +173,7 @@ export function daysRemaining(periodEnd: Date): number {
 
       <CodeBlock
         title="yatta/backend/billing.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
 import { verifyPayload } from "../func/webhook-signing";
 import { chargeOnce } from "../func/billing";
 import { jobs } from "../func/jobs";

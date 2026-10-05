@@ -36,7 +36,7 @@ export default function CronSchedulerExample() {
 
       <CodeBlock
         title="yatta/func/cron.ts"
-        code={`import { createCron } from "yatta/jobs";
+        code={`import { createCron } from "yatta.js/jobs";
 import { jobs } from "./jobs";
 
 export const cron = createCron(jobs);

@@ -139,8 +139,8 @@ cron.schedule("*/5 * * * *", async () => {
 
       <CodeBlock
         title="yatta/func/rate-limit.ts"
-        code={`import type { Middleware } from "yatta/api";
-import { HttpError } from "yatta/api";
+        code={`import type { Middleware } from "yatta.js/api";
+import { HttpError } from "yatta.js/api";
 import { auth } from "./auth";
 import { LIMITS, consume, type Tier } from "./limits";
 

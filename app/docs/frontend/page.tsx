@@ -48,8 +48,8 @@ export default function FrontendDocsPage() {
       <CodeBlock
         title="api-contract.ts"
         code={`import { z } from "zod";
-import { defineRoute, createApp } from "yatta/universal";
-import { HttpError } from "yatta/api";
+import { defineRoute, createApp } from "yatta.js/universal";
+import { HttpError } from "yatta.js/api";
 
 export const User = z.object({
   id: z.string(),
@@ -135,7 +135,7 @@ await api.getUser({ params: { id: 1 } });`}
 
       <CodeBlock
         title="server.ts"
-        code={`import { mount } from "yatta/universal";
+        code={`import { mount } from "yatta.js/universal";
 import { api } from "./api-contract";
 
 Bun.serve({ fetch: mount(api) });`}
@@ -151,7 +151,7 @@ Bun.serve({ fetch: mount(api) });`}
 
       <CodeBlock
         title="browser.ts"
-        code={`import { createClient } from "yatta/universal";
+        code={`import { createClient } from "yatta.js/universal";
 import { api } from "./api-contract";
 
 const client = createClient(api, { baseUrl: "/api" });
@@ -211,7 +211,7 @@ try {
       <CodeBlock
         title="app/profile/[id]/page.tsx"
         code={`"use client";
-import { useCall, useRoutes } from "yatta/react";
+import { useCall, useRoutes } from "yatta.js/react";
 import { api } from "@/api-contract";
 import { use } from "react";
 
@@ -242,7 +242,7 @@ export default function Page({ params }) {
       <CodeBlock
         title="Profile.vue"
         code={`<script setup lang="ts">
-import { useCall } from "yatta/frameworks";
+import { useCall } from "yatta.js/frameworks";
 import { api } from "@/api-contract";
 
 const { state, reload } = useCall(store, api.getUser, { params: { id } });
@@ -258,7 +258,7 @@ const { state, reload } = useCall(store, api.getUser, { params: { id } });
 
       <CodeBlock
         title="Profile.tsx"
-        code={`import { useSolidCall } from "yatta/frameworks";
+        code={`import { useSolidCall } from "yatta.js/frameworks";
 
 const user = useSolidCall(store, api.getUser, { params: { id } });
 
@@ -270,7 +270,7 @@ return <Show when={user().data}>{u => <h1>{u().name}</h1>}</Show>;`}
       <CodeBlock
         title="Profile.svelte"
         code={`<script lang="ts">
-  import { useSvelteCall } from "yatta/frameworks";
+  import { useSvelteCall } from "yatta.js/frameworks";
 
   const user = useSvelteCall(store, api.getUser, { params: { id: data.id } });
 </script>
@@ -296,7 +296,7 @@ export class Profile {
 
       <CodeBlock
         title="component.tsx"
-        code={`import { useQwikCall } from "yatta/frameworks";
+        code={`import { useQwikCall } from "yatta.js/frameworks";
 
 export default component$(() => {
   const call = useQwikCall(store, api.getUser, { params: { id } });
@@ -315,7 +315,7 @@ export default component$(() => {
 
       <CodeBlock
         title="any.html"
-        code={`import { createDomCall } from "yatta/frameworks";
+        code={`import { createDomCall } from "yatta.js/frameworks";
 
 const call = createDomCall(store, api.getUser, { params: { id } });
 const off = call.subscribe((state) => {
@@ -333,7 +333,7 @@ const off = call.subscribe((state) => {
 
       <CodeBlock
         title="app/api/[[...path]]/route.ts"
-        code={`import { toNextRoute } from "yatta/next";
+        code={`import { toNextRoute } from "yatta.js/next";
 import { api } from "@/api-contract";
 
 export const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } = toNextRoute(api);`}
@@ -349,8 +349,8 @@ export const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } = toNextRoute(api)
 
       <CodeBlock
         title="realtime"
-        code={`import { createFrontend } from "yatta/frontend";
-import { createRealtimeClient } from "yatta/realtime";
+        code={`import { createFrontend } from "yatta.js/frontend";
+import { createRealtimeClient } from "yatta.js/realtime";
 
 export const frontend = createFrontend(api, {
   baseUrl: "/api",
@@ -421,7 +421,7 @@ await frontend.realtime.send("chat.message", { text: "hello" });`}
 
       <CodeBlock
         title="api-contract.ts"
-        code={`import { createApp, defineRoute, HttpError } from "yatta/universal";
+        code={`import { createApp, defineRoute, HttpError } from "yatta.js/universal";
 
 const routes = { getUser: defineRoute(/* … */) };
 
@@ -455,7 +455,7 @@ export const api = createApp(routes, {
 
       <CodeBlock
         title="page.tsx"
-        code={`import { loaderFor, withLoaders } from "yatta/batcher";
+        code={`import { loaderFor, withLoaders } from "yatta.js/batcher";
 
 export default async function Page() {
   return withLoaders(async () => {

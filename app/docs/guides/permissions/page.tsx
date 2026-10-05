@@ -107,8 +107,8 @@ if (!allowed) {
 
       <CodeBlock
         title="yatta/func/auth-middleware.ts"
-        code={`import { ForbiddenError, UnauthorizedError } from "yatta/auth";
-import type { Middleware } from "yatta/api";
+        code={`import { ForbiddenError, UnauthorizedError } from "yatta.js/auth";
+import type { Middleware } from "yatta.js/api";
 import { auth } from "./auth";
 import { db } from "./db";
 
@@ -151,11 +151,11 @@ export function requirePermission(
 
       <CodeBlock
         title="yatta/backend/posts.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { db } from "../func/db";
 import { auth } from "../func/auth";
 import { requireAuth } from "../func/auth-middleware";
-import type { PublicUser } from "yatta/auth";
+import type { PublicUser } from "yatta.js/auth";
 
 const posts = createAPI("/posts");
 

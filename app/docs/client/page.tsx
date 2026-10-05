@@ -62,7 +62,7 @@ export default function ClientDocsPage() {
       <CodeBlock
         title="api-contract.ts"
         code={`import { z } from "zod";
-import { route } from "yatta/rpc";
+import { route } from "yatta.js/rpc";
 
 export const User = z.object({
   id: z.string(),
@@ -101,7 +101,7 @@ export const routes = {
 
       <CodeBlock
         title="api-server.ts"
-        code={`import { serve, fail } from "yatta/rpc";
+        code={`import { serve, fail } from "yatta.js/rpc";
 import { routes } from "./api-contract";
 import { db } from "./db";
 
@@ -128,7 +128,7 @@ export const api = serve(routes, {
 
       <CodeBlock
         title="api-server.ts"
-        code={`import { serverRoute, serve, fail } from "yatta/rpc";
+        code={`import { serverRoute, serve, fail } from "yatta.js/rpc";
 
 const routes = {
   getUser: serverRoute(
@@ -144,7 +144,7 @@ export const api = serve(routes, { prefix: "/api" });`}
 
       <CodeBlock
         title="api-client.ts"
-        code={`import { clientFor } from "yatta/rpc";
+        code={`import { clientFor } from "yatta.js/rpc";
 import { routes } from "./api-contract";
 
 const api = clientFor(routes, { baseUrl: "/api" });
@@ -189,7 +189,7 @@ await api.createUser({ body: { email: 1, name: "Ada" } }); // ✗`}
 
       <CodeBlock
         title="handling a failure"
-        code={`import type { CallError } from "yatta/client";
+        code={`import type { CallError } from "yatta.js/client";
 
 try {
   await api.getUser({ params: { id } });
@@ -259,7 +259,7 @@ export const User = v.object({
 
       <CodeBlock
         title="api-client.ts"
-        code={`import { createClient, route } from "yatta/client";
+        code={`import { createClient, route } from "yatta.js/client";
 import { z } from "zod";
 
 const api = createClient(

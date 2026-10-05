@@ -41,10 +41,10 @@ export default function CliDocsPage() {
       <CodeBlock
         title="terminal"
         lang="bash"
-        code={`bun add yatta
+        code={`bun add yatta.js
 
 # or
-npm install yatta`}
+npm install yatta.js`}
       />
 
       <P>Then scaffold the <Code>yatta/</Code> folder:</P>

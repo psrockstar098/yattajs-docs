@@ -55,7 +55,7 @@ yatta_refresh   a rotating refresh token`}
 
       <CodeBlock
         title="yatta/func/auth.ts"
-        code={`import { createAuth } from "yatta/auth";
+        code={`import { createAuth } from "yatta.js/auth";
 
 export const auth = createAuth({
   secret: process.env.AUTH_SECRET!,
@@ -79,7 +79,7 @@ export const auth = createAuth({
 
       <CodeBlock
         title="yatta/backend/auth.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { auth } from "../func/auth";
 
 const route = createAPI("/auth");
@@ -176,7 +176,7 @@ export default route;`}
 
       <CodeBlock
         title="yatta/backend/me.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { auth } from "../func/auth";
 
 const route = createAPI("/me");
@@ -223,7 +223,7 @@ export default route;`}
 
       <CodeBlock
         title="yatta/func/auth-middleware.ts"
-        code={`import type { Middleware } from "yatta/api";
+        code={`import type { Middleware } from "yatta.js/api";
 
 /**
  * Resolve the session once per request and hand it to handlers on ctx.state.
@@ -308,7 +308,7 @@ route.post("/refresh", async (ctx) => {
 
       <CodeBlock
         title="yatta/backend/auth.ts"
-        code={`import { API } from "yatta/api";
+        code={`import { API } from "yatta.js/api";
 
 // Send it. Returns the raw token — useful in dev, log it, do not ship it.
 await auth.sendVerificationEmail(user.id);

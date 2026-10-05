@@ -81,7 +81,7 @@ bun run dev`}
 
       <CodeBlock
         title="yatta/backend/hello.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 
 const hello = createAPI("/hello");
 
@@ -113,7 +113,7 @@ export default hello;`}
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   notes: {
@@ -132,7 +132,7 @@ export const db = createDatabase({
 
       <CodeBlock
         title="yatta/backend/notes.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { db } from "../func/db";
 
 const notes = createAPI("/notes");
@@ -167,7 +167,7 @@ export default notes;`}
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs } from "yatta/jobs";
+        code={`import { createJobs } from "yatta.js/jobs";
 
 export const jobs = createJobs();
 

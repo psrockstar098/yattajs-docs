@@ -36,7 +36,7 @@ export default function IncidentConsoleExample() {
 
       <CodeBlock
         title="yatta/backend/ops/overview.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { observer } from "../../func/observe";
 
 const route = createAPI("/ops");

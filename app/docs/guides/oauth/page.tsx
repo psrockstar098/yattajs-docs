@@ -148,7 +148,7 @@ GITHUB_CLIENT_SECRET=xxxxx`}
 
       <CodeBlock
         title="yatta/backend/auth/[provider]/start.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { auth } from "../../../func/auth";
 
 const api = createAPI();
@@ -174,7 +174,7 @@ export default api;`}
 
       <CodeBlock
         title="yatta/backend/auth/callback/[provider].ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { auth } from "../../../func/auth";
 
 const api = createAPI();
@@ -251,7 +251,7 @@ export default api;`}
 
       <CodeBlock
         title="yatta/backend/auth/link.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { auth } from "../../func/auth";
 
 const api = createAPI();

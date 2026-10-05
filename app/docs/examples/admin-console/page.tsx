@@ -36,9 +36,9 @@ export default function AdminConsoleExample() {
 
       <CodeBlock
         title="yatta/func/admin-guard.ts"
-        code={`import { ForbiddenError, UnauthorizedError } from "yatta/auth";
-import type { Middleware } from "yatta/api";
-import type { PublicUser } from "yatta/auth";
+        code={`import { ForbiddenError, UnauthorizedError } from "yatta.js/auth";
+import type { Middleware } from "yatta.js/api";
+import type { PublicUser } from "yatta.js/auth";
 import { auth } from "./auth";
 
 export interface AdminRequest {
@@ -81,8 +81,8 @@ export function actor(ctx: { state: Record<string, unknown> }): AdminRequest {
 
       <CodeBlock
         title="yatta/backend/admin/users.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
-import { and, col } from "yatta/db";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
+import { and, col } from "yatta.js/db";
 import { db } from "../../func/db";
 import { auth } from "../../func/auth";
 import { requireAdmin, actor } from "../../func/admin-guard";
@@ -139,7 +139,7 @@ route.post("/:id/ban", async (ctx) => {
 
       <CodeBlock
         title="yatta/backend/admin/impersonate.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
 import { auth } from "../../func/auth";
 import { record } from "../../func/audit";
 import { requireAdmin, actor } from "../../func/admin-guard";

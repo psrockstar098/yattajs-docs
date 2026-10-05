@@ -28,14 +28,14 @@ export default function JobsDocsPage() {
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs, SQLiteJobStore } from "yatta/jobs";
+        code={`import { createJobs, SQLiteJobStore } from "yatta.js/jobs";
 
 export interface AppJobs {
   "send-email": { to: string; subject: string; body: string };
   "cleanup-stale-tokens": { maxAgeDays?: number };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface JobRegister extends AppJobs {}
 }
 
@@ -141,7 +141,7 @@ const stats = await jobs.metrics("default");
 
       <CodeBlock
         title="yatta/func/cron.ts"
-        code={`import { createCron } from "yatta/jobs";
+        code={`import { createCron } from "yatta.js/jobs";
 import { jobs } from "./jobs";
 
 export const cron = createCron();

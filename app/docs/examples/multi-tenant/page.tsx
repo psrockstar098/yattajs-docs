@@ -36,7 +36,7 @@ export default function MultiTenantExample() {
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   tenants: {
@@ -76,8 +76,8 @@ export const db = createDatabase({
 
       <CodeBlock
         title="yatta/func/tenant.ts"
-        code={`import type { PublicUser } from "yatta/auth";
-import { and } from "yatta/db";
+        code={`import type { PublicUser } from "yatta.js/auth";
+import { and } from "yatta.js/db";
 import { db } from "./db";
 import { auth } from "./auth";
 
@@ -126,7 +126,7 @@ export async function resolveTenant(host: string, req: Request): Promise<TenantC
 
       <CodeBlock
         title="yatta/func/scoped.ts"
-        code={`import { and } from "yatta/db";
+        code={`import { and } from "yatta.js/db";
 import { db } from "./db";
 
 /**
@@ -170,7 +170,7 @@ export function scoped(tenantId: string | null) {
 
       <CodeBlock
         title="yatta/backend/projects.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
 import { withSession } from "../func/middleware";
 import { resolveTenant } from "../func/tenant";
 import { scoped } from "../func/scoped";

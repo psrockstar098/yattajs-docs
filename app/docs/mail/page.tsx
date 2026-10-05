@@ -27,13 +27,13 @@ export default function MailDocsPage() {
 
       <CodeBlock
         title="yatta/func/mail.ts"
-        code={`import { createMailer } from "yatta/mail";
+        code={`import { createMailer } from "yatta.js/mail";
 
 export interface AppTemplates {
   welcome: { name: string; verifyUrl: string };
 }
 
-declare module "yatta/mail" {
+declare module "yatta.js/mail" {
   interface MailRegister {
     templates: AppTemplates;
   }

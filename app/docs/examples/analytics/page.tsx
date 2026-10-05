@@ -36,7 +36,7 @@ export default function AnalyticsExample() {
 
       <CodeBlock
         title="yatta/backend/events.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { realtime } from "../func/realtime";
 import { withSession } from "../func/middleware";
 

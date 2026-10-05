@@ -33,7 +33,7 @@ export default function AuthDocsPage() {
 
       <CodeBlock
         title="yatta/func/auth.ts"
-        code={`import { createAuth, type AuthStore } from "yatta/auth";
+        code={`import { createAuth, type AuthStore } from "yatta.js/auth";
 import { db } from "./db";
 import { mailer } from "./mail";
 
@@ -264,7 +264,7 @@ check.denyUnless(user, "admin", "billing");`}
       <P>Define roles with <Code>accesscontrol</Code> and reuse them:</P>
 
       <CodeBlock
-        code={`import { createAuth } from "yatta/auth";
+        code={`import { createAuth } from "yatta.js/auth";
 import * as ac from "accesscontrol";
 
 const roles = {
@@ -286,7 +286,7 @@ export const auth = createAuth({
       </P>
 
       <CodeBlock
-        code={`import { auth, RateLimitError } from "yatta/auth";
+        code={`import { auth, RateLimitError } from "yatta.js/auth";
 
 try {
   await auth.signIn({ email, password, req });
@@ -302,7 +302,7 @@ try {
 
       <CodeBlock
         title="yatta/backend/me.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { auth } from "../func/auth";
 
 const api = createAPI();

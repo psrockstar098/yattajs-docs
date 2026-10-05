@@ -32,9 +32,9 @@ export default function StorageDocsPage() {
 
       <CodeBlock
         title="yatta/func/storage.ts"
-        code={`import { createStorage } from "yatta/storage";
+        code={`import { createStorage } from "yatta.js/storage";
 
-declare module "yatta/storage" {
+declare module "yatta.js/storage" {
   interface StorageRegister {
     disks: "local" | "s3";
   }
@@ -113,7 +113,7 @@ for await (const chunk of file.stream()) {
 
       <CodeBlock
         title="yatta/backend/media/[name].ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { storage } from "../func/storage";
 
 const api = createAPI();

@@ -27,7 +27,7 @@ export default function DocsIntroPage() {
         title="terminal"
         lang="bash"
         code={`# 1. Install
-bun add yatta
+bun add yatta.js
 
 # 2. Create yatta/ in the current project
 yatta init
@@ -87,7 +87,7 @@ bun run dev`}
 
       <CodeBlock
         title="yatta/main.ts"
-        code={`import { createRuntime, defineSubsystem } from "yatta/runtime";
+        code={`import { createRuntime, defineSubsystem } from "yatta.js/runtime";
 import routers from "./func/routerHelper";
 
 const runtime = createRuntime({ taskTimeoutMs: 30_000 });
@@ -117,7 +117,7 @@ Bun.serve({
 
       <CodeBlock
         title="yatta/backend/user/index.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 
 const api = createAPI();
 
@@ -145,7 +145,7 @@ export default api;`}
       <CodeBlock
         title="api-contract.ts"
         code={`import { z } from "zod";
-import { route } from "yatta/rpc";
+import { route } from "yatta.js/rpc";
 
 export const routes = {
   getUser: route({
@@ -177,13 +177,13 @@ export const routes = {
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs, SQLiteJobStore } from "yatta/jobs";
+        code={`import { createJobs, SQLiteJobStore } from "yatta.js/jobs";
 
 export interface AppJobs {
   "send-email": { to: string; subject: string; body: string };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface JobRegister extends AppJobs {}
 }
 

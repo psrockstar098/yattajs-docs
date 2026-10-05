@@ -34,7 +34,7 @@ export default function TypesDocsPage() {
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs, SQLiteJobStore } from "yatta/jobs";
+        code={`import { createJobs, SQLiteJobStore } from "yatta.js/jobs";
 
 export interface AppJobs {
   "send-email": { to: string; subject: string; body: string };
@@ -42,7 +42,7 @@ export interface AppJobs {
   "cleanup-stale-tokens": { maxAgeDays?: number };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface JobRegister extends AppJobs {}
 }
 
@@ -76,7 +76,7 @@ await jobs.enqueue("emial-send", {});   // ✗ not a known job`}
   "order.completed": { orderId: string; amount: number };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface EventRegister extends AppEvents {}
 }`}
       />
@@ -98,7 +98,7 @@ await events.emit("order.completed", { orderId: "o_1", amount: 42 });`}
   receipt: { total: number; currency: string };
 }
 
-declare module "yatta/mail" {
+declare module "yatta.js/mail" {
   interface MailRegister {
     templates: AppTemplates;
   }
@@ -123,7 +123,7 @@ await mailer.send({
 
       <CodeBlock
         title="yatta/func/storage.ts"
-        code={`declare module "yatta/storage" {
+        code={`declare module "yatta.js/storage" {
   interface StorageRegister {
     disks: "local" | "s3" | "backups";
   }
@@ -149,7 +149,7 @@ await storage.disk("gcs").upload("a.png", buffer);   // ✗ unknown disk`}
   },
 };
 
-declare module "yatta/db" {
+declare module "yatta.js/db" {
   interface Register {
     schema: typeof schema;
   }
@@ -168,7 +168,7 @@ user.nope;      // ✗ not a column`}
       <H2>Realtime events</H2>
 
       <CodeBlock
-        code={`declare module "yatta/realtime" {
+        code={`declare module "yatta.js/realtime" {
   interface RealtimeRegister {
     events: {
       "chat.message": { user: string; text: string };

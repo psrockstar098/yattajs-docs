@@ -38,7 +38,7 @@ yatta/backend/users/[id]/posts.ts →  /users/:id/posts`}
 
       <CodeBlock
         title="yatta/backend/user/index.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 
 const api = createAPI();
 
@@ -62,7 +62,7 @@ export default api;`}
 
       <CodeBlock
         title="yatta/backend/posts/[id].ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 
 const api = createAPI();
 
@@ -175,7 +175,7 @@ api.use(async (ctx, next) => {
 
       <CodeBlock
         title="error handling"
-        code={`import { HttpError, ValidationError } from "yatta/api";
+        code={`import { HttpError, ValidationError } from "yatta.js/api";
 
 // Throw with a status
 throw new HttpError("Not found", 404);

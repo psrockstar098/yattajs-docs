@@ -67,7 +67,7 @@ export default function FullstackNextExample() {
 
       <CodeBlock
         title="api/yatta/backend/index.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 
 const api = createAPI("/api");
 
@@ -175,9 +175,9 @@ export function TraceProvider({ children }: { children: React.ReactNode }) {
 
       <CodeBlock
         title="api/yatta/backend/documents.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
 import { z } from "zod";
-import { and } from "yatta/db";
+import { and } from "yatta.js/db";
 import { db } from "../func/db";
 import { auth } from "../func/auth";
 import { cache } from "../func/cache";
@@ -430,7 +430,7 @@ export function FeedbackButton() {
 
       <CodeBlock
         title="api/yatta/backend/feedback.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { observer } from "../func/observe";
 
 const api = createAPI("/api/feedback");

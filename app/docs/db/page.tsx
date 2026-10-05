@@ -33,7 +33,7 @@ export default function DbDocsPage() {
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   users: {
@@ -57,7 +57,7 @@ export const schema = {
 };
 
 // Makes db.users and db.posts fully typed.
-declare module "yatta/db" {
+declare module "yatta.js/db" {
   interface Register {
     schema: typeof schema;
   }

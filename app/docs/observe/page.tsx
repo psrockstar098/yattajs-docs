@@ -57,7 +57,7 @@ export default function ObserveDocsPage() {
 
       <CodeBlock
         title="yatta/func/observe.ts"
-        code={`import { createObserver } from "yatta/observe";
+        code={`import { createObserver } from "yatta.js/observe";
 
 export const observer = createObserver({
   service: "app",
@@ -543,7 +543,7 @@ observer.compareToGolden("Cart — healthy", traceId);
       <H2 id="source">Trace to code</H2>
 
       <CodeBlock
-        code={`import { FileSystemTraceToCode } from "yatta/observe";
+        code={`import { FileSystemTraceToCode } from "yatta.js/observe";
 import fs from "node:fs";
 
 // Opt-in: production builds usually ship no sources, and reading files off a

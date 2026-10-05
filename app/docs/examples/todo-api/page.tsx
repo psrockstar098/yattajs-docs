@@ -59,7 +59,7 @@ export default function TodoApiExample() {
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   todos: {
@@ -95,9 +95,9 @@ export const db = createDatabase({
 
       <CodeBlock
         title="yatta/func/middleware.ts"
-        code={`import type { Middleware } from "yatta/api";
-import { UnauthorizedError } from "yatta/auth";
-import type { PublicUser } from "yatta/auth";
+        code={`import type { Middleware } from "yatta.js/api";
+import { UnauthorizedError } from "yatta.js/auth";
+import type { PublicUser } from "yatta.js/auth";
 import { auth } from "./auth";
 
 // Runs once per request; cheap enough not to memoise, correct enough not to
@@ -137,7 +137,7 @@ export function currentUser(ctx: { state: Record<string, unknown> }): PublicUser
 
       <CodeBlock
         title="yatta/backend/auth.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { auth } from "../func/auth";
 
 const route = createAPI("/auth");
@@ -191,8 +191,8 @@ export default route;`}
 
       <CodeBlock
         title="yatta/backend/todos.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
-import { and } from "yatta/db";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
+import { and } from "yatta.js/db";
 import { db } from "../func/db";
 import { cache } from "../func/cache";
 import { requireAuth, withSession } from "../func/middleware";
@@ -344,7 +344,7 @@ export default todos;`}
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs } from "yatta/jobs";
+        code={`import { createJobs } from "yatta.js/jobs";
 
 export const jobs = createJobs();
 
@@ -382,7 +382,7 @@ jobs.handle("todo-digest", async (payload, ctx) => {
 
       <CodeBlock
         title="enqueue it from a cron"
-        code={`import { createCron } from "yatta/jobs";
+        code={`import { createCron } from "yatta.js/jobs";
 import { db } from "./db";
 
 export const cron = createCron(jobs);
@@ -410,7 +410,7 @@ cron.schedule("0 8 * * *", async () => {
 
       <CodeBlock
         title="yatta/backend/todos.ts"
-        code={`import { ValidationError, HttpError } from "yatta/api";
+        code={`import { ValidationError, HttpError } from "yatta.js/api";
 
 todos.onError((error, ctx) => {
   if (error instanceof ValidationError) {

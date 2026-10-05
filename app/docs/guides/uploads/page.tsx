@@ -36,7 +36,7 @@ export default function UploadsGuidePage() {
 
       <CodeBlock
         title="yatta/backend/upload.ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { storage } from "../func/storage";
 
 const api = createAPI();
@@ -96,7 +96,7 @@ ZIP  → "PK\\x03\\x04"`}
 
       <CodeBlock
         title="yatta/backend/files/[key].ts"
-        code={`import { API, createAPI } from "yatta/api";
+        code={`import { API, createAPI } from "yatta.js/api";
 import { storage } from "../../func/storage";
 
 const api = createAPI();

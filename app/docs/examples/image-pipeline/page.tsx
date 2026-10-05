@@ -62,7 +62,7 @@ GET /images/:id/progress   (SSE)
 
       <CodeBlock
         title="yatta/func/storage.ts"
-        code={`import { createStorage } from "yatta/storage";
+        code={`import { createStorage } from "yatta.js/storage";
 
 export const storage = createStorage({
   driver: process.env.S3_BUCKET
@@ -115,7 +115,7 @@ export const db = createDatabase({ url: process.env.DATABASE_URL, schema });`}
 
       <CodeBlock
         title="yatta/func/events.ts"
-        code={`import { createEvents } from "yatta/jobs";
+        code={`import { createEvents } from "yatta.js/jobs";
 import { jobs } from "./jobs";
 
 export interface AppEvents {
@@ -124,7 +124,7 @@ export interface AppEvents {
   "image.failed":   { imageId: string; error: string };
 }
 
-declare module "yatta/jobs" {
+declare module "yatta.js/jobs" {
   interface EventRegister extends AppEvents {}
 }
 
@@ -135,9 +135,9 @@ export const events = createEvents(jobs);`}
 
       <CodeBlock
         title="yatta/backend/images.ts"
-        code={`import { createAPI, HttpError } from "yatta/api";
-import { verifyMagicBytes, guessContentType } from "yatta/storage";
-import { and } from "yatta/db";
+        code={`import { createAPI, HttpError } from "yatta.js/api";
+import { verifyMagicBytes, guessContentType } from "yatta.js/storage";
+import { and } from "yatta.js/db";
 import { db } from "../func/db";
 import { storage } from "../func/storage";
 import { jobs } from "../func/jobs";
@@ -198,7 +198,7 @@ images.post("/", async (ctx) => {
 
       <CodeBlock
         title="yatta/func/jobs.ts"
-        code={`import { createJobs } from "yatta/jobs";
+        code={`import { createJobs } from "yatta.js/jobs";
 import { db } from "./db";
 import { storage } from "./storage";
 import { events } from "./events";
@@ -282,7 +282,7 @@ jobs.handle("image:resize", async ({ imageId }, ctx) => {
 
       <CodeBlock
         title="yatta/backend/images.ts"
-        code={`import { SSEClient } from "yatta/realtime";
+        code={`import { SSEClient } from "yatta.js/realtime";
 import { realtime } from "../func/realtime";
 
 images.get("/:id/progress", async (ctx) => {

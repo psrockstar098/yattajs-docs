@@ -243,8 +243,8 @@ export async function checkPredictedExhaustion(tenantId: string): Promise<void> 
 
       <CodeBlock
         title="yatta/func/quota-middleware.ts"
-        code={`import type { Middleware } from "yatta/api";
-import { HttpError } from "yatta/api";
+        code={`import type { Middleware } from "yatta.js/api";
+import { HttpError } from "yatta.js/api";
 import { consume } from "./quota";
 import { cache } from "./cache";
 

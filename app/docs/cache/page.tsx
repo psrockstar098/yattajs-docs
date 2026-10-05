@@ -27,7 +27,7 @@ export default function CacheDocsPage() {
 
       <CodeBlock
         title="yatta/func/cache.ts"
-        code={`import { createCache, SQLiteL2CacheStore } from "yatta/cache";
+        code={`import { createCache, SQLiteL2CacheStore } from "yatta.js/cache";
 
 export const cache = createCache({
   maxItems: 20_000,       // L1 capacity
@@ -136,7 +136,7 @@ await cache.invalidateTags(["users"]);`}
       </P>
 
       <CodeBlock
-        code={`import { Cache } from "yatta/cache";
+        code={`import { Cache } from "yatta.js/cache";
 
 await Cache.set("k", v);
 const v = await Cache.get("k");`}

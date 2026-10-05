@@ -36,8 +36,8 @@ export default function FeatureFlagsExample() {
 
       <CodeBlock
         title="yatta/func/flags.ts"
-        code={`import { col, createDatabase } from "yatta/db";
-import { createCache } from "yatta/cache";
+        code={`import { col, createDatabase } from "yatta.js/db";
+import { createCache } from "yatta.js/cache";
 
 export const FLAG_KEYS = [
   "new-checkout",

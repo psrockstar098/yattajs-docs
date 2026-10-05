@@ -36,7 +36,7 @@ export default function SearchExample() {
 
       <CodeBlock
         title="yatta/func/db.ts"
-        code={`import { col, createDatabase } from "yatta/db";
+        code={`import { col, createDatabase } from "yatta.js/db";
 
 export const schema = {
   posts: {
@@ -149,7 +149,7 @@ export async function search(
 
       <CodeBlock
         title="yatta/backend/search.ts"
-        code={`import { createAPI } from "yatta/api";
+        code={`import { createAPI } from "yatta.js/api";
 import { cache } from "../func/cache";
 import { search, searchSchema } from "../func/search";
 
