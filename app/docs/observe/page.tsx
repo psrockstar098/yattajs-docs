@@ -7,6 +7,8 @@ import {
   UL,
   LI,
   Callout,
+  Note,
+  Code,
   Breadcrumb,
   DocFooter,
 } from "@/components/docs/prose";
@@ -647,6 +649,32 @@ POST /_yatta/api/analysis/action/:kind`}
           says so in <code>caveats</code>.
         </LI>
       </UL>
+
+      <H2>Access control</H2>
+
+      <P>
+        The dashboard, metrics and traces are not public by default. In production
+        without a token, the whole surface answers <Code>404</Code> — not{" "}
+        <Code>401</Code>, because an unauthenticated caller should not learn the
+        surface exists.
+      </P>
+
+      <CodeBlock
+        title="yatta/func/observe.ts"
+        code={`export const observer = createObserver({
+  service: "app",
+
+  // Required in production. The dashboard serves traces, metric names and error
+  // messages; on a public port that is an information disclosure.
+  dashboardApiKey: process.env.YATTA_OBSERVE_TOKEN,
+});`}
+      />
+
+      <Note kind="warn">
+        A token set is enforced everywhere, not only in production — setting the
+        variable is a statement of intent, and honouring it only in one environment
+        means a staging deploy exposes everything.
+      </Note>
 
       <DocFooter />
     </article>

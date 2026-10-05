@@ -92,6 +92,10 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "next",
     blurb: "Route handlers and request-scoped fetching for Next.js.",
   },
+  "yatta/observe": {
+    slug: "observe",
+    blurb: "Tracing, metrics, issues, incident analysis and the dashboard.",
+  },
   "yatta/path": {
     slug: "path",
     blurb: "Path templates: one parser for the client, the router and the handler.",

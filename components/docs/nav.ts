@@ -65,6 +65,7 @@ const MODULE_ICONS: Record<string, IconType> = {
   frontend: LuGauge,
   binding: LuWaypoints,
   path: LuWorkflow,
+  observe: LuGauge,
   batcher: LuActivity,
   react: LuBraces,
   next: LuLayers,
