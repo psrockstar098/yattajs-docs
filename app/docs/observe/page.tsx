@@ -77,6 +77,9 @@ export const observer = createObserver({
   // In adaptive mode this is a multiplier of each query's own rolling p95.
   slowQueryThresholdMs: 100,
   slowQueryMode: "fixed",
+
+  // Record every 10th request's spans instead of every request's.
+  tracesSampleRate: 1,
 });`}
       />
 
@@ -247,6 +250,43 @@ Bun.serve({ fetch: (req, server) => instrumented(req) });`}
         fast successful request, inflating Apdex and hiding the failure in the
         transaction log.
       </Callout>
+
+      <H2 id="sampling">Sampling</H2>
+
+      <P>
+        <code>tracesSampleRate</code> takes a number from 0 to 1. At{" "}
+        <code>0.1</code>, roughly one request in ten has its spans recorded. At{" "}
+        <code>1</code> (the default) every span is kept.
+      </P>
+
+      <CodeBlock
+        code={`export const observer = createObserver({
+  service: "app",
+  tracesSampleRate: 0.1,
+});`}
+      />
+
+      <P>
+        Two details make it worth trusting. The decision is taken{" "}
+        <strong>once per request</strong>, not once per span — every span in a
+        sampled request is kept, so a trace is never half-recorded. And it is{" "}
+        <strong>deterministic</strong>: every n-th span is taken rather than each
+        one being rolled for. A random sample is one you cannot choose, which
+        makes it useless to go and read.
+      </P>
+
+      <Callout kind="warn">
+        An upstream <code>traceparent</code> header wins over the local rate. If
+        a caller asked for a trace, it gets one whatever this is set to, and an
+        unsampled caller does not flood this service with spans.
+      </Callout>
+
+      <P>
+        Sampling reduces what you can see, not what the dashboard claims. Counters
+        and baselines still see every request, because they do not come from
+        spans. Anything derived from traces is reported with the sample rate
+        attached.
+      </P>
 
       <H2 id="metrics">Metrics and adaptive baselines</H2>
 

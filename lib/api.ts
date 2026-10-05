@@ -60,6 +60,14 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "api",
     blurb: "File-based routing, request context, and validation.",
   },
+  "yatta/rpc": {
+    slug: "rpc",
+    blurb: "Serve a route table, so the server and the client read one definition.",
+  },
+  "yatta/client": {
+    slug: "client",
+    blurb: "A typed client built from your routes. No hand-written fetch calls.",
+  },
   "yatta/db": {
     slug: "db",
     blurb: "Typed SQLite: schema, relations, queries, migrations.",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, H3, P, Note, Props, DocFooter, Code, Breadcrumb,
+import { H1, H2, H3, P, Note, Callout, Props, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -170,6 +170,38 @@ const total = db.users.count();`}
 { like: "A%" }
 { isNull: true }`}
       />
+
+      <P>
+        The same operators work on date columns. Because a date column is stored
+        as text, write the value in ISO-8601 —{" "}
+        <Code>{"2026-01-31T00:00:00.000Z"}</Code>. Comparison is lexicographic,
+        so ISO is what makes a range mean what you expect.
+      </P>
+
+      <CodeBlock
+        title="Date ranges"
+        code={`db.posts.findMany({
+  where: {
+    createdAt: { gte: "2026-01-01T00:00:00.000Z", lt: "2026-02-01T00:00:00.000Z" },
+  },
+  orderBy: { createdAt: "desc" },
+});
+
+// Non-null only — isNull and the comparison operators are separate.
+db.posts.findMany({ where: { deletedAt: { isNull: true } } });`}
+      />
+
+      <Callout kind="note">
+        <Code>col.createdAt()</Code> and <Code>col.updatedAt()</Code> write ISO-8601
+        themselves, so a column you never touch by hand is safe to range over. They
+        used to fall back to SQLite&apos;s{" "}
+        <code>CURRENT_TIMESTAMP</code>, which drops the <code>T</code> and the
+        <code>Z</code> — and since a space sorts before a letter, every
+        never-updated row in a column fell <em>below</em> any ISO cutoff. A table
+        created before that fix keeps its old default; change it with{" "}
+        <code>ALTER TABLE t ALTER COLUMN c SET DEFAULT</code> and normalise the
+        rows already stored.
+      </Callout>
 
       <H2>Pagination</H2>
 

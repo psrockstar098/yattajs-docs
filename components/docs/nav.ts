@@ -58,6 +58,8 @@ export { apiModules };
 const MODULE_ICONS: Record<string, IconType> = {
   runtime: LuCpu,
   api: LuWorkflow,
+  rpc: LuWaypoints,
+  client: LuBraces,
   db: LuDatabase,
   auth: LuLock,
   jobs: LuListTodo,
@@ -230,6 +232,12 @@ export const docsNav: NavSection[] = [
         href: "/docs/api",
         blurb: "File-based routing, middleware, and validation.",
         icon: LuWorkflow,
+      },
+      {
+        title: "Typed client",
+        href: "/docs/client",
+        blurb: "Write a route once. Server and browser read the same table.",
+        icon: LuBraces,
       },
     ],
   },

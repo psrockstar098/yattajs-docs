@@ -357,8 +357,8 @@ const groups: Group[] = [
       {
         title: "Keep observability costs under control",
         description:
-          "Sampling is the honest gap: tracesSampleRate is accepted and validated, but no head-sampling decision is made yet, so every span is recorded. Everything is in-process and nothing is ingested anywhere.",
-        status: "planned",
+          "tracesSampleRate records every n-th request, so trace volume is a share of your traffic rather than all of it. The choice is deterministic, not random, so the same load always produces the same traces and a sample is one you can go and read. Everything stays in-process.",
+        status: "available",
       },
     ],
   },

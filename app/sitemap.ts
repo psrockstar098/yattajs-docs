@@ -48,6 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/docs/mail", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/realtime", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/api", priority: 0.8, frequency: "monthly" as const },
+    { path: "/docs/client", priority: 0.8, frequency: "monthly" as const },
     { path: "/docs/types", priority: 0.6, frequency: "monthly" as const },
     { path: "/docs/config", priority: 0.6, frequency: "monthly" as const },
     { path: "/docs/deployment", priority: 0.6, frequency: "monthly" as const },

@@ -134,6 +134,39 @@ export default api;`}
         <Link href="/docs/api" className="underline underline-offset-4">HTTP API</Link>.
       </P>
 
+      <H2>One route, both sides</H2>
+
+      <P>
+        Write a route once and the browser gets a typed call from it. The same
+        table makes the endpoint and the client method, so there is no second copy
+        of your types to fall out of date.
+      </P>
+
+      <CodeBlock
+        title="api-contract.ts"
+        code={`import { z } from "zod";
+import { route } from "yatta/rpc";
+
+export const routes = {
+  getUser: route({
+    method: "get",
+    path: "/users/:id",
+    params: z.object({ id: z.string() }),
+    response: z.object({ id: z.string(), email: z.string(), name: z.string() }),
+  }),
+};`}
+      />
+
+      <P>
+        The server serves that table; the browser calls it with{" "}
+        <Code>clientFor(routes, &#123; baseUrl: &quot;/api&quot; &#125;)</Code> and{" "}
+        <Code>user.email</Code> is a string. See{" "}
+        <Link href="/docs/client" className="underline underline-offset-4">
+          Typed client
+        </Link>
+        .
+      </P>
+
       <H2>Typed keys</H2>
 
       <P>

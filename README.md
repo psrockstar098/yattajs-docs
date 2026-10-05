@@ -18,9 +18,16 @@ Open [http://localhost:3000](http://localhost:3000).
 | Command | Does |
 |---------|------|
 | `bun run dev` | Development server with hot reload |
-| `bun run build` | Production build |
+| `bun run build` | Checks the API reference is current, then production build |
 | `bun run start` | Serve the production build |
 | `bun run lint` | ESLint |
+| `bun run extract:api` | Regenerate `lib/api-surface.json` from the framework source |
+| `bun run check:api` | Fail if `lib/api-surface.json` has drifted from the framework |
+
+The framework lives in a sibling checkout (`../Yatta`, overridable as the first
+argument to both api scripts). `bun run build` runs `check:api` first, so a
+missing extract is a build failure instead of a page that quietly publishes last
+month's signatures.
 
 ## Structure
 
@@ -56,10 +63,34 @@ public/             Images and video
 - `Render_2` is rendered inside a pinned "portal" stage with a scale + blur transition; changing the zoom timeline means editing `app/page.tsx`.
 - In `components/Observability.tsx` the Shipped/Planned badge is load-bearing, not decoration: a card may only be marked shipped once the capability exists in the framework. Removing a "Planned" badge means the feature actually shipped — check `src/types/observe.ts` before doing so.
 
+## Keeping this in step with the framework
+
+This site is generated and hand-written from the framework's source, so it goes
+stale the moment either moves. The framework repo has the full mapping in its
+`AGENTS.md`; the short version:
+
+| Changed in the framework | Do here |
+|---|---|
+| An exported symbol, signature or doc comment | `bun run extract:api`, commit `lib/api-surface.json` |
+| A new module | Add it to `scripts/extract-api.mjs` MODULES **and** `lib/api.ts` META, then extract |
+| A new feature | A page in `app/docs/`, an entry in `components/docs/nav.ts`, one in `app/sitemap.ts` |
+| A bug a user would notice | The page describing the old behaviour — that claim is now false |
+| The framework README | The matching docs page |
+
+Two rules that matter more than the rest:
+
+- The site is ahead of the framework less harmfully than behind it. Publishing a
+  page for behaviour that does not exist is worse than omitting one.
+- A limitation stated plainly is a feature of the documentation. Silently
+  dropping a "Planned" card because the feature looked easy reads as
+  availability.
+
 ## Docs conventions
 
 - Every code sample in `app/docs/` is written against a real API. If a sample
   references a method that does not exist, the docs are wrong — not the method.
+- Every code sample is checked against a real compiler. A snippet that type-checks
+  nowhere is worse than no snippet, and nobody can tell by reading it.
 - Prefer documenting a refusal over a promise. Where an engine declines to
   produce a result because the data is insufficient, that behaviour is
   documented as deliberately, because it is the part a reader will otherwise

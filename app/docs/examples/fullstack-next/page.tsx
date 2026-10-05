@@ -129,11 +129,12 @@ export const api = {
       <H2 id="rum">One trace across both</H2>
 
       <P>
-        Propagate the traceparent yourself. There is no browser agent in the
-        framework &mdash; <code>rumScript()</code> exists but nothing loads it and
-        there is no ingest endpoint, so emitting it would be a no-op. What does
-        work is minting a W3C header on the client; the server adopts it and the
-        SQLite query it caused lands in the same trace.
+        Propagate the traceparent yourself. The framework has no browser agent:
+        it never had a working one, and the stub that used to sit here did nothing
+        &mdash; it set a global that nothing read, which looks like a proof of
+        telemetry and is not one. What works today is minting a W3C header on the
+        client; the server adopts it and the SQLite query it caused lands in the
+        same trace.
       </P>
 
       <CodeBlock

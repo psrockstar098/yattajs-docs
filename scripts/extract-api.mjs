@@ -21,6 +21,8 @@ const MODULES = [
   { id: "yatta", label: "yatta", file: "src/main.ts" },
   { id: "yatta/runtime", label: "yatta/runtime", file: "core_runtime/index.ts" },
   { id: "yatta/api", label: "yatta/api", file: "src/types/api.ts" },
+  { id: "yatta/rpc", label: "yatta/rpc", file: "src/types/rpc.ts" },
+  { id: "yatta/client", label: "yatta/client", file: "src/types/client.ts" },
   { id: "yatta/db", label: "yatta/db", file: "src/types/db.ts" },
   { id: "yatta/auth", label: "yatta/auth", file: "src/types/auth.ts" },
   { id: "yatta/jobs", label: "yatta/jobs", file: "src/types/job.ts" },

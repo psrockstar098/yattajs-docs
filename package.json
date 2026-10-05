@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/check-api.mjs /home/psrockstar/Documents/code/Yatta && next build",
     "start": "next start",
     "lint": "eslint",
-    "extract:api": "node scripts/extract-api.mjs /home/psrockstar/Documents/code/Yatta lib/api-surface.json"
+    "extract:api": "node scripts/extract-api.mjs /home/psrockstar/Documents/code/Yatta lib/api-surface.json",
+    "check:api": "node scripts/check-api.mjs /home/psrockstar/Documents/code/Yatta"
   },
   "dependencies": {
     "gsap": "^3.15.0",
