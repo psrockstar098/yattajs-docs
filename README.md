@@ -72,7 +72,7 @@ stale the moment either moves. The framework repo has the full mapping in its
 | Changed in the framework | Do here |
 |---|---|
 | An exported symbol, signature or doc comment | `bun run extract:api`, commit `lib/api-surface.json` |
-| A new module | Add it to `scripts/extract-api.mjs` MODULES **and** `lib/api.ts` META, then extract |
+| A new module | Add it to `scripts/extract-api.mjs` MODULES **and** `lib/api.ts` META, add an icon in `components/docs/nav.ts` MODULE_ICONS, then extract |
 | A new feature | A page in `app/docs/`, an entry in `components/docs/nav.ts`, one in `app/sitemap.ts` |
 | A bug a user would notice | The page describing the old behaviour — that claim is now false |
 | The framework README | The matching docs page |
@@ -84,6 +84,10 @@ Two rules that matter more than the rest:
 - A limitation stated plainly is a feature of the documentation. Silently
   dropping a "Planned" card because the feature looked easy reads as
   availability.
+- "Typechecked" is not "works". `/docs/frontend` names which framework bindings
+  were verified by rendering, which only as logic, and which only by the
+  compiler. Keep that split current — a page that implies all nine are equally
+  verified is the kind of claim that erodes trust in the rest.
 
 ## Docs conventions
 

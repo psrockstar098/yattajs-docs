@@ -68,6 +68,30 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "client",
     blurb: "A typed client built from your routes. No hand-written fetch calls.",
   },
+  "yatta/universal": {
+    slug: "universal",
+    blurb: "One route definition, used two ways: called in process or over HTTP.",
+  },
+  "yatta/frameworks": {
+    slug: "frameworks",
+    blurb: "Bindings for Vue, Solid, Svelte, Angular, Qwik, and plain pages.",
+  },
+  "yatta/frontend": {
+    slug: "frontend",
+    blurb: "Query cache, realtime state, and environment detection.",
+  },
+  "yatta/binding": {
+    slug: "binding",
+    blurb: "The shared reactive contract every framework binding is built on.",
+  },
+  "yatta/react": {
+    slug: "react",
+    blurb: "React hooks over the same route table.",
+  },
+  "yatta/next": {
+    slug: "next",
+    blurb: "Route handlers and request-scoped fetching for Next.js.",
+  },
   "yatta/db": {
     slug: "db",
     blurb: "Typed SQLite: schema, relations, queries, migrations.",

@@ -2062,6 +2062,2769 @@
    }
   ]
  },
+ "yatta/universal": {
+  "label": "yatta/universal",
+  "file": "src/types/universal.ts",
+  "entries": [
+   {
+    "name": "createApp",
+    "kind": "function",
+    "signature": "createApp<const R extends RouteTable, S extends ServiceMap = ServiceMap>(routes: R, options?: { services?: S; name?: string; }): App<R> & DirectMethods<R> & { readonly serviceType: S; }",
+    "summary": "Builds an app from a table of routes.",
+    "note": "",
+    "example": "export const app = createApp({\n  getUser: defineRoute(\n    { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n    async ({ params, services }) => services.db.users.findById(params.id),\n  ),\n}, {\n  // Typed, so a handler's `services.db` is your database.\n  services: { db, auth, realtime },\n});",
+    "examples": [
+     "export const app = createApp({\n  getUser: defineRoute(\n    { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n    async ({ params, services }) => services.db.users.findById(params.id),\n  ),\n}, {\n  // Typed, so a handler's `services.db` is your database.\n  services: { db, auth, realtime },\n});"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createClient",
+    "kind": "function",
+    "signature": "createClient<const R extends RouteTable>(app: App<R> & DirectMethods<R>, options?: ClientOptions): Client<R>",
+    "summary": "Builds the browser client for an app.",
+    "note": "This is the other half of the same definition. The app calls handlers in\nprocess; this reaches them over HTTP. Both surfaces come from the table, so the\ndeveloper writes neither.",
+    "example": "// Server Component — direct, no HTTP.\nconst user = await app.getUser({ params: { id } });\n\n// Browser — over HTTP, same shape.\nconst api = createClient(app, { baseUrl: \"/api\" });\nconst user2 = await api.getUser({ params: { id } });",
+    "examples": [
+     "// Server Component — direct, no HTTP.\nconst user = await app.getUser({ params: { id } });\n\n// Browser — over HTTP, same shape.\nconst api = createClient(app, { baseUrl: \"/api\" });\nconst user2 = await api.getUser({ params: { id } });"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "defaultServices",
+    "kind": "function",
+    "signature": "defaultServices(): ServiceMap",
+    "summary": "A default service set.",
+    "note": "Reads the framework's singletons lazily. A getter rather than a value, so\nimporting a route file does not start a database connection or a socket — the\nfailure mode being that reading a route table on the server to mount it would\nspin up everything the app owns.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "defineRoute",
+    "kind": "function",
+    "signature": "defineRoute<const D extends RouteSpec, S extends ServiceMap = ServiceMap, R extends DeclaredOut<D> = DeclaredOut<D>>(spec: D, handler: (input: Input<D, S>) => MaybePromise<R>): Route<D, S, R>",
+    "summary": "Declares one route.",
+    "note": "The handler returns a plain value, not a `Response`. That is the change that\nmakes a direct call meaningful: `invoke()` hands back the value itself rather\nthan something that has to be unwrapped from a transport.\n\nThe return type is constrained to the declared response when there is one, so a\nhandler that drifts from its contract fails here rather than at the browser.",
+    "example": "const getUser = defineRoute(\n  { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n  async ({ params, services }) => {\n    const user = await services.db.users.findById(params.id);\n    if (!user) throw new HttpError(404, \"No such user\");\n    return user;\n  },\n);",
+    "examples": [
+     "const getUser = defineRoute(\n  { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n  async ({ params, services }) => {\n    const user = await services.db.users.findById(params.id);\n    if (!user) throw new HttpError(404, \"No such user\");\n    return user;\n  },\n);"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "invoke",
+    "kind": "async function",
+    "signature": "invoke<N extends string, D extends RouteSpec, S extends ServiceMap, R>(app: App<Record<N, Route<D, S, R>>> & { services: S; }, name: N, args: CallArgs<D>, options?: { ctx?: Context<never>; services?: Partial<S>; }): Promise<Awaited<R>>",
+    "summary": "Calls a route as a function. No HTTP, no serialization, no connection pool.",
+    "note": "This is the point of the whole module. On a server the caller and the handler\nare in the same process, so a network hop between them buys no isolation and\ncosts a round trip, a socket, and a failure mode.",
+    "example": "// A Server Component. The handler runs here, with your `db`.\nconst user = await invoke(app, \"getUser\", { params: { id } });\n\n// Type inferred from the handler, not from a shared interface.\nconst name: string = user.name;",
+    "examples": [
+     "// A Server Component. The handler runs here, with your `db`.\nconst user = await invoke(app, \"getUser\", { params: { id } });\n\n// Type inferred from the handler, not from a shared interface.\nconst name: string = user.name;"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "mount",
+    "kind": "function",
+    "signature": "mount(app: App<any>, options?: TransportOptions): (request: Request) => Promise<Response>",
+    "summary": "Serves an app over HTTP.",
+    "note": "The transport. It matches a path, validates the arguments, runs the same\nhandler `invoke` would, and turns the plain value it returns into a response.\nNothing about the route is re-declared here.",
+    "example": "Bun.serve({ fetch: mount(app) });",
+    "examples": [
+     "Bun.serve({ fetch: mount(app) });"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "readQuery",
+    "kind": "function",
+    "signature": "readQuery(url: string): Record<string, unknown>",
+    "summary": "Query parameters as scalars, or arrays where a key really did repeat.",
+    "note": "Decided by how many values arrived, not by the shape, so `?limit=10` reaches a\n`{ limit: number }` schema as a string and `?tag=a&tag=b` reaches a\n`{ tag: string[] }` schema as an array.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "routesOf",
+    "kind": "function",
+    "signature": "routesOf(source: App<any> | Record<string, Route>): Record<string, Route>",
+    "summary": "Reads the routes off either an app or a bare table.",
+    "note": "Both accepted because both are natural to have on hand, and a developer should\nnot have to know which one a function expects — or unwrap it at the call site.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "App",
+    "kind": "interface",
+    "signature": "interface App<R extends Record<string, any> = RouteTable>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "routes",
+      "kind": "property",
+      "signature": "routes: R",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "services",
+      "kind": "property",
+      "signature": "services: ServiceMap",
+      "summary": "The framework objects handlers are given.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "names",
+      "kind": "property",
+      "signature": "names: readonly (keyof R & string)[]",
+      "summary": "The names in this app. Useful for generating a client or checking coverage.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "get",
+      "kind": "method",
+      "signature": "get<K extends keyof R & string>(name: K): R[K]",
+      "headline": true,
+      "summary": "One route by name.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "ClientOptions",
+    "kind": "interface",
+    "signature": "interface ClientOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "baseUrl",
+      "kind": "property",
+      "signature": "baseUrl?: string",
+      "summary": "Origin the routes are reached through, e.g. \"/api\" or a full origin.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "headers",
+      "kind": "property",
+      "signature": "headers?: Record<string, string>",
+      "summary": "Sent with every request unless a call overrides it.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onRequest",
+      "kind": "property",
+      "signature": "onRequest?: (request: Request) => void",
+      "summary": "Runs before each request: a cookie jar, an auth header.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onResponse",
+      "kind": "property",
+      "signature": "onResponse?: (response: Response) => void",
+      "summary": "Runs after a successful response: pagination cursors, rate-limit counters.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "fetch",
+      "kind": "property",
+      "signature": "fetch?: typeof globalThis.fetch",
+      "summary": "Passed to fetch, to share a cookie jar or an agent.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "validateResponses",
+      "kind": "property",
+      "signature": "validateResponses?: boolean",
+      "summary": "Validate a response against its declared schema.",
+      "note": "On by default. It is the only thing that turns a server that changed into an\nerror naming the field, instead of an `undefined` three components later.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "Route",
+    "kind": "interface",
+    "signature": "interface Route<D extends RouteSpec = RouteSpec, S extends ServiceMap = ServiceMap, R = unknown>",
+    "summary": "A declared route: its spec, its handler, and the handler's return type kept so",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "spec",
+      "kind": "property",
+      "signature": "spec: D",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "handler",
+      "kind": "property",
+      "signature": "handler: (input: Input<D, S>) => MaybePromise<R>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "ServiceMap",
+    "kind": "interface",
+    "signature": "interface ServiceMap",
+    "summary": "The framework objects a handler can use.",
+    "note": "Injected rather than imported, so a handler can be called directly, over HTTP,\nor in a test with a stand-in. An open map by default, because which engines an\napp uses is its own business.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "db",
+      "kind": "property",
+      "signature": "db?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "auth",
+      "kind": "property",
+      "signature": "auth?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "realtime",
+      "kind": "property",
+      "signature": "realtime?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "jobs",
+      "kind": "property",
+      "signature": "jobs?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "mail",
+      "kind": "property",
+      "signature": "mail?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "storage",
+      "kind": "property",
+      "signature": "storage?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "observer",
+      "kind": "property",
+      "signature": "observer?: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "Services",
+    "kind": "interface",
+    "signature": "interface Services",
+    "summary": "Services with the engines an app actually has, so handlers get real types.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "db",
+      "kind": "property",
+      "signature": "db: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "auth",
+      "kind": "property",
+      "signature": "auth: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "realtime",
+      "kind": "property",
+      "signature": "realtime: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "jobs",
+      "kind": "property",
+      "signature": "jobs: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "mail",
+      "kind": "property",
+      "signature": "mail: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "storage",
+      "kind": "property",
+      "signature": "storage: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "observer",
+      "kind": "property",
+      "signature": "observer: unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "TransportOptions",
+    "kind": "interface",
+    "signature": "interface TransportOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "basePath",
+      "kind": "property",
+      "signature": "basePath?: string",
+      "summary": "Stripped before matching, when the mount point is not in the URL.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "validateResponses",
+      "kind": "property",
+      "signature": "validateResponses?: boolean",
+      "summary": "Validate each response against its declared schema. Costs one check.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onNotFound",
+      "kind": "property",
+      "signature": "onNotFound?: (req: WireRequest) => WireResponse | Promise<WireResponse>",
+      "summary": "Called when no route matches. Defaults to a 404 JSON body.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onError",
+      "kind": "property",
+      "signature": "onError?: (error: unknown, req: WireRequest, response: WireResponse) => void",
+      "summary": "Called with a thrown error and the response it became.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "WireRequest",
+    "kind": "interface",
+    "signature": "interface WireRequest",
+    "summary": "A request, as far as the transport layer needs to know.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "method",
+      "kind": "property",
+      "signature": "method: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "url",
+      "kind": "property",
+      "signature": "url: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "headers",
+      "kind": "property",
+      "signature": "headers: Record<string, string>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "body",
+      "kind": "property",
+      "signature": "body?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "WireResponse",
+    "kind": "interface",
+    "signature": "interface WireResponse",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "status",
+      "kind": "property",
+      "signature": "status: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "headers",
+      "kind": "property",
+      "signature": "headers: Record<string, string>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "body",
+      "kind": "property",
+      "signature": "body: string | Uint8Array | ReadableStream | null",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "CallArgs",
+    "kind": "type",
+    "signature": "type CallArgs<D extends RouteSpec> = ParamsArg<D> & QueryArg<D> & BodyArg<D> & { ctx?: Context<never>; }",
+    "summary": "Arguments for a direct call.",
+    "note": "What a route accepts, minus the request context: there is no HTTP request,\nbecause nothing crossed a network.\n\nEach input is contributed only when the route declares it, so passing a body to\na route without one is an error rather than a field quietly dropped.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "CallResult",
+    "kind": "type",
+    "signature": "type CallResult<T> = T extends Route<any, any, infer R> ? Awaited<R> : never",
+    "summary": "What a direct call hands back: the handler's own return type.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "Client",
+    "kind": "type",
+    "signature": "type Client<R extends RouteTable> = HttpMethods<R>",
+    "summary": "A client for an app.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "DeclaredOut",
+    "kind": "type",
+    "signature": "type DeclaredOut<D extends RouteSpec> = D extends { response: infer Res; } ? unknown extends Res ? unknown : Infer<Res> : unknown",
+    "summary": "The value a handler returns when a response schema is declared.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "DirectMethods",
+    "kind": "type",
+    "signature": "type DirectMethods<R extends RouteTable> = { [K in keyof R & string]: (args?: CallArgs<R[K][\"spec\"]>) => Promise<CallResult<R[K]>>; }",
+    "summary": "A set of routes plus the services they use.",
+    "note": "One of these per process on the server, and per request on a server render —\nnever a module-level singleton that outlives a request, which would serve one\nuser's data to the next.\n\nOne method per route, each callable directly.\n\nDerived from the table, so the developer writes routes and nothing else — no\nwrapper per endpoint, no name string to keep in step, no signature to maintain.\nThe method's argument and return types come from the route itself.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "HttpMethods",
+    "kind": "type",
+    "signature": "type HttpMethods<R extends RouteTable> = { [K in keyof R & string]: (args?: CallArgs<R[K][\"spec\"]>) => Promise<DeclaredOut<R[K][\"spec\"]>>; }",
+    "summary": "A method per route, reached over HTTP.",
+    "note": "The same names, the same arguments and the same return types as the app's direct\nmethods. Derived from the same table, so there is nothing to keep in step — a\nrenamed route is a compile error here too.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "Input",
+    "kind": "type",
+    "signature": "type Input<D extends RouteSpec, S extends ServiceMap> = { params: D extends { params: infer P; } ? unknown extends P ? D extends { path: infer Path extends string; } ? PathParams<Path> : Record<string, string> : Infer<P> : D extends { path: infer Path extends string; } ? PathParams<Path> : Record<string, string>; query: D extends { query: infer Q; } ? unknown extends Q ? Record<string, unknown> : Infer<Q> : Record<string, unknown>; body: D extends { body: infer B; } ? unknown extends B ? unknown : Infer<B> : undefined; ctx: Context<never>; services: S; }",
+    "summary": "Everything a handler is given.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "PathParams",
+    "kind": "type",
+    "signature": "type PathParams<Path extends string> = Path extends `${infer _H}:${infer P}/${infer R}` ? { [K in P | keyof PathParams<`/${R}`>]: string; } : Path extends `${infer _H}:${infer P}` ? { [K in P]: string; } : {}",
+    "summary": "Path parameters as plain strings, read from the path template.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "RouteSpec",
+    "kind": "type",
+    "signature": "type RouteSpec = RouteDef",
+    "summary": "The shape a route declares: method, path, and validators.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "RouteTable",
+    "kind": "type",
+    "signature": "type RouteTable = Record<string, Route<RouteSpec, any, any>>",
+    "summary": "A table of routes.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "buildPath",
+    "kind": "unknown",
+    "signature": "buildPath",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "HttpMethod",
+    "kind": "unknown",
+    "signature": "HttpMethod",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "RouteDef",
+    "kind": "unknown",
+    "signature": "RouteDef",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "toQueryString",
+    "kind": "unknown",
+    "signature": "toQueryString",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/frameworks": {
+  "label": "yatta/frameworks",
+  "file": "src/frameworks/index.ts",
+  "entries": [
+   {
+    "name": "bindSubscribable",
+    "kind": "function",
+    "signature": "bindSubscribable<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, onChange: () => void, options?: { enabled?: boolean; key?: string; }): Subscribable<T>",
+    "summary": "Binds a call and hands back a start/stop pair.",
+    "note": "The store's subscription is established here so no adapter has to remember to.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "callKey",
+    "kind": "function",
+    "signature": "callKey<TArgs>(method: unknown, args: TArgs | undefined): string",
+    "summary": "The key a call is stored under.",
+    "note": "Both the route and the arguments, so two calls cannot share a value by accident\nand the same call always does.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createAngularClient",
+    "kind": "function",
+    "signature": "createAngularClient(api: DirectMethods<never>, store: CallStore): YattaAngularClient",
+    "summary": "Builds an Angular client whose calls drive Angular signals.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createDomCall",
+    "kind": "function",
+    "signature": "createDomCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): DomCall<T>",
+    "summary": "No framework at all — a plain page, a script tag, a worker, a Web Component.",
+    "note": "The same contract the other adapters implement, so a page with no framework\nbehaves identically to one inside a component tree: same caching, same\nde-duplication, same rollback.\n\n```ts\nconst call = createDomCall(store, api.getUser, { params: { id } });\nconst off = call.subscribe((state) => render(state.data));\n```",
+    "example": "const call = createDomCall(store, api.getUser, { params: { id } });\nconst off = call.subscribe((state) => render(state.data));",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "runMutation",
+    "kind": "async function",
+    "signature": "runMutation<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, options: { optimistic?: { key: string; value: unknown | ((args: TArgs) => unknown); }; invalidates?: string[]; }, hooks: { onPending: (pending: boolean) => void; onSuccess: (result: T) => void; onError: (error: Error) => void; }): Promise<T | undefined>",
+    "summary": "The optimistic-write-then-request sequence, shared so rollback cannot differ.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useCall",
+    "kind": "function",
+    "signature": "useCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): VueCall<T>",
+    "summary": "Vue 3.",
+    "note": "`shallowRef` rather than `ref`. A response is a plain object, and a deep\nreactive proxy around it means every read goes through a proxy — and an\noptimistic rollback would then mutate the proxy instead of restoring what was\nthere.\n\n```vue\n<script setup lang=\"ts\">\nconst { state, reload } = useCall(api.getUser, { params: { id: props.id } });\nconst user = computed(() => state.value.data);\n</script>\n```",
+    "example": "<script setup lang=\"ts\">\nconst { state, reload } = useCall(api.getUser, { params: { id: props.id } });\nconst user = computed(() => state.value.data);\n</script>",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useMutation",
+    "kind": "function",
+    "signature": "useMutation<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, options?: { optimistic?: { key: string; value: unknown | ((args: TArgs) => unknown); }; invalidates?: string[]; onSuccess?: (result: T, args: TArgs) => void; onError?: (error: Error, args: TArgs) => void; }): VueMutation<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useQwikCall",
+    "kind": "function",
+    "signature": "useQwikCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, options?: { enabled?: boolean; }): QwikCall<T>",
+    "summary": "Qwik.",
+    "note": "A signal and a resource, rather than a subscription. Qwik containers are\nrendered on the server, serialized, and *resumed* in the browser without\nre-running the component — so anything held in a closure is gone, and the only\nthing that survives is serialized state. A resource is exactly that.\n\nMust be called during a component's render. That is a Qwik requirement rather\nthan one this binding adds.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useSolidCall",
+    "kind": "function",
+    "signature": "useSolidCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): SolidCall<T>",
+    "summary": "Solid.",
+    "note": "The closest fit of the group: Solid's reactivity is push-based, which is what\nthe store's subscription already is, so a signal write is the whole adapter.\n\n```tsx\nconst user = useCall(api.getUser, { params: { id } });\nreturn <Show when={user().data}>{u => <span>{u().name}</span>}</Show>;\n```",
+    "example": "const user = useCall(api.getUser, { params: { id } });\nreturn <Show when={user().data}>{u => <span>{u().name}</span>}</Show>;",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useSvelteCall",
+    "kind": "function",
+    "signature": "useSvelteCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): SvelteCall<T>",
+    "summary": "Svelte.",
+    "note": "Getters rather than signals. A Svelte template reads a property, and a getter\nthat reads `$state` is tracked the same as a direct read — so the template does\nnot have to unwrap anything, and this works in a `.ts` module as well as a\ncomponent.\n\n```svelte\n<script lang=\"ts\">\n  const user = useCall(api.getUser, { params: { id: data.id } });\n</script>\n<span>{user.data?.name}</span>\n```",
+    "example": "<script lang=\"ts\">\n  const user = useCall(api.getUser, { params: { id: data.id } });\n</script>\n<span>{user.data?.name}</span>",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "YattaAngularClient",
+    "kind": "class",
+    "signature": "class YattaAngularClient",
+    "summary": "Angular.",
+    "note": "A plain class rather than a service decorator, so it can be constructed in a\nfactory provider or built by hand in a test. Angular's own `signal` is used, not\nan RxJS subject: a signal is readable straight from a template with no async\npipe, and this keeps RxJS out of the dependency list.\n\n```ts",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "call",
+      "kind": "method",
+      "signature": "call<TArgs, T>(method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): AngularCall<T>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "useRoutes",
+      "kind": "method",
+      "signature": "useRoutes(): DirectMethods<never>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "AngularCall",
+    "kind": "interface",
+    "signature": "interface AngularCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "state",
+      "kind": "method",
+      "signature": "state(): CallState<T>",
+      "headline": false,
+      "summary": "An Angular signal of the call's state.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "Call from `ngOnDestroy`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DomCall",
+    "kind": "interface",
+    "signature": "interface DomCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "state",
+      "kind": "property",
+      "signature": "state: CallState<T>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(onChange: (state: CallState<T>) => void): () => void",
+      "headline": true,
+      "summary": "Told on every change. The whole of a no-framework re-render.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "QwikCall",
+    "kind": "interface",
+    "signature": "interface QwikCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "key",
+      "kind": "property",
+      "signature": "key: string",
+      "summary": "The cache key, which is also how the call is tracked across a resume.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "state",
+      "kind": "property",
+      "signature": "state: { value: CallState<T>; }",
+      "summary": "A Qwik signal of the call's state.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "SolidCall",
+    "kind": "interface",
+    "signature": "interface SolidCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "[call]",
+      "kind": "call",
+      "signature": "(): CallState<T>",
+      "summary": "A signal accessor. Call it in JSX and Solid tracks it.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "Subscribable",
+    "kind": "interface",
+    "signature": "interface Subscribable<T>",
+    "summary": "Subscribes a callback to a bound call.",
+    "note": "Returned rather than done inside the constructor of the holder, because a\nbinding is created during a framework's render and doing work there is what\ncauses a request per render.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "state",
+      "kind": "property",
+      "signature": "state: CallState<T>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "SvelteCall",
+    "kind": "interface",
+    "signature": "interface SvelteCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "data",
+      "kind": "property",
+      "signature": "data: T | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "error",
+      "kind": "property",
+      "signature": "error: Error | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "fetching",
+      "kind": "property",
+      "signature": "fetching: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "stale",
+      "kind": "property",
+      "signature": "stale: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "VueCall",
+    "kind": "interface",
+    "signature": "interface VueCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "state",
+      "kind": "property",
+      "signature": "state: { value: CallState<T>; }",
+      "summary": "A `ShallowRef`. Read `.value`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "reload",
+      "kind": "method",
+      "signature": "reload(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "destroy",
+      "kind": "method",
+      "signature": "destroy(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "VueMutation",
+    "kind": "interface",
+    "signature": "interface VueMutation<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "pending",
+      "kind": "property",
+      "signature": "pending: { value: boolean; }",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "error",
+      "kind": "property",
+      "signature": "error: { value: Error | undefined; }",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "call",
+      "kind": "method",
+      "signature": "call(args: unknown): Promise<T | undefined>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "bind",
+    "kind": "unknown",
+    "signature": "bind",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "makeBinding",
+    "kind": "unknown",
+    "signature": "makeBinding",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "methodName",
+    "kind": "unknown",
+    "signature": "methodName",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "stableStringify",
+    "kind": "unknown",
+    "signature": "stableStringify",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "watchCall",
+    "kind": "unknown",
+    "signature": "watchCall",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/frontend": {
+  "label": "yatta/frontend",
+  "file": "src/types/frontend.ts",
+  "entries": [
+   {
+    "name": "cacheKey",
+    "kind": "function",
+    "signature": "cacheKey(name: string, args?: unknown): string",
+    "summary": "A cache key from a route name and its arguments, so calls agree on identity.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "connectRealtime",
+    "kind": "function",
+    "signature": "connectRealtime(client: RealtimeClient, options?: { queueWhileOffline?: boolean; }): RealtimeHandle",
+    "summary": "Wraps a  so its state is observable.",
+    "note": "Takes the connection as an argument rather than making one, so the frontend and\nthe transport are the same object. Two connections would mean two topics and\ntwo sets of events, and neither would be the one the server is pushing to.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createFrontend",
+    "kind": "function",
+    "signature": "createFrontend<const R extends Record<string, RouteDef>>(source: R | App<any>, options?: FrontendOptions<R>): Frontend<R>",
+    "summary": "Builds the client-side surface.",
+    "note": "",
+    "example": "import { createFrontend } from \"yatta/frontend\";\nimport { routes } from \"./api-contract\";\n\nexport const frontend = createFrontend(routes, {\n  baseUrl: \"/api\",\n  realtime: createRealtimeClient({ url: \"/realtime\" }),\n  cookieName: \"session\",\n});",
+    "examples": [
+     "import { createFrontend } from \"yatta/frontend\";\nimport { routes } from \"./api-contract\";\n\nexport const frontend = createFrontend(routes, {\n  baseUrl: \"/api\",\n  realtime: createRealtimeClient({ url: \"/realtime\" }),\n  cookieName: \"session\",\n});"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "QueryCache",
+    "kind": "class",
+    "signature": "class QueryCache",
+    "summary": "A small query cache: deduplicate in flight, share one value per key.",
+    "note": "Not a general-purpose cache and not trying to be. It exists so two components\nasking for the same thing share one request and one value, and so a refetch\ndoes not blank the screen.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "entries",
+      "kind": "property",
+      "signature": "entries: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "inFlight",
+      "kind": "property",
+      "signature": "inFlight: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "watchers",
+      "kind": "property",
+      "signature": "watchers: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(onChange: () => void): () => void",
+      "headline": true,
+      "summary": "Subscribe to any change. Returns an unsubscribe function.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "notify",
+      "kind": "method",
+      "signature": "notify(): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "get",
+      "kind": "method",
+      "signature": "get<T>(key: string): CacheEntry<T>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "resolve",
+      "kind": "method",
+      "signature": "resolve<T>(key: string, fetcher: () => Promise<T>, options?: { force?: boolean; }): Promise<T | undefined>",
+      "headline": false,
+      "summary": "Reads a key, starting a load if there is nothing fresh.",
+      "note": "A second caller for a key already loading gets the same promise, so ten\ncomponents mounting at once cause one request.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set<T>(key: string, updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "Writes a value directly, without a request.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "invalidate",
+      "kind": "method",
+      "signature": "invalidate(key?: string): void",
+      "headline": false,
+      "summary": "Marks a key stale so the next read refetches.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "clear",
+      "kind": "method",
+      "signature": "clear(key?: string): void",
+      "headline": false,
+      "summary": "Clears one key, or everything.",
+      "note": "A cache is only per-request state, so there is no TTL sweep here: on the\nserver the whole instance is thrown away with the render, and in the browser\na reload starts empty.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "evict",
+      "kind": "method",
+      "signature": "evict(): void",
+      "headline": false,
+      "summary": "Drops the oldest entries past the cap, so the cache cannot grow forever.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "CacheEntry",
+    "kind": "interface",
+    "signature": "interface CacheEntry<T = unknown>",
+    "summary": "One entry in the query cache.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "data",
+      "kind": "property",
+      "signature": "data: T | undefined",
+      "summary": "The value, or `undefined` while the first load is still in flight.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "error",
+      "kind": "property",
+      "signature": "error: CallError | Error | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "fetching",
+      "kind": "property",
+      "signature": "fetching: boolean",
+      "summary": "Whether a request is in flight right now.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "updatedAt",
+      "kind": "property",
+      "signature": "updatedAt: number | undefined",
+      "summary": "When the data was last written, as epoch milliseconds.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "stale",
+      "kind": "property",
+      "signature": "stale: boolean",
+      "summary": "Whether the value is from a previous request rather than this one.",
+      "note": "Distinct from `fetching` on its own: a refetch that keeps the old data on\nscreen means the UI can keep showing it instead of flashing empty.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "CacheOptions",
+    "kind": "interface",
+    "signature": "interface CacheOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "staleTime",
+      "kind": "property",
+      "signature": "staleTime?: number",
+      "summary": "How long a value stays fresh, in milliseconds. Defaults to 30 seconds.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "maxEntries",
+      "kind": "property",
+      "signature": "maxEntries?: number",
+      "summary": "Upper bound on stored entries. Defaults to 200.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "Frontend",
+    "kind": "interface",
+    "signature": "interface Frontend<R extends Record<string, RouteDef>>",
+    "summary": "The whole client-side surface, in one object.",
+    "note": "Built from the same route table the server serves, so `client` is typed from\nthe schemas the server validates with.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "api",
+      "kind": "property",
+      "signature": "api: ReturnType<typeof createClient<R>>",
+      "summary": "Typed API methods, one per route.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache: QueryCache",
+      "summary": "Query cache shared by every consumer of this frontend.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "realtime",
+      "kind": "property",
+      "signature": "realtime: RealtimeHandle | undefined",
+      "summary": "Realtime, when a connection was supplied.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "interactive",
+      "kind": "property",
+      "signature": "interactive: boolean",
+      "summary": "Whether this instance can open connections.",
+      "note": "`false` during a server render. Hooks use it to decide between \"load it\" and\n\"wait for the browser\", which is the difference between a working static\nrender and a hydration mismatch.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getCookie",
+      "kind": "property",
+      "signature": "getCookie?: (name: string) => string | undefined",
+      "summary": "Reads a session cookie value. `undefined` on the server.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "setHeaders",
+      "kind": "property",
+      "signature": "setHeaders?: (headers: Headers) => void",
+      "summary": "Sends on every request, for auth headers and the like.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "dispose",
+      "kind": "method",
+      "signature": "dispose(): void",
+      "headline": false,
+      "summary": "Releases timers and connections.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "FrontendOptions",
+    "kind": "interface",
+    "signature": "interface FrontendOptions<R extends Record<string, RouteDef>>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "realtime",
+      "kind": "property",
+      "signature": "realtime?: RealtimeClient",
+      "summary": "A realtime connection to observe. One to serve both, not two.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "queueWhileOffline",
+      "kind": "property",
+      "signature": "queueWhileOffline?: boolean",
+      "summary": "Queue sends made while disconnected. Defaults to `true`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache?: CacheOptions",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "cookieName",
+      "kind": "property",
+      "signature": "cookieName?: string",
+      "summary": "The session cookie name, read on the server and sent by the browser.",
+      "note": "Read rather than accepted as a value, so a server render and the browser\nagree on who the user is without the app threading a token through.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "interactive",
+      "kind": "property",
+      "signature": "interactive?: boolean",
+      "summary": "Overrides the environment check. Set false in tests.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "QueryResult",
+    "kind": "interface",
+    "signature": "interface QueryResult<T>",
+    "summary": "Read-only view of one cache entry, as a hook receives it.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "data",
+      "kind": "property",
+      "signature": "data: T | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "error",
+      "kind": "property",
+      "signature": "error: CallError | Error | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "fetching",
+      "kind": "property",
+      "signature": "fetching: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "stale",
+      "kind": "property",
+      "signature": "stale: boolean",
+      "summary": "The value is from a previous request; a new one is in flight.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "refetch",
+      "kind": "property",
+      "signature": "refetch: () => Promise<T | undefined>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "property",
+      "signature": "set: (updater: T | ((previous: T | undefined) => T)) => void",
+      "summary": "Write a value without a request. For optimistic updates.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "RealtimeHandle",
+    "kind": "interface",
+    "signature": "interface RealtimeHandle",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "status",
+      "kind": "property",
+      "signature": "status: ConnectionStatus",
+      "summary": "Current status. Read it at any time; it is kept up to date.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onStatus",
+      "kind": "method",
+      "signature": "onStatus(onChange: (status: ConnectionStatus) => void): () => void",
+      "headline": false,
+      "summary": "Told on every status change. Returns an unsubscribe function.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "on",
+      "kind": "method",
+      "signature": "on<T = unknown>(event: string, handler: (data: T) => void): () => void",
+      "headline": true,
+      "summary": "Listens for one event.",
+      "note": "Returns an unsubscribe function, so it pairs with a component's teardown.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "join",
+      "kind": "method",
+      "signature": "join(topic: string): () => void",
+      "headline": true,
+      "summary": "Joins a topic. Returns the function that leaves it.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "send",
+      "kind": "method",
+      "signature": "send(event: string, data: unknown): Promise<void>",
+      "headline": true,
+      "summary": "Sends an event. Queued while disconnected rather than thrown.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "queued",
+      "kind": "property",
+      "signature": "queued: number",
+      "summary": "Forgets queued sends. Called when the connection goes away.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "ConnectionStatus",
+    "kind": "type",
+    "signature": "type ConnectionStatus = \"connecting\" | \"open\" | \"closed\"",
+    "summary": "Realtime connection state, as observable values.",
+    "note": "The transport holds this privately; a UI needs to read it, and re-deriving it\nin each component is how two components end up disagreeing about whether the\napp is online.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/binding": {
+  "label": "yatta/binding",
+  "file": "src/types/binding.ts",
+  "entries": [
+   {
+    "name": "bind",
+    "kind": "function",
+    "signature": "bind<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, options?: BindOptions): BoundCall<T>",
+    "summary": "Binds one call to a store.",
+    "note": "`start` is separate because a binding is built during a render, and a render must\nnot do work — that is what makes it safe to render many times, and what stops a\nServer Component from multiplying requests.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "store",
+      "text": "Where results live. Per request on a server, shared in a browser."
+     },
+     {
+      "name": "method",
+      "text": "The route's method, taken from the app."
+     },
+     {
+      "name": "args",
+      "text": "Its arguments. Part of the key, so different arguments never share."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "callKey",
+    "kind": "function",
+    "signature": "callKey<TArgs>(method: unknown, args: TArgs | undefined): string",
+    "summary": "The key one call is stored under: its route and its arguments.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "makeBinding",
+    "kind": "function",
+    "signature": "makeBinding(track: (notify: () => void) => void | (() => void)): Binding",
+    "summary": "Shares one framework subscription across many subscribers.",
+    "note": "Written this way because the alternative — one subscription per component — is\na subscription per component on the same store, which is what a framework\ncharges for.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "track",
+      "text": "Starts the framework subscription and returns its teardown."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "methodName",
+    "kind": "function",
+    "signature": "methodName(method: unknown): string",
+    "summary": "The route a method came from, used as the key's prefix.",
+    "note": "The derived methods are named after their routes, so this is the route name.\nTwo routes cannot collide under one key — which matters, because a key built\nfrom arguments alone would let one route serve another's cached value.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "serverBinding",
+    "kind": "function",
+    "signature": "serverBinding(): Binding",
+    "summary": "A binding that never notifies: correct on a server, where nothing updates.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "stableStringify",
+    "kind": "function",
+    "signature": "stableStringify(value: unknown): string",
+    "summary": "Serialises arguments so key order does not matter.",
+    "note": "`{ id: \"1\", q: 2 }` and `{ q: 2, id: \"1\" }` are the same call. Keying them\ndifferently makes a component refetch whenever its parent reorders a literal.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "watchCall",
+    "kind": "function",
+    "signature": "watchCall<T>(store: CallStore, key: string, onChange: (state: CallState<T>) => void): () => void",
+    "summary": "Subscribes to a call's changes.",
+    "note": "The one thing every framework binding does. Returns the current state\nimmediately, so a subscriber never renders one frame against an empty cache.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "Binding",
+    "kind": "interface",
+    "signature": "interface Binding",
+    "summary": "How a binding is told the store changed.",
+    "note": "One operation: register a callback and get back an unsubscribe.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(notify: () => void): () => void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "BindOptions",
+    "kind": "interface",
+    "signature": "interface BindOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "enabled",
+      "kind": "property",
+      "signature": "enabled?: boolean",
+      "summary": "Skip the load without tearing anything down, for an argument that is not",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "key",
+      "kind": "property",
+      "signature": "key?: string",
+      "summary": "Overrides the derived key. Used by the mutation paths.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "BoundCall",
+    "kind": "interface",
+    "signature": "interface BoundCall<T>",
+    "summary": "A bound call.",
+    "note": "Reads through to the store, so `state` is correct whether or not a notification\nhas arrived yet.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "state",
+      "kind": "property",
+      "signature": "state: CallState<T>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "start",
+      "kind": "method",
+      "signature": "start(): () => void",
+      "headline": true,
+      "summary": "Starts the load. Returns a teardown; does nothing if already started.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "refetch",
+      "kind": "method",
+      "signature": "refetch(): void",
+      "headline": false,
+      "summary": "Reloads, ignoring any cached value.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set(updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "Writes a value without a request, for an optimistic update.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   }
+  ]
+ },
+ "yatta/react": {
+  "label": "yatta/react",
+  "file": "src/react/universal-hooks.tsx",
+  "entries": [
+   {
+    "name": "callKey",
+    "kind": "function",
+    "signature": "callKey(method: unknown, args: unknown): string",
+    "summary": "A cache key that identifies a call by what it asked for.",
+    "note": "Built from the method's name and a stable serialisation of the arguments, so two\ncomponents asking the same question share one value and one request — and an\nargument object rebuilt on every render does not look like a different question.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "CallStoreProvider",
+    "kind": "function",
+    "signature": "CallStoreProvider({\n  store,\n  children,\n}: { store: CallStore; children?: React.ReactNode; }): React.ReactNode",
+    "summary": "Provides a store to everything below it.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "methodName",
+    "kind": "function",
+    "signature": "methodName(method: unknown): string",
+    "summary": "The route a method came from.",
+    "note": "Carried on the function rather than looked up, so a key cannot collide between\ntwo apps in one process and a client method is traceable to its route.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useCall",
+    "kind": "function",
+    "signature": "useCall<TArgs, TResult>(method: (args?: TArgs) => Promise<TResult>, args?: TArgs, options?: { enabled?: boolean; store?: CallStore | null; }): CallState<TResult> & { refetch: () => void; set: (updater: TResult | ((previous: TResult | undefined) => TResult)) => void; }",
+    "summary": "Calls a route and keeps the result.",
+    "note": "The method and the arguments are the whole API — no wrapper function, no\ndependency array to get wrong, no name string to keep in step:\n\n```tsx\nconst { data, error, fetching, refetch } = useCall(api.getUser, { params: { id } });\n```\n\nAdding a route adds nothing here. Changing a route's schema changes this\nsignature, because the argument type is read off the route itself.",
+    "example": "const { data, error, fetching, refetch } = useCall(api.getUser, { params: { id } });",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useCallMutation",
+    "kind": "function",
+    "signature": "useCallMutation<TArgs, TResult>(method: (args?: TArgs) => Promise<TResult>, options?: { store?: CallStore | null; optimistic?: { key: string; value: unknown | ((args: TArgs) => unknown); }; invalidates?: string[]; onSuccess?: (result: TResult, args: TArgs) => void; onError?: (error: Error, args: TArgs) => void; }): { call: (args?: TArgs) => Promise<TResult | undefined>; pending: boolean; error: Error | undefined; }",
+    "summary": "Calls a route that changes something, with an optional optimistic write.",
+    "note": "The write happens before the request and is undone if it fails, because a form\nthat does not respond until the server answers feels broken on a slow\nconnection. A failure rolls the value back — leaving it would show a change\nthat never happened.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useRequiredStore",
+    "kind": "function",
+    "signature": "useRequiredStore(): CallStore",
+    "summary": "The store a call reads and writes.",
+    "note": "Throws rather than returning null, because a component that quietly keeps no\nresults is much harder to diagnose than one that says why.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "useRoutes",
+    "kind": "function",
+    "signature": "useRoutes<R extends RouteTable>(app: App<R> & DirectMethods<R>): DirectMethods<R>",
+    "summary": "The whole app's routes, ready to call.",
+    "note": "Derived from the app, so this is the same set of methods whether it runs in a\nServer Component (calling in process) or in the browser (calling over HTTP).",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "CallState",
+    "kind": "interface",
+    "signature": "interface CallState<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "data",
+      "kind": "property",
+      "signature": "data: T | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "error",
+      "kind": "property",
+      "signature": "error: Error | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "fetching",
+      "kind": "property",
+      "signature": "fetching: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "stale",
+      "kind": "property",
+      "signature": "stale: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "CallStore",
+    "kind": "interface",
+    "signature": "interface CallStore",
+    "summary": "Somewhere to keep a call's result between renders.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "get",
+      "kind": "method",
+      "signature": "get<T>(key: string): CallState<T>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "resolve",
+      "kind": "method",
+      "signature": "resolve<T>(key: string, fetcher: () => Promise<T>, options?: { force?: boolean; }): Promise<T | undefined>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(onChange: () => void): () => void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "set",
+      "kind": "method",
+      "signature": "set<T>(key: string, updater: T | ((previous: T | undefined) => T)): void",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "invalidate",
+      "kind": "method",
+      "signature": "invalidate(key?: string): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   }
+  ]
+ },
+ "yatta/next": {
+  "label": "yatta/next",
+  "file": "src/react/next.ts",
+  "entries": [
+   {
+    "name": "forwardedHeaders",
+    "kind": "function",
+    "signature": "forwardedHeaders(request: Request): Record<string, string>",
+    "summary": "The request headers a server render should forward.",
+    "note": "A Server Component fetching on the server has to pass the caller's cookie on,\nor the API sees an anonymous request and returns 401 — which looks like a\npermissions bug rather than a missing header.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "getRequestCache",
+    "kind": "function",
+    "signature": "getRequestCache(): Map<string, unknown> | undefined",
+    "summary": "The per-request cache.",
+    "note": "Deliberately module-level and set by a provider per request. A module-level\n*value* that survives between requests would leak one user's data into the next\nresponse, so it must be replaced on every request and never outlive one.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "readBody",
+    "kind": "async function",
+    "signature": "readBody(request: Request): Promise<string | undefined>",
+    "summary": "Reads a request body as text, for a platform that streams it.",
+    "note": "Next.js has already consumed the stream by the time a route handler runs in\nsome configurations, so `request.text()` can throw. Returns `undefined` rather\nthan throwing, because an unreadable body on a route that takes no body is not\nan error worth failing the request over.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "releaseRequestCache",
+    "kind": "function",
+    "signature": "releaseRequestCache(cache?: Map<string, unknown> | undefined): void",
+    "summary": "Clears the request cache, taking the cache it was given.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "serverQuery",
+    "kind": "async function",
+    "signature": "serverQuery<T>(key: readonly unknown[], fetcher: () => Promise<T>, options?: { revalidate?: number; }): Promise<T>",
+    "summary": "Server-side data fetching for React Server Components.",
+    "note": "Reads from the request cache instead of issuing a second request, which is the\nwhole point: a Server Component and a client component below it should see one\nfetch, not two.\n\nNeeds a `YattaProvider` above it in the server tree. If there is none, this\nfetches directly rather than throwing, so a component that is server-rendered\non its own still works — it just does not share.",
+    "example": "// app/users/[id]/page.tsx\nexport default async function Page({ params }) {\n  const user = await serverQuery([\"getUser\", params.id], () =>\n    api.getUser({ params: { id: params.id } }),\n  );\n  return <Profile user={user} />;\n}",
+    "examples": [
+     "// app/users/[id]/page.tsx\nexport default async function Page({ params }) {\n  const user = await serverQuery([\"getUser\", params.id], () =>\n    api.getUser({ params: { id: params.id } }),\n  );\n  return <Profile user={user} />;\n}"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "toNextRequestLike",
+    "kind": "function",
+    "signature": "toNextRequestLike(request: Request): Request & { nextUrl?: URL; }",
+    "summary": "Builds a `NextRequest`-shaped argument from the standard `Request`.",
+    "note": "Next.js passes a `NextRequest`, which is a superset of `Request`. This exists so\na handler can read the same headers either way without checking the type.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "toNextRoute",
+    "kind": "function",
+    "signature": "toNextRoute(app: App<any>, options?: AdapterOptions): Record<string, (request: Request) => Promise<Response>>",
+    "summary": "Builds every HTTP method from one route table.",
+    "note": "Next.js route handlers are exported per verb, so a table has to become seven\nnamed exports. Written out by hand that is seven chances to pass a different\nroute table to one of them.",
+    "example": "// app/api/[[...path]]/route.ts\nimport { toNextRoute } from \"yatta/next\";\nimport { routes } from \"@/api-contract\";\nimport { handlers } from \"@/api-handlers\";\n\nexport const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } =\n  toNextRoute(routes, { handlers });",
+    "examples": [
+     "// app/api/[[...path]]/route.ts\nimport { toNextRoute } from \"yatta/next\";\nimport { routes } from \"@/api-contract\";\nimport { handlers } from \"@/api-handlers\";\n\nexport const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } =\n  toNextRoute(routes, { handlers });"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "withRequestCache",
+    "kind": "function",
+    "signature": "withRequestCache(): Map<string, unknown>",
+    "summary": "Scopes a cache to one request.",
+    "note": "Call this at the top of a server tree, in a layout or middleware. Pass\n`undefined` afterwards — leaving a cache in place after the request has been\nserved is how two users see each other's data.",
+    "example": "// app/layout.tsx\nexport default function RootLayout({ children }) {\n  const cache = withRequestCache();\n  try {\n    return <>{children}</>;\n  } finally {\n    releaseRequestCache(cache);\n  }\n}",
+    "examples": [
+     "// app/layout.tsx\nexport default function RootLayout({ children }) {\n  const cache = withRequestCache();\n  try {\n    return <>{children}</>;\n  } finally {\n    releaseRequestCache(cache);\n  }\n}"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "AdapterOptions",
+    "kind": "type",
+    "signature": "type AdapterOptions = TransportOptions",
+    "summary": "Aliases: these names read better from an adapter's point of view.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "UniversalRequest",
+    "kind": "type",
+    "signature": "type UniversalRequest = WireRequest",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "UniversalResponse",
+    "kind": "type",
+    "signature": "type UniversalResponse = WireResponse",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "mount",
+    "kind": "unknown",
+    "signature": "mount",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
  "yatta/db": {
   "label": "yatta/db",
   "file": "src/types/db.ts",
