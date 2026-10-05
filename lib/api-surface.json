@@ -1991,9 +1991,9 @@
    {
     "name": "PathParams",
     "kind": "type",
-    "signature": "type PathParams<Path extends string> = Path extends `${infer _Head}:${infer Param}/${infer Rest}` ? { [K in Param | keyof PathParams<`/${Rest}`>]: string; } : Path extends `${infer _Head}:${infer Param}` ? { [K in Param]: string; } : {}",
+    "signature": "type PathParams<Path extends string> = Path extends `${infer _Head}:${infer Param}/${infer Rest}` ? { [K in StripOptional<Param> | keyof PathParams<`/${Rest}`>]: string; } & Partial<Record<StripOptional<Param>, string>> : Path extends `${infer _Head}:${infer Param}` ? PathParamsOne<Param> : {}",
     "summary": "Named parameters a path declares, e.g. { id: string } for \"/users/:id\".",
-    "note": "",
+    "note": "Path parameters as plain strings, read from the path template.\n\nAn optional segment (`:id?`) yields an optional key named `id`. A required key\nnamed `id?` — which a naive slice produced — is a lie for a segment that may be\nabsent, and cannot be indexed sensibly.",
     "example": "",
     "examples": [],
     "params": [],
@@ -2069,7 +2069,7 @@
    {
     "name": "createApp",
     "kind": "function",
-    "signature": "createApp<const R extends RouteTable, S extends ServiceMap = ServiceMap>(routes: R, options?: { services?: S; name?: string; }): App<R> & DirectMethods<R> & { readonly serviceType: S; }",
+    "signature": "createApp<const R extends RouteTable, S extends ServiceMap = ServiceMap>(routes: R, options?: { services?: S; name?: string; middleware?: Middleware<S>[]; }): App<R> & DirectMethods<R> & { readonly serviceType: S; }",
     "summary": "Builds an app from a table of routes.",
     "note": "",
     "example": "export const app = createApp({\n  getUser: defineRoute(\n    { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n    async ({ params, services }) => services.db.users.findById(params.id),\n  ),\n}, {\n  // Typed, so a handler's `services.db` is your database.\n  services: { db, auth, realtime },\n});",
@@ -2109,7 +2109,7 @@
    {
     "name": "defineRoute",
     "kind": "function",
-    "signature": "defineRoute<const D extends RouteSpec, S extends ServiceMap = ServiceMap, R extends DeclaredOut<D> = DeclaredOut<D>>(spec: D, handler: (input: Input<D, S>) => MaybePromise<R>): Route<D, S, R>",
+    "signature": "defineRoute<const D extends RouteSpec, S extends ServiceMap = ServiceMap, R extends DeclaredOut<D> | Response = DeclaredOut<D>>(spec: D, handler: (input: Input<D, S>) => MaybePromise<R>): Route<D, S, R>",
     "summary": "Declares one route.",
     "note": "The handler returns a plain value, not a `Response`. That is the change that\nmakes a direct call meaningful: `invoke()` hands back the value itself rather\nthan something that has to be unwrapped from a transport.\n\nThe return type is constrained to the declared response when there is one, so a\nhandler that drifts from its contract fails here rather than at the browser.",
     "example": "const getUser = defineRoute(\n  { method: \"get\", path: \"/users/:id\", params: UserId, response: User },\n  async ({ params, services }) => {\n    const user = await services.db.users.findById(params.id);\n    if (!user) throw new HttpError(404, \"No such user\");\n    return user;\n  },\n);",
@@ -2149,11 +2149,11 @@
     "members": []
    },
    {
-    "name": "readQuery",
+    "name": "routesOf",
     "kind": "function",
-    "signature": "readQuery(url: string): Record<string, unknown>",
-    "summary": "Query parameters as scalars, or arrays where a key really did repeat.",
-    "note": "Decided by how many values arrived, not by the shape, so `?limit=10` reaches a\n`{ limit: number }` schema as a string and `?tag=a&tag=b` reaches a\n`{ tag: string[] }` schema as an array.",
+    "signature": "routesOf(source: App<any> | Record<string, Route>): Record<string, Route>",
+    "summary": "Reads the routes off either an app or a bare table.",
+    "note": "Both accepted because both are natural to have on hand, and a developer should\nnot have to know which one a function expects — or unwrap it at the call site.",
     "example": "",
     "examples": [],
     "params": [],
@@ -2161,11 +2161,11 @@
     "members": []
    },
    {
-    "name": "routesOf",
+    "name": "withMiddleware",
     "kind": "function",
-    "signature": "routesOf(source: App<any> | Record<string, Route>): Record<string, Route>",
-    "summary": "Reads the routes off either an app or a bare table.",
-    "note": "Both accepted because both are natural to have on hand, and a developer should\nnot have to know which one a function expects — or unwrap it at the call site.",
+    "signature": "withMiddleware<S extends ServiceMap, D extends RouteSpec, R>(route: Route<D, S, R>, ...middleware: Middleware<S>[]): Route<D, S, R>",
+    "summary": "Adds middleware to a route.",
+    "note": "Mutates and returns the route, so it reads as a modifier:\n`withAuth(defineRoute(...))`.",
     "example": "",
     "examples": [],
     "params": [],
@@ -2335,8 +2335,19 @@
       "name": "handler",
       "kind": "property",
       "signature": "handler: (input: Input<D, S>) => MaybePromise<R>",
-      "summary": "",
+      "summary": "Replaced once, by `createApp`, with the middleware chain around it.",
       "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "middleware",
+      "kind": "property",
+      "signature": "middleware?: Middleware<S>[]",
+      "summary": "Checks that apply to this route only.",
+      "note": "Run inside the app's own middleware, never instead of it, so a route-level\ncheck cannot accidentally shadow a cross-cutting one.",
       "example": "",
       "examples": [],
       "params": [],
@@ -2709,7 +2720,7 @@
    {
     "name": "CallArgs",
     "kind": "type",
-    "signature": "type CallArgs<D extends RouteSpec> = ParamsArg<D> & QueryArg<D> & BodyArg<D> & { ctx?: Context<never>; }",
+    "signature": "type CallArgs<D extends RouteSpec> = ParamsArg<D> & QueryArg<D> & BodyArg<D> & { ctx?: Context<never>; signal?: AbortSignal; }",
     "summary": "Arguments for a direct call.",
     "note": "What a route accepts, minus the request context: there is no HTTP request,\nbecause nothing crossed a network.\n\nEach input is contributed only when the route declares it, so passing a body to\na route without one is an error rather than a field quietly dropped.",
     "example": "",
@@ -2791,9 +2802,21 @@
     "members": []
    },
    {
+    "name": "Middleware",
+    "kind": "type",
+    "signature": "type Middleware<S extends ServiceMap = ServiceMap> = (input: { name: string; ctx: Context<never>; services: S; args: Record<string, unknown>; }) => unknown | Promise<unknown>",
+    "summary": "Runs before a handler, on both paths.",
+    "note": "Return a value to answer instead of calling the handler — that is how an auth\ncheck rejects. Return `undefined` to continue.\n\nThe point of it being here rather than only on the transport: a check that lives\nin HTTP middleware is *not* run by `app.getUser()` or `invoke()`. A Server\nComponent calling a route directly would sail straight past an authorisation\ncheck that HTTP enforces, which is the worst possible place for that gap — the\ncode looks guarded and is not.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "PathParams",
     "kind": "type",
-    "signature": "type PathParams<Path extends string> = Path extends `${infer _H}:${infer P}/${infer R}` ? { [K in P | keyof PathParams<`/${R}`>]: string; } : Path extends `${infer _H}:${infer P}` ? { [K in P]: string; } : {}",
+    "signature": "type PathParams<Path extends string> = Path extends `${infer _H}:${infer P}/${infer R}` ? { [K in StripOptional<P> | keyof PathParams<`/${R}`>]: string; } & Partial<Record<StripOptional<P>, string>> : Path extends `${infer _H}:${infer P}` ? PathParamsOne<P> : {}",
     "summary": "Path parameters as plain strings, read from the path template.",
     "note": "",
     "example": "",
@@ -2839,6 +2862,42 @@
     "members": []
    },
    {
+    "name": "buildPathFrom",
+    "kind": "unknown",
+    "signature": "buildPathFrom",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "bySpecificity",
+    "kind": "unknown",
+    "signature": "bySpecificity",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "extractParams",
+    "kind": "unknown",
+    "signature": "extractParams",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "HttpMethod",
     "kind": "unknown",
     "signature": "HttpMethod",
@@ -2851,9 +2910,81 @@
     "members": []
    },
    {
+    "name": "matchesPath",
+    "kind": "unknown",
+    "signature": "matchesPath",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ParsedPath",
+    "kind": "unknown",
+    "signature": "ParsedPath",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "parseTemplate",
+    "kind": "unknown",
+    "signature": "parseTemplate",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "PathTemplateError",
+    "kind": "unknown",
+    "signature": "PathTemplateError",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "readQuery",
+    "kind": "unknown",
+    "signature": "readQuery",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "RouteDef",
     "kind": "unknown",
     "signature": "RouteDef",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "Segment",
+    "kind": "unknown",
+    "signature": "Segment",
     "summary": "",
     "note": "",
     "example": "",
@@ -2883,7 +3014,7 @@
    {
     "name": "bindSubscribable",
     "kind": "function",
-    "signature": "bindSubscribable<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, onChange: () => void, options?: { enabled?: boolean; key?: string; }): Subscribable<T>",
+    "signature": "bindSubscribable<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, onChange: () => void, options?: { enabled?: boolean; key?: string; signal?: AbortSignal; }): Subscribable<T>",
     "summary": "Binds a call and hands back a start/stop pair.",
     "note": "The store's subscription is established here so no adapter has to remember to.",
     "example": "",
@@ -2929,9 +3060,33 @@
     "members": []
    },
    {
+    "name": "readSvelte",
+    "kind": "function",
+    "signature": "readSvelte<T>(call: SvelteReadable<T>): T",
+    "summary": "Reads a Svelte call from plain TypeScript, with no template.",
+    "note": "Provided because the store contract needs a subscription to be read from outside\na component, and without this there is no non-template way to do it. Inside a\ncomponent, use <code>$user</code> instead.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "routePrefix",
+    "kind": "function",
+    "signature": "routePrefix(target: InvalidationTarget): string",
+    "summary": "The prefix a target's cache keys start with.",
+    "note": "`getUser` and `getUser:` both become `getUser:`. A plain string with no colon is\ntreated as a route name rather than as a literal key, because \"invalidate this\nexact key\" is almost never what a caller means when they are naming a route.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "runMutation",
     "kind": "async function",
-    "signature": "runMutation<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, options: { optimistic?: { key: string; value: unknown | ((args: TArgs) => unknown); }; invalidates?: string[]; }, hooks: { onPending: (pending: boolean) => void; onSuccess: (result: T) => void; onError: (error: Error) => void; }): Promise<T | undefined>",
+    "signature": "runMutation<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args: TArgs | undefined, options: { optimistic?: { key: string; value: unknown | ((args: TArgs) => unknown); }; invalidates?: InvalidationTarget[]; }, hooks: { onPending: (pending: boolean) => void; onSuccess: (result: T) => void; onError: (error: Error) => void; }): Promise<T | undefined>",
     "summary": "The optimistic-write-then-request sequence, shared so rollback cannot differ.",
     "note": "",
     "example": "",
@@ -2991,10 +3146,10 @@
    {
     "name": "useSvelteCall",
     "kind": "function",
-    "signature": "useSvelteCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; }): SvelteCall<T>",
-    "summary": "Svelte.",
-    "note": "Getters rather than signals. A Svelte template reads a property, and a getter\nthat reads `$state` is tracked the same as a direct read — so the template does\nnot have to unwrap anything, and this works in a `.ts` module as well as a\ncomponent.\n\n```svelte\n<script lang=\"ts\">\n  const user = useCall(api.getUser, { params: { id: data.id } });\n</script>\n<span>{user.data?.name}</span>\n```",
-    "example": "<script lang=\"ts\">\n  const user = useCall(api.getUser, { params: { id: data.id } });\n</script>\n<span>{user.data?.name}</span>",
+    "signature": "useSvelteCall<TArgs, T>(store: CallStore, method: (args?: TArgs) => Promise<T>, args?: TArgs, options?: { enabled?: boolean; key?: string; }): SvelteCall<T>",
+    "summary": "",
+    "note": "",
+    "example": "",
     "examples": [],
     "params": [],
     "returns": "",
@@ -3161,6 +3316,98 @@
       "kind": "method",
       "signature": "destroy(): void",
       "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "MutationOptions",
+    "kind": "interface",
+    "signature": "interface MutationOptions<TArgs, T>",
+    "summary": "The options every mutation binding accepts.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "optimistic",
+      "kind": "property",
+      "signature": "optimistic?: OptimisticWrite<TArgs>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "invalidates",
+      "kind": "property",
+      "signature": "invalidates?: InvalidationTarget[]",
+      "summary": "Route methods, or key prefixes.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onSuccess",
+      "kind": "property",
+      "signature": "onSuccess?: (result: T, args: TArgs) => void",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onError",
+      "kind": "property",
+      "signature": "onError?: (error: Error, args: TArgs) => void",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OptimisticWrite",
+    "kind": "interface",
+    "signature": "interface OptimisticWrite<TArgs>",
+    "summary": "Keys an optimistic write and rollback operate on.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "key",
+      "kind": "property",
+      "signature": "key: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "value",
+      "kind": "property",
+      "signature": "value: unknown | ((args: TArgs) => unknown)",
       "summary": "",
       "note": "",
       "example": "",
@@ -3341,57 +3588,13 @@
     "name": "SvelteCall",
     "kind": "interface",
     "signature": "interface SvelteCall<T>",
-    "summary": "",
-    "note": "",
-    "example": "",
+    "summary": "Svelte.",
+    "note": "Returns a **Svelte store**, not an object with getters.\n\nGetters on a plain object are not reactive in Svelte. It compiles components and\nonly tracks reads of `$state` or a store's `subscribe`; a getter on a plain\nobject is invisible to it, so the earlier version here — getters plus an empty\nchange callback — would render once and then never update again. The store\ncontract is the one thing Svelte actually subscribes to, and `$user` works on it\ndirectly.\n\n```svelte\n<script lang=\"ts\">\n  import { useSvelteCall } from \"yatta/frameworks\";\n  const user = useSvelteCall(store, api.getUser, { params: { id: data.id } });\n</script>\n\n{$user.data?.name}\n```\n\nAlso usable outside a component: `user.subscribe(fn)` works in plain TypeScript.",
+    "example": "<script lang=\"ts\">\n  import { useSvelteCall } from \"yatta/frameworks\";\n  const user = useSvelteCall(store, api.getUser, { params: { id: data.id } });\n</script>\n\n{$user.data?.name}",
     "examples": [],
     "params": [],
     "returns": "",
     "members": [
-     {
-      "name": "data",
-      "kind": "property",
-      "signature": "data: T | undefined",
-      "summary": "",
-      "note": "",
-      "example": "",
-      "examples": [],
-      "params": [],
-      "returns": ""
-     },
-     {
-      "name": "error",
-      "kind": "property",
-      "signature": "error: Error | undefined",
-      "summary": "",
-      "note": "",
-      "example": "",
-      "examples": [],
-      "params": [],
-      "returns": ""
-     },
-     {
-      "name": "fetching",
-      "kind": "property",
-      "signature": "fetching: boolean",
-      "summary": "",
-      "note": "",
-      "example": "",
-      "examples": [],
-      "params": [],
-      "returns": ""
-     },
-     {
-      "name": "stale",
-      "kind": "property",
-      "signature": "stale: boolean",
-      "summary": "",
-      "note": "",
-      "example": "",
-      "examples": [],
-      "params": [],
-      "returns": ""
-     },
      {
       "name": "reload",
       "kind": "method",
@@ -3421,6 +3624,31 @@
       "kind": "method",
       "signature": "destroy(): void",
       "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "SvelteReadable",
+    "kind": "interface",
+    "signature": "interface SvelteReadable<T>",
+    "summary": "The Svelte store contract, declared here so Svelte is not a build-time dependency.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(run: (value: T) => void): () => void",
+      "headline": true,
       "summary": "",
       "note": "",
       "example": "",
@@ -3536,6 +3764,18 @@
       "returns": ""
      }
     ]
+   },
+   {
+    "name": "InvalidationTarget",
+    "kind": "type",
+    "signature": "type InvalidationTarget = string | ((...args: never[]) => unknown)",
+    "summary": "What a mutation can invalidate.",
+    "note": "A route method, so `api.getUser` invalidates every `getUser` key whatever its\narguments. A mutation on a user has to invalidate `getUser` for every id, and\nlisting each id means writing down every id that was ever fetched — which is\nwrong the moment a component asks for an id nobody predicted.\n\nA string is accepted too, read as a prefix when it ends in \":\".",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
    },
    {
     "name": "bind",
@@ -3675,6 +3915,27 @@
       "returns": ""
      },
      {
+      "name": "subscribe",
+      "kind": "method",
+      "signature": "subscribe(onChange: (changedKey?: string) => void, key?: string): () => void",
+      "headline": true,
+      "summary": "Subscribes to changes.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [
+       {
+        "name": "onChange",
+        "text": "Told on every change, or — when a key is given — only when that\nkey changes. Keyed is what a bound call uses: an unkeyed subscription wakes\nevery mounted component when any one of them writes, so fifty calls on a page\neach re-render on every keystroke anywhere."
+       },
+       {
+        "name": "key",
+        "text": "Limit to this key. Omit to hear about everything."
+       }
+      ],
+      "returns": ""
+     },
+     {
       "name": "watchers",
       "kind": "property",
       "signature": "watchers: ",
@@ -3686,21 +3947,9 @@
       "returns": ""
      },
      {
-      "name": "subscribe",
-      "kind": "method",
-      "signature": "subscribe(onChange: () => void): () => void",
-      "headline": true,
-      "summary": "Subscribe to any change. Returns an unsubscribe function.",
-      "note": "",
-      "example": "",
-      "examples": [],
-      "params": [],
-      "returns": ""
-     },
-     {
       "name": "notify",
       "kind": "method",
-      "signature": "notify(): void",
+      "signature": "notify(changedKey?: string): void",
       "headline": false,
       "summary": "",
       "note": "",
@@ -3748,19 +3997,28 @@
      {
       "name": "invalidate",
       "kind": "method",
-      "signature": "invalidate(key?: string): void",
+      "signature": "invalidate(key?: string, all?: boolean): void",
       "headline": false,
-      "summary": "Marks a key stale so the next read refetches.",
+      "summary": "Marks keys stale so the next read refetches.",
       "note": "",
       "example": "",
       "examples": [],
-      "params": [],
+      "params": [
+       {
+        "name": "key",
+        "text": "Exact key, or a prefix ending in `:` — `\"getUser:\"` invalidates\nevery call to that route whatever its arguments. A mutation on a user has to\ninvalidate `getUser` for every id, and listing each one means writing down\nevery id that was ever fetched."
+       },
+       {
+        "name": "all",
+        "text": "Invalidate everything. Separate from `key`, because `undefined`\nmeans \"this key\" and cannot also mean \"all of them\"."
+       }
+      ],
       "returns": ""
      },
      {
       "name": "clear",
       "kind": "method",
-      "signature": "clear(key?: string): void",
+      "signature": "clear(key?: string, all?: boolean): void",
       "headline": false,
       "summary": "Clears one key, or everything.",
       "note": "A cache is only per-request state, so there is no TTL sweep here: on the\nserver the whole instance is thrown away with the render, and in the browser\na reload starts empty.",
@@ -4292,6 +4550,18 @@
     "members": []
    },
    {
+    "name": "sameState",
+    "kind": "function",
+    "signature": "sameState<T>(a: CallState<T>, b: CallState<T>): boolean",
+    "summary": "Whether two states are indistinguishable to a reader.",
+    "note": "Compared field by field, because the store hands out a fresh object on every\nwrite: an identity check would report a change on every notification and defeat\nthe whole point of the filter above.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "serverBinding",
     "kind": "function",
     "signature": "serverBinding(): Binding",
@@ -4308,7 +4578,7 @@
     "kind": "function",
     "signature": "stableStringify(value: unknown): string",
     "summary": "Serialises arguments so key order does not matter.",
-    "note": "`{ id: \"1\", q: 2 }` and `{ q: 2, id: \"1\" }` are the same call. Keying them\ndifferently makes a component refetch whenever its parent reorders a literal.",
+    "note": "`{ id: \"1\", q: 2 }` and `{ q: 2, id: \"1\" }` are the same call. Keying them\ndifferently makes a component refetch whenever its parent reorders a literal.\n\nThe non-plain cases are handled explicitly, because `Object.entries` sees them as\nempty and every one of them silently becomes `\"{}\"`:\n\n- A `Date` has no own enumerable properties, so two *different* dates produced\n    the same key. Every date-range query then shared one cache entry and returned\n    whichever date happened to be cached first.\n  - A `RegExp` and a `Map` or `Set` have the same problem.\n  - A circular structure recursed until the stack overflowed, which took down\n    the render that built the arguments.\n\n`undefined` and `{}` are the same call, so an omitted argument does not fork the\nkey.",
     "example": "",
     "examples": [],
     "params": [],
@@ -4319,8 +4589,8 @@
     "name": "watchCall",
     "kind": "function",
     "signature": "watchCall<T>(store: CallStore, key: string, onChange: (state: CallState<T>) => void): () => void",
-    "summary": "Subscribes to a call's changes.",
-    "note": "The one thing every framework binding does. Returns the current state\nimmediately, so a subscriber never renders one frame against an empty cache.",
+    "summary": "Subscribes to one call's changes.",
+    "note": "The one thing every framework binding does. Returns the current state\nimmediately, so a subscriber never renders one frame against an empty cache.\n\nFiltered to the key, and gated on the state actually having changed.\n\nWithout either, the store's subscribe is global: one mutation anywhere woke every\nmounted component, each allocated a fresh state object, and each re-rendered. On a\npage with fifty calls that is fifty renders to change one, and the reason a small\nchange could be felt as a janky one.",
     "example": "",
     "examples": [],
     "params": [],
@@ -4380,6 +4650,17 @@
       "signature": "key?: string",
       "summary": "Overrides the derived key. Used by the mutation paths.",
       "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "signal",
+      "kind": "property",
+      "signature": "signal?: AbortSignal",
+      "summary": "Cancels the request.",
+      "note": "Forwarded to `fetch` on the HTTP path, and readable from `ctx.signal` in a\ndirect call. Without it, a component whose arguments change mid-flight cannot\nabandon the answers nobody is waiting for — the work still runs and still\noccupies a connection.",
       "example": "",
       "examples": [],
       "params": [],
@@ -4446,6 +4727,420 @@
       "returns": ""
      }
     ]
+   }
+  ]
+ },
+ "yatta/path": {
+  "label": "yatta/path",
+  "file": "src/types/path.ts",
+  "entries": [
+   {
+    "name": "buildPathFrom",
+    "kind": "function",
+    "signature": "buildPathFrom(parsed: ParsedPath, params?: Record<string, unknown>): string",
+    "summary": "Builds a URL path from a template and its parameters.",
+    "note": "A parameter with no value is omitted when it is optional; a required one is an\nerror, because sending the string \"undefined\" produces a request that reaches\na handler as a real segment.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "bySpecificity",
+    "kind": "function",
+    "signature": "bySpecificity(a: ParsedPath, b: ParsedPath): number",
+    "summary": "Orders templates so the most specific one is tried first.",
+    "note": "`/users/new` must be matched before `/users/:id`, or a create endpoint silently\nbecomes a fetch of a user whose id is the literal string \"new\". A static segment\nbeats a parameter at the same position; a wildcard loses to both.\n\nStable for templates that are equally specific, so declaration order decides\nbetween two routes that cannot both match.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "extractParams",
+    "kind": "function",
+    "signature": "extractParams(parsed: ParsedPath, path: string): Record<string, string>",
+    "summary": "Reads the parameters out of a request path.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "matchesPath",
+    "kind": "function",
+    "signature": "matchesPath(parsed: ParsedPath, path: string): boolean",
+    "summary": "Matches a request path against a parsed template.",
+    "note": "An optional parameter may be absent, and a wildcard absorbs whatever is left.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "parseTemplate",
+    "kind": "function",
+    "signature": "parseTemplate(template: string): ParsedPath",
+    "summary": "Parses a path template.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "readQuery",
+    "kind": "function",
+    "signature": "readQuery(url: string): Record<string, unknown>",
+    "summary": "Splits a query string into scalars, or arrays where a key really did repeat.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "stripBase",
+    "kind": "function",
+    "signature": "stripBase(path: string, basePath: string | undefined): string",
+    "summary": "Strips a mount point from a path, when the platform does not include it.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "PathTemplateError",
+    "kind": "class",
+    "signature": "class PathTemplateError extends Error",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ParsedPath",
+    "kind": "interface",
+    "signature": "interface ParsedPath",
+    "summary": "A template, parsed.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "template",
+      "kind": "property",
+      "signature": "template: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "segments",
+      "kind": "property",
+      "signature": "segments: readonly Segment[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "wildcard",
+      "kind": "property",
+      "signature": "wildcard: boolean",
+      "summary": "True when the last segment is a wildcard, which may contain slashes.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "arity",
+      "kind": "property",
+      "signature": "arity: number",
+      "summary": "Required segment count, for matching a path with no wildcard.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "Segment",
+    "kind": "type",
+    "signature": "type Segment = { readonly kind: \"static\"; readonly value: string; } | { readonly kind: \"param\"; readonly name: string; readonly optional: boolean; } | { readonly kind: \"wildcard\"; readonly name: string; }",
+    "summary": "One segment of a parsed template.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/batcher": {
+  "label": "yatta/batcher",
+  "file": "src/types/batcher.ts",
+  "entries": [
+   {
+    "name": "batchBy",
+    "kind": "function",
+    "signature": "batchBy<K, V>(batch: (keys: readonly K[]) => Promise<readonly V[]>, keyOf: (value: V) => K, options?: LoaderOptions): DataLoader<K, V>",
+    "summary": "A loader over rows that need a key to join on.",
+    "note": "For when the batch function returns rows in whatever order the database gave them\nrather than one per requested key — a join, an aggregation, anything with a\n`WHERE id IN (...)`.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "hasLoaderScope",
+    "kind": "function",
+    "signature": "hasLoaderScope(): boolean",
+    "summary": "Whether this code is inside a loader scope.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "loaderFor",
+    "kind": "function",
+    "signature": "loaderFor<K, V>(name: string, batch: BatchFn<K, V>, options?: LoaderOptions): DataLoader<K, V>",
+    "summary": "A loader scoped to the current request.",
+    "note": "The same name returns the same loader within one scope, so two components asking\nfor the same key share one query and one cached value. Outside a scope a loader is\ncreated per call and behaves correctly but shares nothing — which is right for a\nscript and means a server route must remember to wrap itself.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "withLoaders",
+    "kind": "function",
+    "signature": "withLoaders<T>(fn: () => T): T",
+    "summary": "Runs `fn` with a fresh set of loaders, discarded afterwards.",
+    "note": "This is what makes batching safe on a server. A loader cached per user would be a\ncache of one user's data inside another user's request; cached on the app it\nwould be shared by every concurrent request. Scoped to the call, it lives exactly\nas long as the work does.",
+    "example": "// app/api/[[...path]]/route.ts\nexport const GET = withLoaders((req) => handle(req));",
+    "examples": [
+     "// app/api/[[...path]]/route.ts\nexport const GET = withLoaders((req) => handle(req));"
+    ],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "DataLoader",
+    "kind": "class",
+    "signature": "class DataLoader",
+    "summary": "Batches and caches keys into single calls to `batch`.",
+    "note": "```ts\nconst loader = new DataLoader(async (ids: readonly string[]) => {\n  const rows = await db.users.findMany({ where: { id: { in: [...ids] } } });\n  return new Map(rows.map((row) => [row.id, row]));\n});\n\n// Three concurrent calls: one query, not three.\nconst [a, b, c] = await Promise.all(ids.map((id) => loader.load(id)));\n```",
+    "example": "const loader = new DataLoader(async (ids: readonly string[]) => {\n  const rows = await db.users.findMany({ where: { id: { in: [...ids] } } });\n  return new Map(rows.map((row) => [row.id, row]));\n});\n\n// Three concurrent calls: one query, not three.\nconst [a, b, c] = await Promise.all(ids.map((id) => loader.load(id)));",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "queue",
+      "kind": "property",
+      "signature": "queue: K[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "queued",
+      "kind": "property",
+      "signature": "queued: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "timer",
+      "kind": "property",
+      "signature": "timer: ReturnType<typeof setTimeout> | undefined",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "load",
+      "kind": "method",
+      "signature": "load(key: K): Promise<V>",
+      "headline": false,
+      "summary": "Loads one key.",
+      "note": "Two calls for the same key in the same window share one request — the second\ngets the first's promise rather than queueing a duplicate key.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "schedule",
+      "kind": "method",
+      "signature": "schedule(): void",
+      "headline": true,
+      "summary": "Resolves on the next tick. Batching is not useful for a single call.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "flush",
+      "kind": "method",
+      "signature": "flush(): Promise<void>",
+      "headline": false,
+      "summary": "Runs the batch. Public so a caller can force it at a known boundary.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "settle",
+      "kind": "method",
+      "signature": "settle(key: K, value: V | undefined, error: Error | undefined): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "clear",
+      "kind": "method",
+      "signature": "clear(key?: K): void",
+      "headline": false,
+      "summary": "Empties the cache. The batch function is unchanged.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "has",
+      "kind": "method",
+      "signature": "has(key: K): boolean",
+      "headline": false,
+      "summary": "Whether a key already has a settled or in-flight value.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "LoaderOptions",
+    "kind": "interface",
+    "signature": "interface LoaderOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "cache",
+      "kind": "property",
+      "signature": "cache?: boolean",
+      "summary": "Whether to cache results per key.",
+      "note": "On by default. Off for anything that changes often enough that a stale value is\nworse than a second query — a stock price, a queue depth.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "maxBatchMs",
+      "kind": "property",
+      "signature": "maxBatchMs?: number",
+      "summary": "Window in which calls are collected, in milliseconds.",
+      "note": "Defaults to 0, which collects everything queued in the current tick and flushes\non the microtask. Raising it batches a burst across several ticks at the cost of\nadding that much latency to the first call in the window.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "onMissing",
+      "kind": "property",
+      "signature": "onMissing?: (key: unknown) => Error",
+      "summary": "Reported when `batch` resolves for fewer keys than it was given.",
+      "note": "The default throws, because a missing key means the caller's `load()` rejects\nand the failure surfaces far from the batch that lost it.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "BatchFn",
+    "kind": "type",
+    "signature": "type BatchFn<K, V> = (keys: readonly K[]) => Promise<ReadonlyMap<K, V>> | Promise<V[]>",
+    "summary": "Fetches many keys at once. Receives the keys collected in one tick.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
    }
   ]
  },
@@ -4632,7 +5327,7 @@
      {
       "name": "subscribe",
       "kind": "method",
-      "signature": "subscribe(onChange: () => void): () => void",
+      "signature": "subscribe(onChange: (changedKey?: string) => void, key?: string): () => void",
       "headline": true,
       "summary": "",
       "note": "",
@@ -4656,7 +5351,7 @@
      {
       "name": "invalidate",
       "kind": "method",
-      "signature": "invalidate(key?: string): void",
+      "signature": "invalidate(key?: string, all?: boolean): void",
       "headline": false,
       "summary": "",
       "note": "",

@@ -92,6 +92,14 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "next",
     blurb: "Route handlers and request-scoped fetching for Next.js.",
   },
+  "yatta/path": {
+    slug: "path",
+    blurb: "Path templates: one parser for the client, the router and the handler.",
+  },
+  "yatta/batcher": {
+    slug: "batcher",
+    blurb: "DataLoader batching, so fifty concurrent calls are one query.",
+  },
   "yatta/db": {
     slug: "db",
     blurb: "Typed SQLite: schema, relations, queries, migrations.",

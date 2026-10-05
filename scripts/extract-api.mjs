@@ -27,6 +27,8 @@ const MODULES = [
   { id: "yatta/frameworks", label: "yatta/frameworks", file: "src/frameworks/index.ts" },
   { id: "yatta/frontend", label: "yatta/frontend", file: "src/types/frontend.ts" },
   { id: "yatta/binding", label: "yatta/binding", file: "src/types/binding.ts" },
+  { id: "yatta/path", label: "yatta/path", file: "src/types/path.ts" },
+  { id: "yatta/batcher", label: "yatta/batcher", file: "src/types/batcher.ts" },
   { id: "yatta/react", label: "yatta/react", file: "src/react/universal-hooks.tsx" },
   { id: "yatta/next", label: "yatta/next", file: "src/react/next.ts" },
   { id: "yatta/db", label: "yatta/db", file: "src/types/db.ts" },

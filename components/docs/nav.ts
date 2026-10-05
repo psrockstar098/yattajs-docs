@@ -64,6 +64,8 @@ const MODULE_ICONS: Record<string, IconType> = {
   frameworks: LuBoxes,
   frontend: LuGauge,
   binding: LuWaypoints,
+  path: LuWorkflow,
+  batcher: LuActivity,
   react: LuBraces,
   next: LuLayers,
   db: LuDatabase,

@@ -404,6 +404,163 @@ await frontend.realtime.send("chat.message", { text: "hello" });`}
         service does not pull React in through Yatta.
       </Note>
 
+      <H2>Middleware runs on both paths</H2>
+
+      <P>
+        A check that lives in HTTP middleware is not run by{" "}
+        <Code>api.getUser()</Code>. A Server Component calling a route directly
+        sails straight past an authorisation check that HTTP enforces — and that is
+        the worst place for the gap, because the code looks guarded.
+      </P>
+
+      <P>
+        So middleware belongs to the app, and runs on every path into a handler. A
+        middleware that <em>returns a value</em> is answering instead of the
+        handler; one that returns nothing lets the handler run.
+      </P>
+
+      <CodeBlock
+        title="api-contract.ts"
+        code={`import { createApp, defineRoute, HttpError } from "yatta/universal";
+
+const routes = { getUser: defineRoute(/* … */) };
+
+export const api = createApp(routes, {
+  services: { db, auth },
+
+  middleware: [
+    async ({ name, ctx, services }) => {
+      const session = await services.auth.session(ctx);
+      if (!session) throw new HttpError(401, "Not signed in");
+    },
+  ],
+});`}
+      />
+
+      <Callout kind="note">
+        App middleware runs <em>outside</em> a route&apos;s own middleware, so a
+        route cannot accidentally shadow a cross-cutting check. And a middleware
+        that returns a value stops the handler — a check that returns the user
+        instead of throwing would otherwise still let the handler run, making every
+        cache in the chain decorative.
+      </Callout>
+
+      <H2>One query, not fifty</H2>
+
+      <P>
+        A Server Component that awaits fifty routes issues fifty queries. It is not
+        visible in the source — there is no repeated call, there is{" "}
+        <Code>Promise.all</Code> over a list, and every call is correct on its own.
+      </P>
+
+      <CodeBlock
+        title="page.tsx"
+        code={`import { loaderFor, withLoaders } from "yatta/batcher";
+
+export default async function Page() {
+  return withLoaders(async () => {
+    const loader = loaderFor<string, User>("users", async (ids) => {
+      const rows = await db.users.findMany({ where: { id: { in: [...ids] } } });
+      return new Map(rows.map((row) => [row.id, row]));
+    });
+
+    // Fifty concurrent loads, one query.
+    const users = await Promise.all(ids.map((id) => loader.load(id)));
+    return <List users={users} />;
+  });
+}`}
+      />
+
+      <Note kind="warn">
+        Batching collects calls made in the same tick, which is what{" "}
+        <Code>Promise.all</Code> produces. Fifty <em>sequential</em>{" "}
+        <Code>await</Code>s are fifty ticks and stay fifty queries — batching them
+        would mean holding the first result open until the last arrived, which is
+        unbounded latency for a guess. For that shape, add one route that returns a
+        list.
+      </Note>
+
+      <Callout kind="note">
+        <Code>withLoaders</Code> is what makes this safe on a server. A loader
+        cached on the app would be shared by every concurrent request — a cache of
+        one user&apos;s data inside another user&apos;s response. Scoped to the call,
+        it lives exactly as long as the work does.
+      </Callout>
+
+      <H2>Invalidating a whole route</H2>
+
+      <P>
+        A mutation on a user has to invalidate <Code>getUser</Code> for every id,
+        not for the one id you happen to be looking at. Name the route:
+      </P>
+
+      <CodeBlock
+        code={`await useMutation(api.updateUser, {
+  invalidates: [api.getUser, api.listUsers],   // every call to each, whatever its arguments
+}).call({ body });`}
+      />
+
+      <P>
+        Listing individual keys means writing down every argument a component has
+        ever fetched, which is wrong the moment one asks for an id nobody
+        predicted.
+      </P>
+
+      <H2>Cancelling</H2>
+
+      <P>
+        <Code>signal</Code> is forwarded to <Code>fetch</Code> and readable from{" "}
+        <Code>ctx.signal</Code> on both paths. A search box typed three more
+        characters can abandon the two answers nobody is waiting for.
+      </P>
+
+      <CodeBlock
+        code={`const controller = new AbortController();
+await api.search({ query: { q }, signal: controller.signal });`}
+      />
+
+      <Note>
+        The server-side work still runs — a query cannot be un-issued. What the
+        signal saves is the client&apos;s connection and the work of decoding a
+        response nobody will read.
+      </Note>
+
+      <H2>Path templates</H2>
+
+      <P>
+        One parser serves the client, the router and the handler, because three
+        implementations of &ldquo;what does this path mean&rdquo; is how a route
+        starts matching without getting its parameter.
+      </P>
+
+      <CodeBlock
+        code={`/users              static
+/users/:id          one required parameter
+/users/:id?         one optional parameter, last segment only
+/files/*path        a wildcard, last segment only, may span slashes`}
+      />
+
+      <UL>
+        <LI>
+          A static segment is matched before a parameter, so{" "}
+          <Code>/users/new</Code> does not become a fetch of the user whose id is
+          the string <Code>&quot;new&quot;</Code>.
+        </LI>
+        <LI>
+          An optional parameter in the middle is refused at startup, because{" "}
+          <Code>/posts/:id?/comments</Code> and <Code>/posts/comments</Code> cannot
+          be told apart.
+        </LI>
+        <LI>
+          A wildcard that is not last is refused, for the same reason.
+        </LI>
+        <LI>
+          A parameter is encoded whole, so a value containing a slash cannot add a
+          path segment. A wildcard keeps its slashes and encodes each piece — that
+          is the difference between the two.
+        </LI>
+      </UL>
+
       <DocFooter
         prev={{ href: "/docs/client", title: "Typed client" }}
         next={{ href: "/docs/realtime", title: "Realtime" }}
