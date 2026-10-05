@@ -17,6 +17,10 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(process.argv[2] ?? "/home/psrockstar/Documents/code/Yatta");
 const COMMITTED = resolve("lib/api-surface.json");
+if (!existsSync(ROOT)) {
+  console.warn(`check-api: framework source not found at ${ROOT}; skipping API surface check.`);
+  process.exit(0);
+}
 
 if (!existsSync(COMMITTED)) {
   console.error(`check-api: ${COMMITTED} does not exist. Run: bun run extract:api`);
