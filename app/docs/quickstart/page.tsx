@@ -38,9 +38,11 @@ export default function QuickstartPage() {
       <H2 id="scaffold">Scaffold a project</H2>
 
       <P>
-        The CLI writes a complete project — <code>src/main.ts</code>, the{" "}
-        <code>yatta/func/</code> directory, and every subsystem already wired to
-        its own worker pool. It then runs <code>bun install</code> for you.
+        The CLI writes a complete project: <code>yatta/main.ts</code>, the{" "}
+        <code>yatta/backend/</code> and <code>yatta/func/</code> directories, and
+        every subsystem already wired to its own worker pool. It prints the install
+        and link commands you still need rather than reaching for the network
+        without being asked.
       </P>
 
       <CodeBlock
@@ -55,8 +57,14 @@ bun run dev`}
       </P>
 
       <CodeBlock
-        code={`✓ Mounted 8 subsystems (auth, jobs, db, cache, mail, storage, events, cron)
-Yatta server running at http://localhost:4000 (PID: 4711)`}
+        code={`[Yatta Runtime] Fleet active on 2 CPU cores:
+  • CPU-Bound Workers : 1
+  • I/O-Bound Workers : 2 (smol: true)
+  • Total OS Threads  : 3
+✓ Yatta listening on http://localhost:4000
+  routes:  yatta/backend/
+  modules: yatta/func/
+  observe:  http://localhost:4000/_yatta/dashboard`}
       />
 
       <Callout kind="note">

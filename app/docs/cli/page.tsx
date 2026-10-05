@@ -7,6 +7,7 @@ import {
   UL,
   LI,
   Note,
+  Callout,
   DocFooter,
   Code,
   Breadcrumb,
@@ -71,6 +72,33 @@ yatta check         Typecheck, then run tests
 yatta build         Bundle the worker runtime to dist/
 yatta info          Show versions, paths, and import specifiers`}
       />
+
+      <H2>yatta new &lt;name&gt;</H2>
+
+      <P>
+        Creates <Code>name/</Code> with the same <Code>yatta/</Code> folder that{" "}
+        <Code>yatta init</Code> creates, plus <Code>package.json</Code> and{" "}
+        <Code>tsconfig.json</Code>. One writer produces both, so the entrypoint and
+        the scripts cannot disagree about where it lives.
+      </P>
+
+      <P>
+        It writes files and stops. It does not run <Code>bun install</Code> or{" "}
+        <Code>bun link</Code> — those print as the next steps — so creating a project
+        never reaches for the network behind your back. <Code>yatta init</Code>{" "}
+        <em>does</em> install, because you are in a project that is expected to work
+        when it finishes.
+      </P>
+
+      <Callout kind="warn">
+        <Code>yatta new</Code> used to write the entrypoint to{" "}
+        <Code>src/main.ts</Code> while the <Code>package.json</Code> it wrote ran{" "}
+        <Code>yatta/main.ts</Code>, and never wrote the seventeen files that
+        entrypoint imports. A fresh project had thirteen unresolved imports and could
+        not typecheck or start. The templates are string literals, so{" "}
+        <Code>tsc --noEmit</Code> in the framework repo never saw any of it — the
+        CLI is now covered by tests that scaffold and check the output.
+      </Callout>
 
       <H2>yatta init</H2>
 
