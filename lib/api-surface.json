@@ -6360,7 +6360,7 @@
      {
       "name": "performAction",
       "kind": "method",
-      "signature": "performAction(request: { kind: string; payload?: Record<string, unknown>; idempotencyKey?: string; }, executor: (kind: string, payload: Record<string, unknown>) => unknown, options?: { confirmed?: boolean; actor?: string; }): ActionOutcome",
+      "signature": "performAction(request: { kind: string; payload?: Record<string, unknown>; idempotencyKey?: string; }, executor: (kind: string, payload: Record<string, unknown>) => unknown | Promise<unknown>, options?: { confirmed?: boolean; actor?: string; }): Promise<ActionOutcome>",
       "headline": false,
       "summary": "Perform a guarded action.",
       "note": "Enforces confirmation and an idempotency key for anything that changes state,\nand records an audit entry either way — including for attempts that were\nblocked, since \"someone tried to purge the queue at 3am\" is itself the record\nworth keeping.",
@@ -6889,6 +6889,18 @@
       "headline": false,
       "summary": "Real work behind a guarded action. Only reached after the guard approves.",
       "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "actorFor",
+      "kind": "method",
+      "signature": "actorFor(req: Request): string",
+      "headline": false,
+      "summary": "Who to record an audit entry against.",
+      "note": "Read from `x-observe-actor` when the caller sends one, and otherwise stated as\nunknown. The dashboard is behind a single shared token, so the server has no way\nto tell two people holding that token apart — which means every entry used to say\n`dashboard_operator` and the audit log could not answer \"who flushed the cache\".\n\nThe header is a self-declared label, not an identity: anyone with the token can\nput anything in it. It is useful for telling a CI job from a human, and worthless\nas proof. Anything that needs to attribute an action to a person needs real\nauthentication, not this.",
       "example": "",
       "examples": [],
       "params": [],
@@ -12711,7 +12723,7 @@
      {
       "name": "signIn",
       "kind": "method",
-      "signature": "signIn(input: { email: string; password?: string; mfaCode?: string; recoveryCode?: string; req?: Request; }): Promise<AuthResult | { mfaRequired: true; userId: string; }>",
+      "signature": "signIn(input: { email: string; password?: string; mfaCode?: string; recoveryCode?: string; req?: Request; }): Promise<AuthResult | MfaChallenge>",
       "headline": false,
       "summary": "",
       "note": "",
@@ -12730,6 +12742,39 @@
       "example": "",
       "examples": [],
       "params": [],
+      "returns": ""
+     },
+     {
+      "name": "isSessionLive",
+      "kind": "method",
+      "signature": "isSessionLive(session: AuthSession): boolean",
+      "headline": false,
+      "summary": "Whether a session is still inside its lifetime.",
+      "note": "Checked here rather than left to the store. `MemoryAuthStore` filters expired\nsessions out of its scan, so the default implementation made this look handled —\nbut `AuthStore` is a published interface, and a custom store that returns an\nexpired session makes every caller believe a dead session is live. \"The default\nhappens to check\" is not a security property.\n\nA session with no `expiresAt` is treated as live: some deployments use a\nshorter access token and never set one, and refusing those would break them\nloudly for a case that is not a leak.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "completeMfa",
+      "kind": "method",
+      "signature": "completeMfa(input: { ticket: string; code?: string; recoveryCode?: string; req?: Request; }): Promise<AuthResult>",
+      "headline": false,
+      "summary": "Finishes a sign-in that stopped at the second factor.",
+      "note": "Every flow that can stop — password, passkey, OAuth, magic link — returns\n`{ mfaRequired: true, ticket }` when the account has 2FA on. Nothing consumed\nthat before, so a 2FA user could not sign in by any route but a password. This\nis the half that was missing.\n\nA signed ticket rather than the bare `userId` the flows used to return.\n\nWith a bare id, whatever the app built as its second step had no proof the first\nfactor had passed — so anything that accepted a user id and asked the store a\nquestion was reachable by anyone who could produce or guess one. The ticket is\nsigned, short-lived, single-use, and only this function can interpret it.",
+      "example": "",
+      "examples": [],
+      "params": [
+       {
+        "name": "ticket",
+        "text": "The value from the `mfaRequired` response."
+       },
+       {
+        "name": "code",
+        "text": "A 6-digit TOTP code, or a recovery code."
+       }
+      ],
       "returns": ""
      },
      {
@@ -12916,6 +12961,30 @@
       "name": "cookieNames",
       "kind": "getter",
       "signature": "cookieNames: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "spendMfaTicket",
+      "kind": "method",
+      "signature": "spendMfaTicket(ticket: string): Promise<boolean>",
+      "headline": false,
+      "summary": "Mints the short-lived ticket handed back when 2FA stops a sign-in.",
+      "note": "Short-lived on purpose: it authorises nothing on its own, but it is the half of\na two-factor check, so a longer life is a wider window for a captured value.\n\nPublic because every sign-in route needs it — password, passkey, OAuth and magic\nlink all stop here — and four private copies would be four chances to give one\nof them a different lifetime.\n\nTakes an MFA ticket out of circulation, reporting whether it was still there.\n\nUses the store's atomic `consume` where it offers one. Without it this is a read\nfollowed by a delete, which two concurrent callers can both pass — and the second\nsession is exactly the one an attacker wants.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "issueMfaTicket",
+      "kind": "method",
+      "signature": "issueMfaTicket(user: AuthUser): MfaChallenge",
+      "headline": false,
       "summary": "",
       "note": "",
       "example": "",
@@ -13295,7 +13364,7 @@
      {
       "name": "verify",
       "kind": "method",
-      "signature": "verify(rawToken: string, req?: Request): Promise<AuthResult | { mfaRequired: true; userId: string; }>",
+      "signature": "verify(rawToken: string, req?: Request): Promise<AuthResult | MfaChallenge>",
       "headline": true,
       "summary": "",
       "note": "",
@@ -13332,14 +13401,14 @@
      {
       "name": "verifyCode",
       "kind": "method",
-      "signature": "verifyCode(secret: string, code: string, user?: AuthUser): boolean",
+      "signature": "verifyCode(secret: string, code: string, user?: AuthUser): boolean | \"replayed\"",
       "headline": false,
-      "summary": "",
+      "summary": "Whether a TOTP code is valid for this user right now.",
       "note": "",
       "example": "",
       "examples": [],
       "params": [],
-      "returns": ""
+      "returns": "`true`, `false`, or `\"replayed\"`.\n\n`replayed` is distinguished because the situation is not the user's mistake. A\ncode that is genuinely correct but inside a time-step already used is rejected —\nrightly — but reported as \"that code is not valid\" it reads as a typo, and the\nuser retypes a code that will never work. It happens on enrolment: the code used\nto set 2FA up consumes the step, so signing in inside the same 30 seconds is\nrefused."
      },
      {
       "name": "confirmSetup",
@@ -13438,9 +13507,21 @@
       "returns": ""
      },
      {
+      "name": "sessionUserId",
+      "kind": "method",
+      "signature": "sessionUserId(req: Request | undefined): Promise<string | null>",
+      "headline": false,
+      "summary": "Completes an OAuth sign-in, or links a provider to the caller's own account.",
+      "note": "`linkToUserId` has been removed, and deliberately not replaced with\n`linkToSessionToken`-style indirection of the same shape. Taking a user id from\nthe caller and checking only that it *exists* is account takeover: anyone who can\nrun their own Google sign-in and guess a victim's id passes their identity to\n`linkIdentity`, and from then on Google signs them in as the victim.\n\nTo link, pass `req` with the caller's own session cookie. The user is resolved\nfrom that session inside this function, so the answer cannot be forged.\n\nThe user id behind a request's own session, or `null`.\n\nWhere an operation must act on the caller rather than on a value they supplied.\nReturning `null` rather than throwing keeps the call sites readable: \"no session\"\nand \"a session\" are two ordinary cases, and only the caller knows which it is.\n\nGoes through `getSession` rather than reading the cookie itself, so bearer tokens\nand the JWT path resolve here too. Reading only the cookie would make linking work\nin a browser and silently do nothing for a native client.\n\n`autoRefresh` is off: this decides who the request is, and a failed refresh should\nleave that as no answer rather than minting a new session to find out.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "handleCallback",
       "kind": "method",
-      "signature": "handleCallback(input: { provider: string; code: string; state: string; expectedState: string; redirectUri: string; codeVerifier?: string; linkToUserId?: string; req?: Request; }): Promise<AuthResult | { mfaRequired: true; userId: string; }>",
+      "signature": "handleCallback(input: { provider: string; code: string; state: string; expectedState: string; redirectUri: string; codeVerifier?: string; req?: Request; }): Promise<AuthResult | MfaChallenge>",
       "headline": false,
       "summary": "",
       "note": "",
@@ -13512,7 +13593,7 @@
      {
       "name": "verifyAuthentication",
       "kind": "method",
-      "signature": "verifyAuthentication(response: AuthenticationResponseJSON, expectedChallenge: string, req?: Request): Promise<AuthResult | { mfaRequired: true; userId: string; }>",
+      "signature": "verifyAuthentication(response: AuthenticationResponseJSON, expectedChallenge: string, req?: Request): Promise<AuthResult | MfaChallenge>",
       "headline": false,
       "summary": "",
       "note": "",
@@ -14227,6 +14308,18 @@
       "returns": ""
      },
      {
+      "name": "consume",
+      "kind": "method",
+      "signature": "consume(challengeString: string): Promise<AuthChallenge | null>",
+      "headline": false,
+      "summary": "Reads and removes in one step.",
+      "note": "Atomic for this store: the map is synchronous and nothing awaits between the\nread and the delete, so two concurrent calls cannot both see the entry.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "delete",
       "kind": "method",
       "signature": "delete(challengeString: string): Promise<void>",
@@ -14706,6 +14799,18 @@
       "examples": [],
       "params": [],
       "returns": ""
+     },
+     {
+      "name": "consume",
+      "kind": "method",
+      "signature": "consume(challengeString: string): Promise<AuthChallenge | null>?",
+      "headline": false,
+      "summary": "Reads and removes a challenge in one step.",
+      "note": "Optional, and the caller must fall back to `get` + `delete` when it is absent.\nThat fallback is racy across workers — two callers can both pass the `get` — so\nanything spent on its way in (an MFA ticket, a one-time link) needs this to be a\nreal atomic take rather than a read followed by a hope.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
      }
     ]
    },
@@ -14747,6 +14852,17 @@
       "kind": "property",
       "signature": "challengeStore?: AuthChallengeStore",
       "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "mfa",
+      "kind": "property",
+      "signature": "mfa?: { challengeTtlSec?: number; }",
+      "summary": "Two-factor settings. Applies to every sign-in route, not just passwords.",
       "note": "",
       "example": "",
       "examples": [],
@@ -16230,8 +16346,8 @@
      {
       "name": "type",
       "kind": "property",
-      "signature": "type: \"access\" | \"refresh\"",
-      "summary": "",
+      "signature": "type: \"access\" | \"refresh\" | \"mfa\"",
+      "summary": "`mfa` is a short-lived, single-use ticket for the second half of a sign-in. It",
       "note": "",
       "example": "",
       "examples": [],
@@ -16241,7 +16357,7 @@
      {
       "name": "sid",
       "kind": "property",
-      "signature": "sid: string",
+      "signature": "sid?: string",
       "summary": "",
       "note": "",
       "example": "",
@@ -16272,6 +16388,17 @@
       "returns": ""
      },
      {
+      "name": "amr",
+      "kind": "property",
+      "signature": "amr?: string",
+      "summary": "How the first factor was satisfied. Present on `mfa` tickets.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "exp",
       "kind": "property",
       "signature": "exp: number",
@@ -16287,6 +16414,52 @@
       "kind": "property",
       "signature": "iat: number",
       "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "MfaChallenge",
+    "kind": "interface",
+    "signature": "interface MfaChallenge",
+    "summary": "What a sign-in returns when it stops at the second factor.",
+    "note": "A `ticket`, not a `userId`. With a bare id, whatever the app built as its second\nstep had no proof the first factor had passed — see .",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "mfaRequired",
+      "kind": "property",
+      "signature": "mfaRequired: true",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "ticket",
+      "kind": "property",
+      "signature": "ticket: string",
+      "summary": "Short-lived, single-use, signed. Pass it to `completeMfa`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "expiresInSec",
+      "kind": "property",
+      "signature": "expiresInSec: number",
+      "summary": "When the ticket stops working. For a countdown in the UI.",
       "note": "",
       "example": "",
       "examples": [],

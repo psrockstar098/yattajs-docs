@@ -8,6 +8,7 @@ import {
   UL,
   LI,
   Note,
+  Callout,
   DocFooter,
   Code, Breadcrumb,
 } from "@/components/docs/prose";
@@ -218,10 +219,22 @@ export default api;`}
       <H2 id="account-linking">Account linking</H2>
 
       <P>
-        By default a matching email links to the existing user rather than
-        creating a second account. Pass <Code>linkToUserId</Code> to attach an
-        additional provider to a user who is already signed in.
+        By default a provider identity with a verified matching email joins the
+        existing user rather than creating a second account. To attach an{" "}
+        <em>additional</em> provider to someone already signed in, pass the{" "}
+        <Code>Request</Code>. The user is read from its own session, inside the
+        function.
       </P>
+
+      <Callout kind="warn">
+        <strong>There is no user-id parameter, on purpose.</strong> This used to take{" "}
+        <Code>linkToUserId</Code> and check only that the id existed. That is account
+        takeover: anyone who could run their own Google sign-in and guess a
+        victim&apos;s id passed their identity straight to <Code>linkIdentity</Code>,
+        and from then on Google signed them in as the victim. Existence is not proof
+        of identity, so the parameter is gone rather than reshaped into another
+        spelling of the same hole.
+      </Callout>
 
       <CodeBlock
         title="link a second provider"
@@ -230,8 +243,9 @@ export default api;`}
   code,
   expectedState,
   redirectUri,
-  // The currently signed-in user
-  linkToUserId: currentUserId,
+  // The caller's own request. Their session cookie, or their bearer token,
+  // is what decides which account this attaches to.
+  req,
 });`}
       />
 
@@ -252,12 +266,11 @@ api.get(async (ctx) => {
   const { url, state, codeVerifier } =
     await auth.oauth.getAuthorizationUrl(provider, redirectUri);
 
-  // Carry the user id through the round trip so the callback knows
-  // which account to attach this provider to.
-  const signed = \`\${state}.\${await sign(state + session.user.id)}\`;
-  await saveOAuthState(state, { codeVerifier, userId: session.user.id });
+  // Only the PKCE verifier needs carrying. Who the user is does not: their session
+  // is still on the request that comes back to the callback.
+  await saveOAuthState(state, { codeVerifier });
 
-  return Response.redirect(url.replace(/state=[^&]*/, \`state=\${signed}\`), 302);
+  return Response.redirect(url, 302);
 });
 
 export default api;`}

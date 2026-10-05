@@ -617,10 +617,21 @@ POST /_yatta/api/analysis/action/:kind`}
       />
 
       <Callout kind="warn">
-        Actions route through the guard rather than executing inline, so
-        confirmation and idempotency cannot be bypassed by calling the endpoint
-        directly — which is exactly what someone would do.
+        Every state-changing route above requires <code>confirmed: true</code> and an{" "}
+        <code>idempotencyKey</code>, from the body or from the query string. That
+        includes <code>jobs/replay-dead</code>, <code>jobs/purge-dead</code> and{" "}
+        <code>cache/clear</code>, which used to run their work inline and log
+        afterwards — so the guard those three bypassed was exactly the thing someone
+        would have bypassed.
       </Callout>
+
+      <P>
+        <code>performAction</code> is <code>async</code>. It used to be synchronous
+        and did not await the executor, which put a pending promise in the outcome — and
+        a promise serialises to <code>{"{}"}</code>, so the HTTP route answered{" "}
+        <code>{"{ ok: true }"}</code> with no record of what had been done. You now
+        get the real result back.
+      </P>
 
       <H2 id="limits">What it cannot see</H2>
 
@@ -675,6 +686,31 @@ POST /_yatta/api/analysis/action/:kind`}
         variable is a statement of intent, and honouring it only in one environment
         means a staging deploy exposes everything.
       </Note>
+
+      <H2 id="audit-actor">Who the audit log names</H2>
+
+      <P>
+        The dashboard is behind a single shared token, so the server has no way to
+        tell two people holding it apart. Every audit entry therefore records{" "}
+        <code>unknown (shared token)</code> unless the request sends an{" "}
+        <code>x-observe-actor</code> header, which is reduced to a short printable
+        label.
+      </P>
+
+      <P>
+        That header is a self-declared label, <strong>not an identity</strong> —
+        anyone with the token can put anything in it. It is useful for telling a CI
+        job from a human, and worthless as proof. The entries used to all say{" "}
+        <code>dashboard_operator</code>, which reads like a person but distinguishes
+        nobody: a log where every line has the same actor cannot answer{" "}
+        &ldquo;who flushed the cache&rdquo;.
+      </P>
+
+      <P>
+        Attributing an action to a person needs real authentication in front of the
+        dashboard. Until then, treat the audit trail as <em>what happened</em>, not{" "}
+        <em>who did it</em>.
+      </P>
 
       <DocFooter />
     </article>

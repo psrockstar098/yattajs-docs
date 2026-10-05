@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, P, Note, DocFooter, Code, Breadcrumb,
+import { H1, H2, P, Note, Callout, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -72,7 +72,7 @@ class SQLiteAuthStore implements AuthStore {
 
 export const auth = createAuth({
   secret: process.env.AUTH_SECRET || "change-me-32-chars-minimum",
-  store: new SQLiteAuthStore(),
+  store: new SQLiteAuthStore(),   // required in production
   email: { mailer, appUrl: process.env.APP_URL || "http://localhost:4000" },
   passkeys: {
     rpName: "Yatta App",
@@ -81,6 +81,23 @@ export const auth = createAuth({
   },
 });`}
       />
+
+      <Note kind="warn">
+        <strong>A store is required in production.</strong> Omit it and{" "}
+        <Code>createAuth</Code> throws. The in-memory default is a linear scan per
+        lookup and enforces nothing — two concurrent signups for one address both
+        succeed, because uniqueness is a scan rather than a constraint. That is fine
+        for a script or a test, which is why it still defaults outside production.
+      </Note>
+
+      <Note kind="warn">
+        Session expiry is checked by <Code>getSession</Code> itself, not left to the
+        store. The in-memory store filters expired sessions out of its own scan, so
+        the default made this look handled — but <Code>AuthStore</Code> is a
+        published interface, and a custom store that returns an expired session makes
+        every caller believe a dead session is live. &ldquo;The default happens to
+        check&rdquo; is not a security property.
+      </Note>
 
       <Note>
         Store the secret in <Code>AUTH_SECRET</Code>. The fallback string above
@@ -105,7 +122,7 @@ if ("emailVerificationRequired" in result) {
   // result.toResponse(body?, status?) builds the whole reply, cookies included.
 }
 
-// signIn returns { mfaRequired, userId } when a second factor is pending.
+// With 2FA on, signIn returns { mfaRequired, ticket, expiresInSec } instead.
 const login = await auth.signIn({
   email: "ada@example.com",
   password: "CorrectHorseBatteryStaple123!",
@@ -164,21 +181,55 @@ const result = await auth.passkey.verifyAuthentication(
 );
 
 // verifyAuthentication resolves to the same shape as signIn: an AuthResult, or
-// { mfaRequired: true, userId } when a second factor is still pending.`}
+// { mfaRequired: true, ticket, expiresInSec } when a second factor is pending.
+// Either way, completeMfa({ ticket, code }) finishes the sign-in.`}
       />
 
       <H2>Two-factor authentication</H2>
 
       <CodeBlock
-        title="TOTP"
-        code={`// Start enrolment — returns a secret and otpauth URL
-const { secret, recoveryCodes } = await auth.mfa.enable(userId, req);
+        title="Enrolling"
+        code={`// 1. Start. Returns a base32 secret and an otpauth:// URL for a QR code.
+//    The secret is held encrypted, keyed by user id.
+const { secret, uri } = await auth.mfa.beginSetup(userId, "Acme");
 
-// Confirm the first code before it counts as enabled
-await auth.mfa.verify(userId, "123456");
+// 2. Confirm with the first code. Only now does 2FA count as enabled.
+const { recoveryCodes } = await auth.mfa.confirmSetup(userId, "123456");
 
-// Later, during login, when user.twoFactorEnabled is true
-const result = await auth.mfa.challenge(loginResult);`}
+// Show the recovery codes once. Each one works once, in place of a TOTP code.`}
+      />
+
+      <CodeBlock
+        title="Signing in with 2FA on"
+        code={`// Every sign-in route stops here when the account has 2FA on: password,
+// passkey, OAuth and magic link alike.
+const pending = await auth.signIn({ email, password });
+
+if (pending.mfaRequired) {
+  // \`ticket\` is signed, short-lived (5 minutes by default) and single-use.
+  // \`expiresInSec\` is there so a UI can count down.
+  return renderSecondFactor(pending.ticket, pending.expiresInSec);
+}
+
+// Then the user types a code, and you finish the sign-in:
+const result = await auth.completeMfa({
+  ticket,
+  code: "123456",        // or: recoveryCode: "a1b2-c3d4"
+});`}
+      />
+
+      <Callout kind="warn">
+        <strong>A ticket, not a user id.</strong> These flows used to return{" "}
+        <Code>mfaRequired: true, userId</Code> and nothing else, so a 2FA user could
+        not sign in by passkey, OAuth or magic link at all — and whatever second step
+        you built had no proof the first factor had passed. The ticket is the half of
+        the check that was missing.
+      </Callout>
+
+      <CodeBlock
+        title="Turning it off"
+        code={`// Needs a recent-auth session, and a code — either would be enough on its own.
+await auth.mfa.disable(req, "123456");`}
       />
 
       <H2>API keys</H2>
