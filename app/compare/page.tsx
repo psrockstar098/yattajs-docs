@@ -147,54 +147,38 @@ export default function ComparePage() {
       </Section>
 
       {/* REAL-WORLD API */}
-      <Section kicker="CRUD · auth · validation · DB round-trip" title={<>REAL-WORLD <span className="text-emerald-400">API</span></>}>
-        <p data-fade-in className="text-[#f3eed7]/60">Raw /json speed is one thing. Real APIs do auth checks, validate input, and hit the database. Yatta keeps all of that in-process — no network hops to Redis, no separate auth service.</p>
-        <div data-fade-in className="mt-6 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <p className="font-mono text-xs uppercase tracking-widest text-[#f3eed7]/40">Auth + validate + DB read</p>
-            <p className="font-bebas mt-2 text-4xl">~1.2<span className="text-lg text-[#f3eed7]/40">ms</span></p>
-            <p className="mt-2 text-sm text-[#f3eed7]/50">Yatta, in-process everything</p>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <p className="font-mono text-xs uppercase tracking-widest text-[#f3eed7]/40">Same flow, microservices</p>
-            <p className="font-bebas mt-2 text-4xl">~8-15<span className="text-lg text-[#f3eed7]/40">ms</span></p>
-            <p className="mt-2 text-sm text-[#f3eed7]/50">Typical: auth service + Redis + DB hops</p>
-          </div>
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.07] p-6">
-            <p className="font-mono text-xs uppercase tracking-widest text-emerald-300/80">Advantage</p>
-            <p className="font-bebas mt-2 text-4xl text-emerald-300">7-12x</p>
-            <p className="mt-2 text-sm text-[#f3eed7]/50">Fewer hops wins real-world latency</p>
-          </div>
+      <Section kicker="In-process architecture" title={<>REAL-WORLD <span className="text-emerald-400">API</span></>}>
+        <p data-fade-in className="text-[#f3eed7]/60">Raw /json speed is one thing. Real APIs do auth checks, validate input, and hit the database. Yatta keeps all of that in-process — no network hops to Redis, no separate auth service. Fewer hops means lower real-world latency.</p>
+        <div data-fade-in className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+          <p className="text-[#f3eed7]/70">Yatta's architecture eliminates network round-trips between services. Auth, cache, and database all run in-process. We're benchmarking the full stack (auth + validation + DB) — results coming soon.</p>
         </div>
       </Section>
-
+            
       {/* DATABASE */}
-      <Section kicker="SQLite · indexed reads · writes" title={<>DATABASE <span className="text-emerald-400">BENCHMARK</span></>}>
-        <p data-fade-in className="text-[#f3eed7]/60">Yatta ships a typed SQLite ORM with zero setup. Others need you to wire up Prisma, Drizzle, or TypeORM first.</p>
+      <Section kicker="SQLite · measured 2026-10-06" title={<>DATABASE <span className="text-emerald-400">BENCHMARK</span></>}>
+        <p data-fade-in className="text-[#f3eed7]/60">Yatta ships a typed SQLite ORM with zero setup. Real measured numbers, in-process:</p>
         <div data-fade-in className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
           <table className="w-full min-w-[600px] text-sm">
             <thead><tr className="border-b border-white/10 bg-white/[0.03]">
               <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Operation</th>
-              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-emerald-400">Yatta</th>
-              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Prisma + PG</th>
-            </tr></thead>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-emerald-400">Yatta SQLite</th>
+              tr></thead>
             <tbody className="font-mono">
-              {[["Indexed point read", "0.08ms", "0.6ms"], ["Filtered list (100)", "0.4ms", "2.1ms"], ["Insert + return", "0.15ms", "1.2ms"], ["Transaction (3 ops)", "0.3ms", "3.8ms"]].map((r) => (
+              {[["Indexed point read", "0.003ms"], ["Filtered list (100)", "0.117ms"], ["Insert", "0.007ms"]].map((r) => (
                 <tr key={r[0]} className="border-b border-white/5 last:border-0">
                   <td className="px-4 py-3 text-[#f3eed7]/70">{r[0]}</td>
                   <td className="px-4 py-3 text-right text-emerald-300">{r[1]}</td>
-                  <td className="px-4 py-3 text-right text-[#f3eed7]/50">{r[2]}</td>
-                </tr>
+                  tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">In-process SQLite vs network Postgres. For single-node apps, local wins. Yatta scales out with read replicas when you need them.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun's SQLite, in-process. No network hops. Competitor numbers require their own setup — we're not fabricating them.</p>
       </Section>
 
       {/* TIME TO BUILD */}
-      <Section kicker="Auth + users + posts + DB + validation + tests + deploy" title={<>TIME TO <span className="text-emerald-400">BUILD</span></>}>
-        <p data-fade-in className="text-[#f3eed7]/60">Estimated hours for one developer to ship a complete app: user auth, posts CRUD, database, input validation, tests, and deployment.</p>
+      <Section kicker="Auth + users + posts + DB + validation + tests + deploy · estimates" title={<>TIME TO <span className="text-emerald-400">BUILD</span></>}>
+        <p data-fade-in className="text-[#f3eed7]/60">Estimated hours for one developer to ship a complete app. These are estimates based on the number of packages to configure — not measured stopwatch times.</p>
         <div className="mt-8 space-y-4">
           {Object.entries(buildTime).sort((a, b) => a[1] - b[1]).map(([name, hrs]) => (
             <div key={name} data-fade-in>
@@ -239,7 +223,7 @@ export default function ComparePage() {
       </Section>
 
       {/* MEMORY */}
-      <Section kicker="RSS under load · lower is better" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}>
+      <Section kicker="RSS · estimates based on runtime characteristics" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}>
         <div className="space-y-4">
           {Object.entries(memory).sort((a, b) => a[1] - b[1]).map(([name, mb]) => (
             <div key={name} data-fade-in>
@@ -253,7 +237,7 @@ export default function ComparePage() {
             </div>
           ))}
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Bun's runtime is lean. NestJS pays for DI container overhead; AdonisJS for its full MVC stack.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Estimates based on runtime characteristics. Bun-based frameworks (Yatta, Elysia, Hono) are lean. NestJS pays for DI container overhead. We're working on measured numbers.</p>
       </Section>
 
       {/* WEIGHTED TOTALS */}
