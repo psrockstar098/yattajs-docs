@@ -39,6 +39,13 @@ const header = () => {
         >
           Docs
         </Link>
+        <Link
+          href="/compare"
+          prefetch={true}
+          className="rounded-md px-2 py-1 font-mono text-[11px] tracking-[0.2em] text-[#f3eed7]/50 uppercase transition-colors hover:text-[#f3eed7] sm:text-xs"
+        >
+          Compare
+        </Link>
       </div>
     </nav>
   );
