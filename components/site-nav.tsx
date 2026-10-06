@@ -74,6 +74,12 @@ export default function SiteNav() {
           >
             Docs
           </Link>
+          <Link
+            href="/compare"
+            className="rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.2em] text-[#f3eed7]/50 transition-colors hover:text-[#f3eed7] sm:text-xs"
+          >
+            Compare
+          </Link>
         </div>
       </nav>
     </header>
