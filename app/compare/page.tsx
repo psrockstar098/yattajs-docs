@@ -42,10 +42,12 @@ function weightedTotal(n: string) {
 const ranked = [...frameworks].sort((a, b) => weightedTotal(b) - weightedTotal(a));
 
 // ── Raw speed ──
-const rps: Record<string, number> = { Yatta: 16180, Elysia: 17595, Hono: 16042, Fastify: 11291, Express: 8457, Koa: 7093 };
+// Real CI numbers from benchmarks.json (GitHub Actions, Bun 1.4.2, GET /json, 20k req, 100 concurrent)
+// https://github.com/psrockstar098/yatta.js/blob/main/benchmarks.json
+const rps: Record<string, number> = { Elysia: 72684, Hono: 70348, Yatta: 62827, Fastify: 36435, Express: 29732, Koa: 27789 };
 const maxRps = Math.max(...Object.values(rps));
 
-// ── Batteries included matrix ──
+
 const features = [
   "Auth (sessions/JWT)",
   "Database ORM",
@@ -75,9 +77,9 @@ const buildTime: Record<string, number> = {
 };
 const maxBuild = Math.max(...Object.values(buildTime));
 
-// ── Memory footprint (MB RSS, estimated idle + under load) ──
+// ── Memory footprint (MB RSS under load, measured 2026-10-06) ──
 const memory: Record<string, number> = {
-  Yatta: 85, Elysia: 70, Hono: 65, Fastify: 110, Express: 95, Koa: 90, AdonisJS: 140, NestJS: 180,
+  Elysia: 66, Hono: 69, Yatta: 71, Express: 83, Fastify: 84, Koa: 84,
 };
 const maxMem = Math.max(...Object.values(memory));
 
@@ -138,25 +140,51 @@ const Section = ({ kicker, title, children }: { kicker: string; title: React.Rea
         </div>
       </Section>
 
-      {/* REAL-WORLD API */}
-      <Section kicker="In-process architecture" title={<>REAL-WORLD <span className="text-emerald-400">API</span></>}>
-        <p data-fade-in className="text-[#f3eed7]/60">Raw /json speed is one thing. Real APIs do auth checks, validate input, and hit the database. Yatta keeps all of that in-process — no network hops to Redis, no separate auth service. Fewer hops means lower real-world latency.</p>
-        <div data-fade-in className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <p className="text-[#f3eed7]/70">Yatta&apos;s architecture eliminates network round-trips between services. Auth, cache, and database all run in-process. We&apos;re benchmarking the full stack (auth + validation + DB) — results coming soon.</p>
+        {/* REAL-WORLD API */}
+      <Section kicker="Auth + validation + DB read · Yatta vs Hono + Drizzle · measured 2026-10-06" title={<>REAL-WORLD <span className="text-emerald-400">API</span></>}>
+        <p data-fade-in className="text-[#f3eed7]/60">Raw /json speed is one thing. Real APIs do auth checks, validate input, and hit the database. We benchmarked the identical route on both stacks: in-process Bearer token check, param validation, SQLite point-read, JSON response. Same 10,000 users, same operations — no network hops in either.</p>
+        <div data-fade-in className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+          <table className="w-full min-w-[600px] text-sm">
+            <thead><tr className="border-b border-white/10 bg-white/[0.03]">
+              <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Stack</th>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">req/s</th>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">p50</th>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">p95</th>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">p99</th>
+            </tr></thead>
+            <tbody className="font-mono">
+              <tr className="border-b border-white/5 bg-emerald-500/[0.06]">
+                <td className="px-4 py-3 text-emerald-300 font-semibold">Yatta (built-in ORM)</td>
+                <td className="px-4 py-3 text-right text-emerald-300">2,026</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">36.9ms</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">130.4ms</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">192.9ms</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-[#f3eed7]/70">Hono + Drizzle</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">1,716</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">45.5ms</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">144.0ms</td>
+                <td className="px-4 py-3 text-right text-[#f3eed7]/70">200.9ms</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p data-fade-in className="mt-4 text-sm text-[#f3eed7]/60"><span className="text-emerald-400 font-semibold">Honest result:</span> on an identical real-world route, Yatta is ~1.18x the throughput of a well-assembled Hono + Drizzle single-process app. Not 7-12x — that old figure compared in-process Yatta against network-hop microservices (an architecture difference, not a framework one). This is the apples-to-apples test.</p>
+        <p data-fade-in className="mt-2 text-xs text-[#f3eed7]/35">Methodology: GET /api/user/:id, 2k warmup + 20k requests at 100 concurrency, 3 runs each (fresh server + DB per run), median run reported. In-memory SQLite, 10k seeded users. Absolute req/s is capped by the test VM; the relative gap was consistent across all runs.</p>
       </Section>
             
       {/* DATABASE */}
-      <Section kicker="SQLite · measured 2026-10-06" title={<>DATABASE <span className="text-emerald-400">BENCHMARK</span></>}>
-        <p data-fade-in className="text-[#f3eed7]/60">Yatta ships a typed SQLite ORM with zero setup. Real measured numbers, in-process:</p>
+      <Section kicker="SQLite · Yatta ORM vs Drizzle · same database · measured 2026-10-06" title={<>DATABASE <span className="text-emerald-400">BENCHMARK</span></>}>
+        <p data-fade-in className="text-[#f3eed7]/60">Same SQLite file, same table, same 10,000 rows, same operations. The only variable is the ORM. Yatta ships a typed SQLite ORM with zero setup.</p>
         <div data-fade-in className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
           <table className="w-full min-w-[600px] text-sm">
             <thead><tr className="border-b border-white/10 bg-white/[0.03]">
               <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Operation</th>
-              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-emerald-400">Yatta SQLite</th>
+              <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-emerald-400">Yatta ORM</th><th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Drizzle</th>
               </tr></thead>
             <tbody className="font-mono">
-              {[["Indexed point read", "0.003ms"], ["Filtered list (100)", "0.117ms"], ["Insert", "0.007ms"]].map((r) => (
+              {[["Indexed point read", "0.009ms", "0.043ms"], ["Filtered list (100)", "0.071ms", "0.162ms"], ["Insert + return", "0.188ms", "0.801ms"], ["Transaction (3 ops)", "0.240ms", "0.667ms"]].map((r) => (
                 <tr key={r[0]} className="border-b border-white/5 last:border-0">
                   <td className="px-4 py-3 text-[#f3eed7]/70">{r[0]}</td>
                   <td className="px-4 py-3 text-right text-emerald-300">{r[1]}</td>
@@ -165,7 +193,7 @@ const Section = ({ kicker, title, children }: { kicker: string; title: React.Rea
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun&apos;s SQLite, in-process. No network hops. Competitor numbers require their own setup — we&apos;re not fabricating them.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun&apos;s SQLite, in-process. No network hops. Competitor numbers require their own setup — we&apos;re not Methodology: one shared SQLite file (bun:sqlite), users table with 10k rows, identical PRAGMAs for both ORMs. 500 warmup + 5,000 timed iterations per operation, 3 full runs; reported = median of per-run medians. Lower is better..</p>
       </Section>
 
       {/* TIME TO BUILD */}
@@ -211,11 +239,11 @@ const Section = ({ kicker, title, children }: { kicker: string; title: React.Rea
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-sm text-[#f3eed7]/50">Yatta is the only framework here that ships all ten. The rest need 5-10 extra packages, each with its own config, version drift, and docs.</p>
+        <p data-fade-in className="mt-4 text-sm text-[#f3eed7]/50">Yatta is the only framework here that ships all ten in its core package. The rest need extra packages — some official (like <span className="font-mono">@nestjs/*</span> or <span className="font-mono">@adonisjs/*</span>), some community — each with its own config, version drift, and docs.</p>
       </Section>
 
       {/* MEMORY */}
-      <Section kicker="RSS · estimates based on runtime characteristics" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}>
+      <Section kicker="RSS under load · measured 2026-10-06" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}><p data-fade-in className="text-[#f3eed7]/60">Real RSS measurements — each framework's /json server in its own OS process, 10k requests at 50 concurrency, RSS read from the OS.</p>
         <div className="space-y-4">
           {Object.entries(memory).sort((a, b) => a[1] - b[1]).map(([name, mb]) => (
             <div key={name} data-fade-in>
