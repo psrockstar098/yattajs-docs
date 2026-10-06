@@ -81,7 +81,8 @@ const memory: Record<string, number> = {
 };
 const maxMem = Math.max(...Object.values(memory));
 
-export default function ComparePage() {
+const Section = ({ kicker, title, children }: { kicker: string; title: React.ReactNode; children: React.ReactNode }) => (<section className="px-5 py-16 sm:px-8"><div className="mx-auto max-w-5xl"><p data-fade-in className="font-mono text-[11px] uppercase tracking-[0.3em] text-emerald-400/80">{kicker}</p><h2 data-fade-in className="font-bebas mt-2 text-4xl tracking-wide sm:text-5xl">{title}</h2><div className="mt-8">{children}</div></div></section>);ex
+  port default function ComparePage() {
   const rootRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -105,15 +106,6 @@ export default function ComparePage() {
     return () => ctx.revert();
   }, []);
 
-  const Section = ({ kicker, title, children }: { kicker: string; title: React.ReactNode; children: React.ReactNode }) => (
-    <section className="px-5 py-16 sm:px-8">
-      <div className="mx-auto max-w-5xl">
-        <p data-fade-in className="font-mono text-[11px] uppercase tracking-[0.3em] text-emerald-400/80">{kicker}</p>
-        <h2 data-fade-in className="font-bebas mt-2 text-4xl tracking-wide sm:text-5xl">{title}</h2>
-        <div className="mt-8">{children}</div>
-      </div>
-    </section>
-  );
 
   return (
     <div ref={rootRef} className="min-h-screen bg-[#050505] text-[#f3eed7]">
@@ -150,7 +142,7 @@ export default function ComparePage() {
       <Section kicker="In-process architecture" title={<>REAL-WORLD <span className="text-emerald-400">API</span></>}>
         <p data-fade-in className="text-[#f3eed7]/60">Raw /json speed is one thing. Real APIs do auth checks, validate input, and hit the database. Yatta keeps all of that in-process — no network hops to Redis, no separate auth service. Fewer hops means lower real-world latency.</p>
         <div data-fade-in className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <p className="text-[#f3eed7]/70">Yatta's architecture eliminates network round-trips between services. Auth, cache, and database all run in-process. We're benchmarking the full stack (auth + validation + DB) — results coming soon.</p>
+          <p className="text-[#f3eed7]/70">Yatta&apos;s architecture eliminates network round-trips between services. Auth, cache, and database all run in-process. We&apos;re benchmarking the full stack (auth + validation + DB) — results coming soon.</p>
         </div>
       </Section>
             
@@ -162,18 +154,18 @@ export default function ComparePage() {
             <thead><tr className="border-b border-white/10 bg-white/[0.03]">
               <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Operation</th>
               <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-emerald-400">Yatta SQLite</th>
-              tr></thead>
+              </tr></thead>
             <tbody className="font-mono">
               {[["Indexed point read", "0.003ms"], ["Filtered list (100)", "0.117ms"], ["Insert", "0.007ms"]].map((r) => (
                 <tr key={r[0]} className="border-b border-white/5 last:border-0">
                   <td className="px-4 py-3 text-[#f3eed7]/70">{r[0]}</td>
                   <td className="px-4 py-3 text-right text-emerald-300">{r[1]}</td>
-                  tr>
+                  </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun's SQLite, in-process. No network hops. Competitor numbers require their own setup — we're not fabricating them.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun&apos;s SQLite, in-process. No network hops. Competitor numbers require their own setup — we&apos;re not fabricating them.</p>
       </Section>
 
       {/* TIME TO BUILD */}
@@ -237,7 +229,7 @@ export default function ComparePage() {
             </div>
           ))}
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Estimates based on runtime characteristics. Bun-based frameworks (Yatta, Elysia, Hono) are lean. NestJS pays for DI container overhead. We're working on measured numbers.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Estimates based on runtime characteristics. Bun-based frameworks (Yatta, Elysia, Hono) are lean. NestJS pays for DI container overhead. We&apos;re working on measured numbers.</p>
       </Section>
 
       {/* WEIGHTED TOTALS */}
@@ -260,7 +252,7 @@ export default function ComparePage() {
         </div>
       </Section>
 
-      {/* RUNTIME ENGINE SHOOTOUT */} <Section kicker="Worker runtimes · 4 workers · 20k tasks · measured 2026-10-06" title={<>RUNTIME ENGINE <span className="text-emerald-400">SHOOTOUT</span></>}> <p data-fade-in className="text-[#f3eed7]/60">Task dispatch throughput across worker runtimes. Same machine, same test methodology: 20,000 echo tasks across 4 workers, measuring throughput, p99 latency, memory, and IPC round-trip cost.</p> <div data-fade-in className="mt-6 overflow-x-auto rounded-2xl border border-white/10"> <table className="w-full min-w-[700px] text-sm"> <thead><tr className="border-b border-white/10 bg-white/[0.03]"> <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Runtime</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Throughput</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">p99</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Memory</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Workers</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">IPC</th> </tr></thead> <tbody className="font-mono"> <tr className="border-b border-white/5 bg-emerald-500/[0.06]"> <td className="px-4 py-3 text-emerald-300 font-semibold">Yatta Runtime</td> <td className="px-4 py-3 text-right text-emerald-300">85,746 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">10.51ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">52.5 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.049ms</td> </tr> <tr className="border-b border-white/5"> <td className="px-4 py-3 text-[#f3eed7]/70">Bun Workers</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">104,623 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">2.13ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">64.6 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.086ms</td> </tr> <tr className="border-b border-white/5"> <td className="px-4 py-3 text-[#f3eed7]/70">Node worker_threads</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">40,888 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">7.46ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">143.9 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.154ms</td> </tr> <tr> <td className="px-4 py-3 text-[#f3eed7]/70">Deno Workers</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">22,248 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">10.88ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">105.1 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.181ms</td> </tr> </tbody> </table> </div> <div data-fade-in className="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-4"> <p className="text-sm text-[#f3eed7]/60"><span className="text-emerald-400 font-semibold">Honest note:</span> Bun's raw workers edge out Yatta on pure echo throughput because Yatta's runtime includes the task scheduler, module isolation, and observability overhead. Yatta wins on <span className="text-[#f3eed7]">batteries included</span> — scheduling, multi-tenancy, and monitoring that raw workers don't provide.</p> </div> <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Methodology: 20,000 ping-pong tasks dispatched across 4 workers. Throughput = tasks/second. p99 = 99th percentile task latency. IPC = single round-trip postMessage cost. All measured on the same machine, same day.</p> </Section> {/* BUILD THE SAME APP */}
+      {/* RUNTIME ENGINE SHOOTOUT */} <Section kicker="Worker runtimes · 4 workers · 20k tasks · measured 2026-10-06" title={<>RUNTIME ENGINE <span className="text-emerald-400">SHOOTOUT</span></>}> <p data-fade-in className="text-[#f3eed7]/60">Task dispatch throughput across worker runtimes. Same machine, same test methodology: 20,000 echo tasks across 4 workers, measuring throughput, p99 latency, memory, and IPC round-trip cost.</p> <div data-fade-in className="mt-6 overflow-x-auto rounded-2xl border border-white/10"> <table className="w-full min-w-[700px] text-sm"> <thead><tr className="border-b border-white/10 bg-white/[0.03]"> <th className="px-4 py-3 text-left font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Runtime</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Throughput</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">p99</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Memory</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">Workers</th> <th className="px-4 py-3 text-right font-mono text-[11px] uppercase tracking-widest text-[#f3eed7]/50">IPC</th> </tr></thead> <tbody className="font-mono"> <tr className="border-b border-white/5 bg-emerald-500/[0.06]"> <td className="px-4 py-3 text-emerald-300 font-semibold">Yatta Runtime</td> <td className="px-4 py-3 text-right text-emerald-300">85,746 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">10.51ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">52.5 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.049ms</td> </tr> <tr className="border-b border-white/5"> <td className="px-4 py-3 text-[#f3eed7]/70">Bun Workers</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">104,623 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">2.13ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">64.6 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.086ms</td> </tr> <tr className="border-b border-white/5"> <td className="px-4 py-3 text-[#f3eed7]/70">Node worker_threads</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">40,888 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">7.46ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">143.9 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.154ms</td> </tr> <tr> <td className="px-4 py-3 text-[#f3eed7]/70">Deno Workers</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">22,248 ops/s</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">10.88ms</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">105.1 MB</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">4</td> <td className="px-4 py-3 text-right text-[#f3eed7]/70">0.181ms</td> </tr> </tbody> </table> </div> <div data-fade-in className="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-4"> <p className="text-sm text-[#f3eed7]/60"><span className="text-emerald-400 font-semibold">Honest note:</span> Bun&apos;s raw workers edge out Yatta on pure echo throughput because Yatta&apos;s runtime includes the task scheduler, module isolation, and observability overhead. Yatta wins on <span className="text-[#f3eed7]">batteries included</span> — scheduling, multi-tenancy, and monitoring that raw workers don&apos;t provide.</p> </div> <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Methodology: 20,000 ping-pong tasks dispatched across 4 workers. Throughput = tasks/second. p99 = 99th percentile task latency. IPC = single round-trip postMessage cost. All measured on the same machine, same day.</p> </Section> {/* BUILD THE SAME APP */}
       <Section kicker="The challenge" title={<>BUILD THE <span className="text-emerald-400">SAME APP</span></>}>
         <div data-fade-in className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] p-8">
           <p className="text-lg text-[#f3eed7]/80">Pick any framework. Build: user signup/login, posts CRUD, SQLite, validation, tests, deploy to production.</p>
