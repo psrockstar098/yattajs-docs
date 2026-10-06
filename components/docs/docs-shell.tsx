@@ -1,5 +1,6 @@
 "use client";
 
+
 // components/docs/docs-shell.tsx
 //
 // Two-pane app shell, the dashboard pattern: the page itself never scrolls.
@@ -18,6 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import DocsSidebar from "./sidebar";
 import TableOfContents from "./table-of-contents";
+import MobileNav from "./mobile-nav";
 
 export default function DocsShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -34,7 +36,7 @@ export default function DocsShell({ children }: { children: ReactNode }) {
           matter how long the article gets. */}
       <section
         className={[
-          " max-sm:w-14 relative h-full shrink-0 overflow-hidden bg-[#f3eed7]/[0.035] transition-[width] duration-300",
+          "relative hidden h-full shrink-0 overflow-hidden bg-[#f3eed7]/[0.035] transition-[width] duration-300 sm:block",
           railCollapsed ? "w-12" : "w-[216px]",
         ].join(" ")}
       >
@@ -56,6 +58,10 @@ export default function DocsShell({ children }: { children: ReactNode }) {
               YATTA
             </Link>
 
+            <div className="sm:hidden">
+              <MobileNav />
+            </div>
+
             <div className="ml-auto flex items-center gap-4">
               <Link
                 href="/docs"
@@ -68,6 +74,12 @@ export default function DocsShell({ children }: { children: ReactNode }) {
                 ].join(" ")}
               >
                 Docs
+                <Link
+                  href="/compare"
+                  className="rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.2em] text-[#f3eed7]/45 transition-colors hover:text-[#f3eed7] sm:text-xs"
+                  >
+                Compare
+                </Link>
               </Link>
             </div>
           </div>
