@@ -83,8 +83,8 @@ const memory: Record<string, number> = {
 };
 const maxMem = Math.max(...Object.values(memory));
 
-const Section = ({ kicker, title, children }: { kicker: string; title: React.ReactNode; children: React.ReactNode }) => (<section className="px-5 py-16 sm:px-8"><div className="mx-auto max-w-5xl"><p data-fade-in className="font-mono text-[11px] uppercase tracking-[0.3em] text-emerald-400/80">{kicker}</p><h2 data-fade-in className="font-bebas mt-2 text-4xl tracking-wide sm:text-5xl">{title}</h2><div className="mt-8">{children}</div></div></section>);ex
-  port default function ComparePage() {
+const Section = ({ kicker, title, children }: { kicker: string; title: React.ReactNode; children: React.ReactNode }) => (<section className="px-5 py-16 sm:px-8"><div className="mx-auto max-w-5xl"><p data-fade-in className="font-mono text-[11px] uppercase tracking-[0.3em] text-emerald-400/80">{kicker}</p><h2 data-fade-in className="font-bebas mt-2 text-4xl tracking-wide sm:text-5xl">{title}</h2><div className="mt-8">{children}</div></div></section>);
+export default function ComparePage() {
   const rootRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const root = rootRef.current;
