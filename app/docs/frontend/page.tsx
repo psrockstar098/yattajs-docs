@@ -30,6 +30,12 @@ export default function FrontendDocsPage() {
           { label: "Frontend" },
         ]}
       />
+      <Callout type="warning" title="Removed in v1.0">
+        Frontend bindings (React hooks, framework integrations) were removed in
+        Yatta v1.0. Yatta is now backend-first. Use the typed HTTP client from{" "}
+        <Code>yatta/api</Code> with your frontend framework of choice, or call
+        routes directly via the universal API on the server.
+      </Callout>
       <H1
         eyebrow={"Engines"}
         sub="The usual split is a backend that defines behaviour and a frontend that calls it over HTTP, with a hand-written client and a copy of every type in between. That copy is what goes stale. Here the route is a plain function, and the transport is derived."

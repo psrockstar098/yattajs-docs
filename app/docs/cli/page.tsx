@@ -69,8 +69,13 @@ yatta dev           Run the server in watch mode
 yatta start         Run the server
 yatta cluster       Run one process per core
 yatta check         Typecheck, then run tests
-yatta build         Bundle the worker runtime to dist/
-yatta info          Show versions, paths, and import specifiers`}
+yatta info          Show versions, paths, and import specifiers
+yatta doctor        Diagnose project health and configuration
+yatta migrate       Run pending database migrations
+yatta migrate:make <name>  Create a new migration file
+yatta migrate:status  Show migration status
+yatta db:backup     Backup the SQLite database
+yatta db:restore <file>  Restore from backup`}
       />
 
       <H2>yatta new &lt;name&gt;</H2>
@@ -220,6 +225,43 @@ bun link yatta`}
         title="terminal"
         lang="bash"
         code={`ln -sf /path/to/yatta/src/cli.ts ~/.bun/bin/yatta`}
+      />
+
+      <H2>Database commands</H2>
+
+      <P>
+        <Code>yatta migrate</Code> runs pending migrations from{" "}
+        <Code>./migrations/</Code>. Use <Code>yatta migrate:make &lt;name&gt;</Code>{" "}
+        to scaffold a new migration file, and <Code>yatta migrate:status</Code> to
+        see which migrations have been applied.
+      </P>
+
+      <CodeBlock
+        title="terminal"
+        lang="bash"
+        code={`yatta migrate:make add_users_table
+yatta migrate
+yatta migrate:status`}
+      />
+
+      <P>
+        <Code>yatta db:backup</Code> creates a timestamped snapshot of the SQLite
+        database (including WAL files). <Code>yatta db:restore &lt;file&gt;</Code>{" "}
+        restores from a backup, automatically saving the current database first.
+      </P>
+
+      <H2>Diagnostics</H2>
+
+      <P>
+        <Code>yatta doctor</Code> checks your project health: Bun version,
+        database file accessibility, required environment variables, and
+        production configuration. Run it when something isn't working.
+      </P>
+
+      <CodeBlock
+        title="terminal"
+        lang="bash"
+        code={`yatta doctor`}
       />
 
       <DocFooter

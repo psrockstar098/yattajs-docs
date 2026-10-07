@@ -712,6 +712,30 @@ POST /_yatta/api/analysis/action/:kind`}
         <em>who did it</em>.
       </P>
 
+      <H2 id="opentelemetry">OpenTelemetry</H2>
+
+      <P>
+        Yatta's built-in spans can be bridged to OpenTelemetry, so traces flow to
+        any OTel-compatible backend (Jaeger, Zipkin, Datadog, Grafana Tempo, etc.)
+        while the built-in diagnostics keep working independently.
+      </P>
+
+      <CodeBlock
+        title="otel-setup.ts"
+        code={`import { enableOpenTelemetry } from "yatta.js/otel";
+// Configure your OTel SDK separately (e.g., @opentelemetry/sdk-node
+// with your chosen exporter), then:
+enableOpenTelemetry({ tracerName: "my-service" });
+// Yatta spans now automatically become OTel spans with the same trace IDs.`}
+      />
+
+      <P>
+        For manual instrumentation, use <Code>startOtelSpan()</Code> or{" "}
+        <Code>withOtelSpan()</Code> from <Code>yatta.js/otel</Code>. The bridge
+        uses W3C traceparent headers, so distributed traces work across Yatta and
+        non-Yatta services.
+      </P>
+
       <DocFooter />
     </article>
   );
