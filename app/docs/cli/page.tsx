@@ -258,6 +258,14 @@ yatta migrate
 yatta migrate:status`}
       />
 
+      <Note kind="note">
+        Every command here resolves the database the same way the server does:{" "}
+        <Code>DATABASE_URL</Code>, then <Code>DATABASE_PATH</Code> as an alias, then{" "}
+        <Code>Database/yatta.db</Code>. They used to disagree — the server read one
+        variable and the tools another, so <Code>db:backup</Code> could archive a file
+        the server was not using, and report success.
+      </Note>
+
       <P>
         <Code>yatta db:backup</Code> writes a timestamped snapshot with{" "}
         <Code>VACUUM INTO</Code>, which produces one self-contained file in a single

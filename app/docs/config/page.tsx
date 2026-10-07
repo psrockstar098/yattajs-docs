@@ -52,7 +52,7 @@ export default function ConfigDocsPage() {
           {
             name: "DATABASE_URL",
             type: "string",
-            desc: "SQLite file path. Defaults to Database/app.db.",
+            desc: "SQLite file path. Defaults to Database/app.db. Also accepted as DATABASE_PATH, which the CLI commands read; DATABASE_URL wins if both are set.",
           },
           {
             name: "AUTH_SECRET",
