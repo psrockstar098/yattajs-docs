@@ -715,7 +715,7 @@ POST /_yatta/api/analysis/action/:kind`}
       <H2 id="opentelemetry">OpenTelemetry</H2>
 
       <P>
-        Yatta's built-in spans can be bridged to OpenTelemetry, so traces flow to
+        Yatta&rsquo;s built-in spans can be bridged to OpenTelemetry, so traces flow to
         any OTel-compatible backend (Jaeger, Zipkin, Datadog, Grafana Tempo, etc.)
         while the built-in diagnostics keep working independently.
       </P>

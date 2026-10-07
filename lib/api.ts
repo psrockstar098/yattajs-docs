@@ -52,6 +52,14 @@ export interface Module {
 
 /** Ordering and copy for the reference rail. Kept beside the data it labels. */
 const META: Record<string, { slug: string; blurb: string }> = {
+  yatta: {
+    slug: "root",
+    blurb: "The root entrypoint: the runtime and the loaded environment.",
+  },
+  "yatta/otel": {
+    slug: "otel",
+    blurb: "OpenTelemetry tracing, bridged into the observe dashboard.",
+  },
   "yatta/runtime": {
     slug: "runtime",
     blurb: "Worker pools, subsystems, crash supervision and drain.",
@@ -60,49 +68,9 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "api",
     blurb: "File-based routing, request context, and validation.",
   },
-  "yatta/rpc": {
-    slug: "rpc",
-    blurb: "Serve a route table, so the server and the client read one definition.",
-  },
-  "yatta/client": {
-    slug: "client",
-    blurb: "A typed client built from your routes. No hand-written fetch calls.",
-  },
-  "yatta/universal": {
-    slug: "universal",
-    blurb: "One route definition, used two ways: called in process or over HTTP.",
-  },
-  "yatta/frameworks": {
-    slug: "frameworks",
-    blurb: "Bindings for Vue, Solid, Svelte, Angular, Qwik, and plain pages.",
-  },
-  "yatta/frontend": {
-    slug: "frontend",
-    blurb: "Query cache, realtime state, and environment detection.",
-  },
-  "yatta/binding": {
-    slug: "binding",
-    blurb: "The shared reactive contract every framework binding is built on.",
-  },
-  "yatta/react": {
-    slug: "react",
-    blurb: "React hooks over the same route table.",
-  },
-  "yatta/next": {
-    slug: "next",
-    blurb: "Route handlers and request-scoped fetching for Next.js.",
-  },
   "yatta/observe": {
     slug: "observe",
     blurb: "Tracing, metrics, issues, incident analysis and the dashboard.",
-  },
-  "yatta/path": {
-    slug: "path",
-    blurb: "Path templates: one parser for the client, the router and the handler.",
-  },
-  "yatta/batcher": {
-    slug: "batcher",
-    blurb: "DataLoader batching, so fifty concurrent calls are one query.",
   },
   "yatta/db": {
     slug: "db",
@@ -133,6 +101,25 @@ const META: Record<string, { slug: string; blurb: string }> = {
     blurb: "WebSockets, SSE, rooms, pub/sub and AI streaming.",
   },
 };
+
+/*
+ * Thrown rather than filtered.
+ *
+ * This used to be `.filter(([id]) => id in META)`, which silently dropped any module
+ * the package exports but META has no entry for. Two were dropped — the root
+ * `yatta` entrypoint and `yatta/otel` — so both were importable and documented
+ * nowhere, and nothing failed. A silent omission in a reference is worse than a
+ * broken build: it looks complete.
+ */
+const missingMeta = Object.keys(surface).filter((id) => !(id in META));
+
+if (missingMeta.length > 0) {
+  throw new Error(
+    `lib/api.ts META has no entry for: ${missingMeta.join(", ")}.\n` +
+      `These are in package.json exports and api-surface.json, so they are part of ` +
+      `the public surface. Add a slug and blurb for each.`,
+  );
+}
 
 export const modules: Module[] = Object.entries(surface)
   .filter(([id]) => id in META)

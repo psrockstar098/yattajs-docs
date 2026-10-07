@@ -327,6 +327,30 @@
     "members": []
    },
    {
+    "name": "clientFor",
+    "kind": "unknown",
+    "signature": "clientFor",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ClientFor",
+    "kind": "unknown",
+    "signature": "ClientFor",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "Context",
     "kind": "unknown",
     "signature": "Context",
@@ -483,6 +507,18 @@
     "members": []
    },
    {
+    "name": "fail",
+    "kind": "unknown",
+    "signature": "fail",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "Handler",
     "kind": "unknown",
     "signature": "Handler",
@@ -603,6 +639,30 @@
     "members": []
    },
    {
+    "name": "PathParamsOf",
+    "kind": "unknown",
+    "signature": "PathParamsOf",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "route",
+    "kind": "unknown",
+    "signature": "route",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "Route",
     "kind": "unknown",
     "signature": "Route",
@@ -654,6 +714,66 @@
     "name": "RouteTable",
     "kind": "unknown",
     "signature": "RouteTable",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "serve",
+    "kind": "unknown",
+    "signature": "serve",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ServeOptions",
+    "kind": "unknown",
+    "signature": "ServeOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ServerInput",
+    "kind": "unknown",
+    "signature": "ServerInput",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "serverRoute",
+    "kind": "unknown",
+    "signature": "serverRoute",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "ServerRoute",
+    "kind": "unknown",
+    "signature": "ServerRoute",
     "summary": "",
     "note": "",
     "example": "",

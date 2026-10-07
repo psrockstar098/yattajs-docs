@@ -77,7 +77,6 @@ export default function BenchmarksPage() {
 
   const frameworks = data?.comparison?.frameworks ?? [];
   const maxRps = Math.max(1, ...frameworks.map((f) => f.requests_per_sec));
-  const yatta = frameworks.find((f) => f.name === "Yatta");
 
   return (
     <div ref={rootRef} className="min-h-screen bg-[#050505] text-[#f3eed7]">

@@ -255,7 +255,7 @@ yatta migrate:status`}
       <P>
         <Code>yatta doctor</Code> checks your project health: Bun version,
         database file accessibility, required environment variables, and
-        production configuration. Run it when something isn't working.
+        production configuration. Run it when something isn&rsquo;t working.
       </P>
 
       <CodeBlock
