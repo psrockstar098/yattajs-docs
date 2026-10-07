@@ -46,6 +46,7 @@ export default function LayoutDocsPage() {
         ├── cron.ts
         ├── workers.ts
         ├── realtime.ts
+        ├── peer.ts
         └── routerHelper.ts`}
       />
 
@@ -117,6 +118,7 @@ func/events.ts      event names (AppEvents)
 func/cron.ts        schedules
 func/workers.ts     job handlers
 func/realtime.ts    WebSocket/SSE handlers
+func/peer.ts        client address, for per-IP rate limits
 func/routerHelper.ts  routing infra`}
       />
 

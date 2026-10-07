@@ -285,6 +285,37 @@ export const auth = createAuth({
         limit throws <Code>RateLimitError</Code> (HTTP 429).
       </P>
 
+      <Callout kind="warn">
+        <strong>&ldquo;Per IP&rdquo; needs one line of setup.</strong> Bun keeps the
+        peer address on the server, not on the <Code>Request</Code>, so without{" "}
+        <Code>security.getClientIp</Code> every request is seen as{" "}
+        <Code>127.0.0.1</Code> and the per-IP limits collapse into one{" "}
+        <em>global</em> limit — so one attacker guessing passwords locks out every
+        legitimate user at once. The framework warns at boot when it is missing, in
+        production only.
+      </Callout>
+
+      <CodeBlock
+        code={`// yatta/func/auth.ts
+import { peerAddress } from "./peer";
+
+export const auth = createAuth({
+  // …
+  security: {
+    // func/peer.ts records this in main.ts's fetch(), which is the only place
+    // Bun exposes it.
+    getClientIp: (req) => peerAddress(req),
+  },
+});`}
+      />
+
+      <P>
+        If you are behind a proxy or load balancer, the address Bun gives you is the
+        proxy&rsquo;s. Count from the right by the number of proxies you actually run
+        — <Code>trustedProxyCount</Code> on the security config — rather than trusting{" "}
+        <Code>X-Forwarded-For</Code> as sent, which a client can write.
+      </P>
+
       <CodeBlock
         code={`import { auth, RateLimitError } from "yatta.js/auth";
 

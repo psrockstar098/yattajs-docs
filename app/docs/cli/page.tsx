@@ -136,6 +136,7 @@ yatta db:restore <file>  Restore from backup`}
     yatta/func/
       db.ts            ORM + schema
       auth.ts          auth, passkeys, 2FA
+      peer.ts          client address, for per-IP limits
       cache.ts         L1 LRU + SQLite L2
       mail.ts          templates + transports
       storage.ts       local + S3 disks
@@ -258,10 +259,23 @@ yatta migrate:status`}
       />
 
       <P>
-        <Code>yatta db:backup</Code> creates a timestamped snapshot of the SQLite
-        database (including WAL files). <Code>yatta db:restore &lt;file&gt;</Code>{" "}
-        restores from a backup, automatically saving the current database first.
+        <Code>yatta db:backup</Code> writes a timestamped snapshot with{" "}
+        <Code>VACUUM INTO</Code>, which produces one self-contained file in a single
+        transaction — including everything still in the write-ahead log.{" "}
+        <Code>yatta db:restore &lt;file&gt;</Code> restores from a backup, saving the
+        current database to a <Code>.pre-restore-*</Code> file first.
       </P>
+
+      <Callout kind="warn">
+        It used to copy the database file, and its own comment claimed it did so
+        &ldquo;with WAL checkpoint&rdquo; — there was no checkpoint in it. In WAL mode
+        the newest writes live in the <Code>-wal</Code> sidecar, so a copy of the main
+        file taken while writers are active can be torn: present, plausible, and
+        unrestorable. The copy is still used when the file is not a SQLite database at
+        all, but it says{" "}
+        <Code>UNSAFE COPY &mdash; could not take a consistent snapshot</Code> rather
+        than reporting success.
+      </Callout>
 
       <H2>Diagnostics</H2>
 
