@@ -217,9 +217,6 @@ jobs.handle("send-welcome", async ({ to }) => {
           <code>yatta start</code> — start in production mode.
         </LI>
         <LI>
-          <code>yatta build</code> — compile for deployment.
-        </LI>
-        <LI>
           <code>yatta cluster</code> — spawn one worker process per core, bound
           to the same port with <code>SO_REUSEPORT</code>.
         </LI>

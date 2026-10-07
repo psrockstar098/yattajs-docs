@@ -145,10 +145,10 @@ export default api;`}
       <CodeBlock
         title="api-contract.ts"
         code={`import { z } from "zod";
-import { route } from "yatta.js/rpc";
+import { defineRoute } from "yatta.js/api";
 
 export const routes = {
-  getUser: route({
+  getUser: defineRoute({
     method: "get",
     path: "/users/:id",
     params: z.object({ id: z.string() }),
@@ -159,10 +159,10 @@ export const routes = {
 
       <P>
         The server serves that table; the browser calls it with{" "}
-        <Code>clientFor(routes, &#123; baseUrl: &quot;/api&quot; &#125;)</Code> and{" "}
+        <Code>createClient(routes, &#123; baseUrl: &quot;/api&quot; &#125;)</Code> and{" "}
         <Code>user.email</Code> is a string. See{" "}
-        <Link href="/docs/client" className="underline underline-offset-4">
-          Typed client
+        <Link href="/docs/api" className="underline underline-offset-4">
+          API reference
         </Link>
         .
       </P>
