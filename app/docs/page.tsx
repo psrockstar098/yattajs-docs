@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, P, UL, LI, Note, Props, Code } from "@/components/docs/prose";
+import { H1, H2, P, UL, LI, Note, Callout, Props, Code } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
   title: "Introduction — YATTA Docs",
@@ -134,38 +134,32 @@ export default api;`}
         <Link href="/docs/api" className="underline underline-offset-4">HTTP API</Link>.
       </P>
 
-      <H2>One route, both sides</H2>
+      <H2>One router</H2>
 
       <P>
-        Write a route once and the browser gets a typed call from it. The same
-        table makes the endpoint and the client method, so there is no second copy
-        of your types to fall out of date.
+        There is one router, and it is the whole HTTP surface: a path, a handler, and
+        a <Code>ctx</Code> carrying the request.
       </P>
-
-      <CodeBlock
-        title="api-contract.ts"
-        code={`import { z } from "zod";
-import { defineRoute } from "yatta.js/api";
-
-export const routes = {
-  getUser: defineRoute({
-    method: "get",
-    path: "/users/:id",
-    params: z.object({ id: z.string() }),
-    response: z.object({ id: z.string(), email: z.string(), name: z.string() }),
-  }),
-};`}
-      />
 
       <P>
-        The server serves that table; the browser calls it with{" "}
-        <Code>createClient(routes, &#123; baseUrl: &quot;/api&quot; &#125;)</Code> and{" "}
-        <Code>user.email</Code> is a string. See{" "}
-        <Link href="/docs/api" className="underline underline-offset-4">
-          API reference
-        </Link>
-        .
+        Yatta used to ship a second routing layer alongside it —{" "}
+        <Code>defineRoute</Code> / <Code>createApp</Code> / <Code>mount</Code> /{" "}
+        <Code>createClient</Code> — with its own path parser, batching and schema
+        modules, so one route table could serve HTTP and also produce a typed browser
+        client. It was removed. Two routers over one codebase is two things to learn
+        and two places for a signature to drift, and the second had no users outside
+        its own tests. If you were using <Code>defineRoute</Code>, routes are now{" "}
+        <Code>api.get(path, handler)</Code> and the body comes from{" "}
+        <Code>ctx.json(schema)</Code>.
       </P>
+
+      <Callout kind="note">
+        There is no generated browser client. Call your backend over HTTP the ordinary
+        way. What survives is the part that was load-bearing:{" "}
+        <Code>ctx.json(schema)</Code> applies a validator&apos;s transform, so the
+        handler sees the coerced value rather than the raw body, and{" "}
+        <Code>ctx.params</Code> is typed from the route.
+      </Callout>
 
       <H2>Typed keys</H2>
 
