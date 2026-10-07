@@ -243,7 +243,7 @@ export default function ComparePage() {
       </Section>
 
       {/* MEMORY */}
-      <Section kicker="RSS under load · measured 2026-10-06" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</spaTEST123n></>}><p data-fade-in className="text-[#f3eed7]/60">Real RSS measurements — each framework's /json server in its own OS process, 10k requests at 50 concurrency, RSS read from the OS.</p>
+      <Section kicker="RSS under load · measured 2026-10-06" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}><p data-fade-in className="text-[#f3eed7]/60">Real RSS measurements — each framework's /json server in its own OS process, 10k requests at 50 concurrency, RSS read from the OS.</p>
         <div className="space-y-4">
           {Object.entries(memory).sort((a, b) => a[1] - b[1]).map(([name, mb]) => (
             <div key={name} data-fade-in>
