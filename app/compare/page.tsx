@@ -188,6 +188,7 @@ export default function ComparePage() {
                 <tr key={r[0]} className="border-b border-white/5 last:border-0">
                   <td className="px-4 py-3 text-[#f3eed7]/70">{r[0]}</td>
                   <td className="px-4 py-3 text-right text-emerald-300">{r[1]}</td>
+                  <td className="px-4 py-3 text-right text-[#f3eed7]/50">{r[2]}</td>
                   </tr>
               ))}
             </tbody>
