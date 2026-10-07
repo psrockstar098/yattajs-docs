@@ -83,6 +83,24 @@ export const auth = createAuth({
       />
 
       <Note kind="warn">
+        <strong>Refresh tokens rotate, and reuse revokes the session.</strong> Every
+        refresh issues a new refresh token and invalidates the old one. Presenting a
+        token that has already been superseded fails the session outright and emits{" "}
+        <Code>security.token_replay</Code> — so a stolen token is usable at most once,
+        and using it logs the legitimate client out, which is the point.
+      </Note>
+
+      <Note kind="warn">
+        There is a 30-second grace window for concurrent refreshes, because a client
+        firing two at once would otherwise be logged out for its own timing. Within that
+        window the replay is only accepted from the <em>same client</em> — same address
+        and user agent. That binding needs a client address, so it only holds when{" "}
+        <Code>getClientIp</Code> is configured; without it every request reads as{" "}
+        <Code>127.0.0.1</Code> and the window cannot tell an attacker from a retry. One
+        more reason to set it.
+      </Note>
+
+      <Note kind="warn">
         <strong>A store is required in production.</strong> Omit it and{" "}
         <Code>createAuth</Code> throws. The in-memory default is a linear scan per
         lookup and enforces nothing — two concurrent signups for one address both
@@ -244,11 +262,28 @@ await auth.mfa.disable(req, "123456");`}
 // apiKey  → shown once, e.g. "yk_live_..."
 // record  → the stored row
 
-const principal = await auth.apiKeys.authenticate(rawKey);
-// checks the hash and scopes
+const principal = await auth.apiKeys.verify(rawKey);
+// checks the hash, the expiry, and the revocation
 
-await auth.apiKeys.revoke(record.id);`}
+principal?.requireScope("write:data");  // throws ForbiddenError if not held
+principal?.hasScope("read:data");       // true
+
+// Or gate it at verification, so a key that lacks the scope never resolves:
+await auth.apiKeys.verify(rawKey, { requireScope: "write:data" }); // null if not held
+
+await auth.apiKeys.revoke(user.id, record.id);`}
       />
+
+      <Callout kind="warn">
+        Scopes used to be stored and never read. A key minted{" "}
+        <Code>scopes: [&quot;read:data&quot;]</Code> was exactly as good as one minted{" "}
+        <Code>[&quot;write:data&quot;]</Code>, and the only way to notice was to read{" "}
+        <Code>principal.apiKey.scopes</Code> yourself and remember to do it at every
+        call site. <Code>verify</Code> now enforces, and the principal carries{" "}
+        <Code>hasScope</Code> / <Code>requireScope</Code> so the check is in the type.
+        <Code>*</Code> is a wildcard; an empty list grants nothing, so a forgotten scope
+        list denies rather than allows.
+      </Callout>
 
       <H2>Permissions</H2>
 

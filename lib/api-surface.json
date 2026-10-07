@@ -8025,8 +8025,8 @@
       "kind": "method",
       "signature": "parseCookies(header: string): Record<string, string>",
       "headline": false,
-      "summary": "",
-      "note": "",
+      "summary": "Cookies from a `Cookie:` header.",
+      "note": "Built on a null-prototype object, for the same reason `Context.query()` is: a plain\n`{}` inherits from `Object.prototype`, so a read of a key nobody sent returns the\ninherited value rather than nothing.\n\nThe default cookie names are namespaced — `yatta_session`, `yatta_refresh`,\n`yatta_csrf` — so no inherited key can collide with them and this is not reachable\nout of the box. But the names are configurable, and `csrfCookieName: \"constructor\"`\nor any other Object.prototype member hands back a function where a token belongs.\nThat value is then compared against a header, which is a check that quietly stops\nchecking.",
       "example": "",
       "examples": [],
       "params": [],
@@ -8093,7 +8093,7 @@
      {
       "name": "verify",
       "kind": "method",
-      "signature": "verify(rawKey: string): Promise<{ user: PublicUser; apiKey: AuthApiKey; } | null>",
+      "signature": "verify(rawKey: string, options?: { requireScope?: string; }): Promise<ApiKeyPrincipal | null>",
       "headline": true,
       "summary": "",
       "note": "",
@@ -9517,6 +9517,74 @@
     "params": [],
     "returns": "",
     "members": []
+   },
+   {
+    "name": "ApiKeyPrincipal",
+    "kind": "interface",
+    "signature": "interface ApiKeyPrincipal",
+    "summary": "A verified API key, with its scopes attached as behaviour rather than as data.",
+    "note": "`scopes` alone is easy to ignore: a check written once and missed in one route is an\nauthorisation bug that no type checker reports. `requireScope` puts the check in the\ntype, so using the key without considering it is the awkward path.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "user",
+      "kind": "property",
+      "signature": "user: PublicUser",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "apiKey",
+      "kind": "property",
+      "signature": "apiKey: AuthApiKey",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "scopes",
+      "kind": "property",
+      "signature": "scopes: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "hasScope",
+      "kind": "property",
+      "signature": "hasScope: (scope: string) => boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "requireScope",
+      "kind": "property",
+      "signature": "requireScope: (scope: string) => void",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
    },
    {
     "name": "AuthApiKey",
