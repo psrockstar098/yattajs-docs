@@ -239,11 +239,11 @@ export default function ComparePage() {
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-sm text-[#f3eed7]/50">Yatta is the only framework here that ships all ten in its core package. The rest need extra packages — some official (like <span className="font-mono">@nestjs/*</span> or <span className="font-mono">@adonisjs/*</span>), some community — each with its own config, version drift, and docs.</p>
+        <p data-fade-in className="mt-4 text-sm text-[#f3eed7]/50">Yatta ships these ten capabilities through its core runtime. Competing frameworks generally compose them through additional official or community packages (like <span className="font-mono">@nestjs/*</span> or <span className="font-mono">@adonisjs/*</span>) — each with its own config, version drift, and docs to manage.</p>
       </Section>
 
       {/* MEMORY */}
-      <Section kicker="RSS under load · measured 2026-10-06" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</span></>}><p data-fade-in className="text-[#f3eed7]/60">Real RSS measurements — each framework's /json server in its own OS process, 10k requests at 50 concurrency, RSS read from the OS.</p>
+      <Section kicker="RSS under load · measured 2026-10-06" title={<>MEMORY <span className="text-emerald-400">FOOTPRINT</spaTEST123n></>}><p data-fade-in className="text-[#f3eed7]/60">Real RSS measurements — each framework's /json server in its own OS process, 10k requests at 50 concurrency, RSS read from the OS.</p>
         <div className="space-y-4">
           {Object.entries(memory).sort((a, b) => a[1] - b[1]).map(([name, mb]) => (
             <div key={name} data-fade-in>
@@ -261,7 +261,12 @@ export default function ComparePage() {
       </Section>
 
       {/* WEIGHTED TOTALS */}
-      <Section kicker="10 criteria · published weights" title={<>WEIGHTED <span className="text-emerald-400">TOTALS</span></>}>
+      <Section kicker="10 criteria · published weights" title={<>WEIGHTED <span className="text-emerald-400">TOTALS</span></>}> <p data-fade-in className="mb-6 max-w-2xl text-sm text-[#f3eed7]/50">Scores are editorial (1–10 per criterion). Weights: Performance 15%, Developer experience 15%, Architecture 15%, Ecosystem 15%, TypeScript 10%, Database / ORM 10%, Security 5%, Testing 5%, Deployment 5%, Maturity 5%. Total = Σ(score × weight). Reproduce it: the weights, per-framework scores, and formula live in <span className="font-mono">app/compare/page.tsx</span> in this repo.</p> <p data-fade-in className="mb-6 max-w-2xl text-sm text-[#f3eed7]/50">Scores are editorial (1–10 per criterion). Weights: Performance 15%, Developer experience 15%, Architecture 15%, Ecosystem 15%, TypeScript 10%, Database / ORM 10%, Security 5%, Testing 5%, Deployment 5%, Maturity 5%. Total = Σ(score × weight). Reproduce it: the weights, per-framework scores, and formula live in <span className="font-mono">app/compare/page.tsx</span> in this repo.</p>
+        
+        
+        
+        
+        <p data-fade-in className="mb-6 max-w-2xl text-sm text-[#f3eed7]/50">Scores are editorial (1–10 per criterion). Weights: Performance 15%, Developer experience 15%, Architecture 15%, Ecosystem 15%, TypeScript 10%, Database / ORM 10%, Security 5%, Testing 5%, Deployment 5%, Maturity 5%. Total = Σ(score × weight). Reproduce it: the weights, per-framework scores, and formula live in <span className="font-mono">app/compare/page.tsx</span> in this repo.</p>        
         <div className="space-y-3">
           {ranked.map((name, i) => {
             const total = weightedTotal(name);
@@ -285,7 +290,7 @@ export default function ComparePage() {
         <div data-fade-in className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] p-8">
           <p className="text-lg text-[#f3eed7]/80">Pick any framework. Build: user signup/login, posts CRUD, SQLite, validation, tests, deploy to production.</p>
           <p className="mt-4 text-[#f3eed7]/60">Time yourself. Then build it in Yatta.</p>
-          <p className="font-bebas mt-6 text-3xl text-emerald-300">YATTA SHIPS IT IN ~4 HOURS.</p>
+          <p className="font-bebas mt-6 text-3xl text-emerald-300">ESTIMATED IMPLEMENTATION EFFORT: ~4H.</p>
           <p className="mt-2 text-sm text-[#f3eed7]/50">The rest take 6-16. That gap is the batteries.</p>
         </div>
       </Section>
