@@ -193,7 +193,7 @@ export default function ComparePage() {
             </tbody>
           </table>
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Measured on Bun&apos;s SQLite, in-process. No network hops. Competitor numbers require their own setup — we&apos;re not Methodology: one shared SQLite file (bun:sqlite), users table with 10k rows, identical PRAGMAs for both ORMs. 500 warmup + 5,000 timed iterations per operation, 3 full runs; reported = median of per-run medians. Lower is better..</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Methodology: one shared SQLite file (bun:sqlite), users table with 10k rows, identical PRAGMAs for both ORMs. 500 warmup + 5,000 timed iterations per operation, 3 full runs; reported = median of per-run medians. Lower is better.</p>
       </Section>
 
       {/* TIME TO BUILD */}
@@ -257,7 +257,7 @@ export default function ComparePage() {
             </div>
           ))}
         </div>
-        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Estimates based on runtime characteristics. Bun-based frameworks (Yatta, Elysia, Hono) are lean. NestJS pays for DI container overhead. We&apos;re working on measured numbers.</p>
+        <p data-fade-in className="mt-4 text-xs text-[#f3eed7]/35">Methodology: each framework&apos;s /json server in its own OS process, 10,000 requests at 50 concurrency, RSS read from the OS. Two rounds averaged. Lower is better.</p>
       </Section>
 
       {/* WEIGHTED TOTALS */}
