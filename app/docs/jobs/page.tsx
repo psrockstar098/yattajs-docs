@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
 import {
-  H1, H2, P, UL, LI, Code, DocFooter, Breadcrumb,
+  H1, H2, P, UL, LI, Code, Note, DocFooter, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -173,6 +173,34 @@ cron.every("10m", () => {
         A schedule is just a way to enqueue a job on a timer — the handler and
         its retry policy are the same as any other job.
       </P>
+
+      <H2>How work is picked up</H2>
+
+      <P>
+        A worker claims one job at a time with a single atomic statement: an{" "}
+        <Code>UPDATE</Code> whose <Code>WHERE id = (SELECT … LIMIT 1)</Code> picks the
+        highest-priority due job and marks it running in one round trip, so two workers
+        cannot claim the same row.
+      </P>
+
+      <P>
+        That claim is served entirely by{" "}
+        <Code>idx_yatta_jobs_claim_v2</Code>, an index on{" "}
+        <Code>(queue, state, priority DESC, run_at ASC, id ASC, lock_expires_at)</Code>.
+        The column order and the trailing <Code>lock_expires_at</Code> are both load
+        bearing: the index has to supply the sort order the claim asks for, and it has
+        to carry the columns the claim&apos;s own predicate reads, or SQLite fetches each
+        candidate row from the table on the way past.
+      </P>
+
+      <Note kind="note">
+        Measured draining 3,000 queued jobs: <strong>2211ms → 81ms</strong> when the
+        index was reshaped to match the query, and the per-operation cost stopped
+        growing with queue depth — 978µs at 4,000 queued became 48µs. The previous index
+        led with <Code>run_at</Code>, which served the filter but not the sort. If you
+        add a query over this table, check its plan with{" "}
+        <Code>EXPLAIN QUERY PLAN</Code> before assuming the index is doing the work.
+      </Note>
 
       <DocFooter
         prev={{ href: "/docs/auth", title: "Authentication" }}

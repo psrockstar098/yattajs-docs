@@ -105,6 +105,19 @@ yatta db:restore <file>  Restore from backup`}
         CLI is now covered by tests that scaffold and check the output.
       </Callout>
 
+      <Callout kind="warn">
+        <Code>yatta dev</Code>, <Code>yatta start</Code> and <Code>yatta cluster</Code>{" "}
+        also hardcoded <Code>src/main.ts</Code>, so{" "}
+        <Code>yatta new app && cd app && yatta dev</Code> answered{" "}
+        &ldquo;No src/main.ts found&rdquo; — in a project that was sitting right there,
+        correctly scaffolded, whose own <Code>package.json</Code>{" "}
+        <Code>dev</Code> script would have worked. <Code>bun run dev</Code> working
+        while <Code>yatta dev</Code> did not is the worst shape of that bug: two ways
+        of starting the server disagreeing about where the server is. The run commands
+        now ask where the entrypoint is rather than naming it, so they cannot drift
+        from the scaffold again.
+      </Callout>
+
       <H2>yatta init</H2>
 
       <P>

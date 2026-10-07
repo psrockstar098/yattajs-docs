@@ -51,8 +51,8 @@ export default function FullstackNextExample() {
 │   └── .env.local           NEXT_PUBLIC_API_URL=http://localhost:4000
 │
 └── api/                     Yatta backend
-    ├── src/main.ts
     ├── yatta/
+    │   ├── main.ts
     │   ├── func/
     │   │   ├── auth.ts  db.ts  cache.ts  jobs.ts
     │   │   ├── events.ts  storage.ts  mail.ts  observe.ts
