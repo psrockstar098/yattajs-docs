@@ -53,6 +53,22 @@ const user = await cache.get<{ name: string }>("user:42");
 await cache.delete("user:42");`}
       />
 
+      <P>
+        A TTL of <Code>0</Code>, or none at all, means the entry does not expire —
+        only LRU eviction removes it.
+      </P>
+
+      <Callout>
+        A TTL has to be a duration. <code>ttl: Number(process.env.CACHE_TTL)</code>{" "}
+        with the variable unset is <code>NaN</code>, and every TTL is consumed by{" "}
+        <code>ttlMs &gt; 0 ? now + ttlMs : null</code> — so <code>NaN</code> did not
+        fail the expiry, it set <code>expiresAt</code> to <code>null</code>, which means{" "}
+        <em>never expires</em>. A cache configured that way has no expiry at all, which is
+        unbounded staleness and unbounded memory. A non-finite or negative TTL is now a{" "}
+        <code>QueueError</code>, and a bad <code>defaultTtl</code> is refused at
+        construction rather than at the first write.
+      </Callout>
+
       <H2>remember</H2>
 
       <P>
