@@ -18,6 +18,58 @@ const nextConfig: NextConfig = {
         destination: "/docs/examples/fullstack-next",
         permanent: true,
       },
+      // Removed API-reference modules (v1.0 backend-first refactor) — Google flagged as 404s in Search Console.
+      // The single yatta/api export absorbed their surface; /docs/api-reference/api is the nearest surviving page.
+      {
+        source: "/docs/api-reference/rpc",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/client",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/universal",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/frameworks",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/frontend",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/binding",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/path",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/batcher",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/react",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
+      {
+        source: "/docs/api-reference/next",
+        destination: "/docs/api-reference/api",
+        permanent: true,
+      },
     ];
   },
 };
