@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   H1,
   H2,
+  H3,
   P,
   Callout,
   Breadcrumb,
@@ -71,6 +72,32 @@ bun run dev`}
         The port is <code>4000</code> by default. Set <code>PORT</code> to change
         it — see <a href="/docs/config" className="underline underline-offset-4">Configuration</a>.
       </Callout>
+
+      <H3>Working against a local checkout</H3>
+
+      <P>
+        To develop against Yatta itself rather than the published package, register
+        this checkout and link it in. The name has to be{" "}
+        <code>yatta.js</code> — that is what the templates import, and{" "}
+        <code>bun link yatta</code> creates a <code>node_modules/yatta</code>{" "}
+        directory that nothing resolves against, so the project does not compile.
+      </P>
+
+      <CodeBlock
+        title="local checkout"
+        code={`# in the Yatta checkout
+bun run src/cli.ts link
+
+# in your project
+bun install
+bun link yatta.js
+bunx tsc --noEmit   # should print nothing`}
+      />
+
+      <P>
+        <code>yatta link</code> prints these steps with the correct name substituted in,
+        so it cannot drift from <code>package.json</code> again.
+      </P>
 
       <H2 id="first-route">Write your first route</H2>
 

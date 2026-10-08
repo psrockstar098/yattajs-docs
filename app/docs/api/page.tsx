@@ -171,6 +171,16 @@ api.use(async (ctx, next) => {
         caught deliberately rather than silently running the handler twice.
       </Note>
 
+      <P>
+        Outside production, the file-system router reloads at most twice a second so a
+        <em>newly added</em> route file is served without a restart. Reloading on every
+        request was both a directory scan per request and a race —{" "}
+        <code>reload()</code> rewrites the route table while <code>match()</code> reads
+        it — which on a fresh scaffold failed 40 of 100 concurrent requests to a
+        file-routed path. An <em>edited</em> file is not re-read, because{" "}
+        <code>import()</code> caches the module: use <code>bun run dev</code> for edits.
+      </P>
+
       <H3>Rate limiting</H3>
 
       <CodeBlock

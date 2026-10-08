@@ -387,6 +387,18 @@
     "members": []
    },
    {
+    "name": "throttledReload",
+    "kind": "unknown",
+    "signature": "throttledReload",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "ValidationError",
     "kind": "unknown",
     "signature": "ValidationError",
