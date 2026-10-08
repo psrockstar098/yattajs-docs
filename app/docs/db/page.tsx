@@ -216,6 +216,43 @@ const feed = db.posts.cursorPaginate({ limit: 15, cursor: lastCursor });
 // → { data, nextCursor, hasMore }`}
       />
 
+      <P>
+        <Code>page</Code> and <Code>limit</Code> are clamped rather than
+        validated, because a page number that is not a number is a caller that
+        forgot the parameter rather than an attack:{" "}
+        <Code>Math.max(1, NaN)</Code> is <Code>NaN</Code>, so{" "}
+        <Code>paginate({"{ page: Number(q.page), limit: 20 }"})</Code> with{" "}
+        <Code>q.page</Code> absent used to reach SQLite as an offset of{" "}
+        <code>NaN</code> and surface as &ldquo;no such column: NaN&rdquo;. It
+        now takes the documented default. A fractional page is floored.
+      </P>
+
+      <P>
+        <Code>skip</Code> and <Code>take</Code> are different: both are
+        interpolated into the SQL, so both are <em>validated</em> and reject
+        anything that is not a non-negative integer with a{" "}
+        <Code>YattaError</Code> naming the field. Previously a non-numeric offset
+        produced SQLite&apos;s own error — &ldquo;no such column: NaN&rdquo; for{" "}
+        <Code>"abc"</Code>, &ldquo;datatype mismatch&rdquo; plus the whole
+        statement for <Code>1.7</Code> — and a negative one was read as{" "}
+        <code>0</code>, silently returning from the start.{" "}
+        <Code>take: -1</Code> stays legal: it is SQLite&apos;s own unbounded
+        read.
+      </P>
+
+      <Callout>
+        A <Code>where</Code> that is not an object is rejected rather than
+        ignored. <Code>Object.keys(fn)</Code> is <code>[]</code>, so{" "}
+        <code>findMany({"{ where: (f) => f.tenantId.isEqualTo(id) }"})</code>{" "}
+        compiled to no filter at all and returned <em>every</em> row — a filter
+        that reads correct and behaves as its absence. TypeScript rejects that
+        form, so it arrived through an <code>any</code> at a handler boundary or
+        from plain JavaScript. Use the object form, or{" "}
+        <code>db.users.where((f) =&gt; f.tenantId.isEqualTo(id)).all()</code>,
+        which is where the <code>and</code>/<code>or</code> helpers belong —
+        they need the field proxy that <code>where</code> hands its callback.
+      </Callout>
+
       <H2>Transactions</H2>
 
       <P>

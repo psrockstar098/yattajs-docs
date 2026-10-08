@@ -5952,6 +5952,18 @@
       "returns": ""
      },
      {
+      "name": "rowCount",
+      "kind": "method",
+      "signature": "rowCount(value: unknown, field: string, allowUnlimited: boolean): number",
+      "headline": false,
+      "summary": "Validates a `take`/`skip` value and renders it for direct interpolation.",
+      "note": "These two are spliced into the SQL text rather than bound, and `Number()` will\nhappily produce `NaN` from the string \"abc\". Every other spliced value in this\nfile — column names, sort directions, filter operators — is checked, and these two\nwere not, so a typo in a query parameter surfaced as SQLite talking about itself:\n`{ skip: \"abc\" }` gave \"no such column: NaN\" and `{ skip: \"1.7\" }` gave \"datatype\nmismatch\" plus the full statement.\n\n`take: -1` stays legal because it is SQLite's own \"no upper bound\" and is the idiom\nfor an unbounded read.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "buildOrderBy",
       "kind": "method",
       "signature": "buildOrderBy(orderBy?: OrderBy<T> | OrderBy<T>[]): string",
@@ -22817,6 +22829,17 @@
       "signature": "secure?: boolean",
       "summary": "Use TLS/SSL (defaults to true if port is 465).",
       "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "timeouts",
+      "kind": "property",
+      "signature": "timeouts?: { connection?: number; greeting?: number; socket?: number; }",
+      "summary": "Transport timeouts, in milliseconds.",
+      "note": "Nodemailer's own defaults are long — a socket that never answers can hold a\nconnection open for minutes. That matters because mail is usually sent inline:\na signup that emails a verification link is waiting on the relay, so a black-holed\nor half-open relay turns into a request that never completes, and a queue of\nworkers waiting on the same relay turns into a service that is down.\n\nDefaults below are deliberately short enough to fail inside a typical request\nbudget. A relay that cannot be reached in five seconds is not going to be reached\nin five minutes either.",
       "example": "",
       "examples": [],
       "params": [],

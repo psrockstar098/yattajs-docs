@@ -178,6 +178,36 @@ const preview = await mailer.preview({
 });`}
       />
 
+      <H3>Relay timeouts</H3>
+
+      <P>
+        The SMTP transport sets <Code>connectionTimeout</Code>,{" "}
+        <Code>greetingTimeout</Code> and <Code>socketTimeout</Code> on every
+        connection — 5s, 5s and 10s. Override them with{" "}
+        <Code>timeouts</Code> if your relay needs longer:
+      </P>
+
+      <CodeBlock
+        title="timeouts"
+        code={`createMailer({
+  mode: "smtp",
+  host: process.env.SMTP_HOST!,
+  timeouts: { connection: 2000, greeting: 2000, socket: 30000 },
+});`}
+      />
+
+      <P>
+        These are set rather than inherited on purpose. Nodemailer&apos;s own
+        defaults are 2 minutes, 30 seconds and 10 minutes, and mail is usually
+        sent inside a request — a signup that emails a verification link is
+        waiting on the relay, so a black-holed one turns into a request that never
+        completes. One caveat worth knowing: nodemailer retries the whole send,
+        so a dead relay takes four attempts. Measured against a relay that
+        accepts the connection and never greets, that is about 23s rather than
+        the 5s of a single attempt, against roughly two minutes with
+        nodemailer&apos;s defaults.
+      </P>
+
       <P>
         <Code>mode</Code> decides whether a message is actually transmitted
         (<Code>smtp</Code>, <Code>ethereal</Code>) or not (<Code>terminal</Code>,{" "}
