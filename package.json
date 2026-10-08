@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check": "bun run lint && bun run build",
+    "verify:ci": "node /home/psrockstar/Documents/code/Yatta/scripts/verify-ci.mjs",
     "extract:api": "node scripts/extract-api.mjs /home/psrockstar/Documents/code/Yatta lib/api-surface.json",
     "check:api": "node scripts/check-api.mjs /home/psrockstar/Documents/code/Yatta"
   },
