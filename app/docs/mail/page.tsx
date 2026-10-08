@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, P, UL, LI, Note, DocFooter, Code, Breadcrumb,
+import { H1, H2, H3, P, UL, LI, Note, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {

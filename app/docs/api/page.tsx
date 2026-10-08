@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, P, Note, DocFooter, Code, Breadcrumb,
+import { H1, H2, H3, P, Note, Callout, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -170,6 +170,30 @@ api.use(async (ctx, next) => {
         Calling <Code>next()</Code> twice in one middleware throws. This is
         caught deliberately rather than silently running the handler twice.
       </Note>
+
+      <H3>Rate limiting</H3>
+
+      <CodeBlock
+        title="rateLimit"
+        code={`api.rateLimit({
+  maxRequests: 100,
+  windowMs: 60_000,           // per key; defaults to X-Forwarded-For, then one global bucket
+  getKey: (ctx) => ctx.req.headers.get("x-api-key") ?? "global",
+});
+
+// → 429 with a Retry-After header once the bucket is over`}
+      />
+
+      <Callout>
+        Both numbers are validated when the middleware is registered, and rejected if
+        they are not finite and at least 1. The check is{" "}
+        <code>count &gt; maxRequests</code>, and <code>count &gt; NaN</code> is false —
+        so a <code>NaN</code> did not fail the limit, it <em>removed</em> it, and every
+        request was answered 200. That is the likeliest way to produce one:{" "}
+        <code>maxRequests: Number(process.env.RATE_MAX)</code> with the variable unset.
+        <code>windowMs: 0</code> is rejected for the same reason by a different route —
+        the bucket resets every millisecond, so the count never accumulates.
+      </Callout>
 
       <H2>Errors</H2>
 
