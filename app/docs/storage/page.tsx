@@ -86,6 +86,24 @@ await storage
 await storage.disk("local").upload("uploads/x.png", request);`}
       />
 
+      <P>
+        A size limit is enforced for every input kind — string, buffer, typed array,{" "}
+        <Code>Blob</Code> and stream — and a stream is capped while it is read rather
+        than after it has been buffered.
+      </P>
+
+      <Callout>
+        <Code>maxSize</Code> must be a size, not merely a number. A{" "}
+        <code>NaN</code> cap used to <em>disable</em> the limit rather than fail it,
+        because every check compares against it and{" "}
+        <code>bytes &gt; NaN</code> is false — so{" "}
+        <code>maxSize: Number(process.env.UPLOAD_MAX)</code> with the variable unset
+        stored anything, of any size. That is the shape most likely to produce a{" "}
+        <code>NaN</code>, and it failed open. A non-finite or negative value is now a{" "}
+        <Code>StorageError</Code> naming the value. Same for{" "}
+        <Code>expiresIn</Code> on a signed URL.
+      </Callout>
+
       <H2>Reading</H2>
 
       <CodeBlock
@@ -151,6 +169,23 @@ const url = await storage
         production — an ephemeral secret makes every link invalid after a
         restart.
       </Note>
+
+      <P>
+        The signature covers the key, the expiry, the method and, for a{" "}
+        <Code>PUT</Code>, the content type. So a token issued for one file does not open
+        another, a read token is not a write token, and tampering with any part of the
+        URL invalidates it. The signed route checks the signature and does not fall
+        through to the public one: a tampered, expired or malformed token gets a 403
+        rather than the file.
+      </P>
+
+      <P>
+        One consequence worth knowing: a signed URL is its own credential. The{" "}
+        <Code>authorize</Code> callback is consulted when the link is{" "}
+        <em>issued</em>, under the <Code>sign</Code> action, and not again when it is
+        used. Anyone holding the URL can use it until it expires, so treat the lifetime
+        as the permission.
+      </P>
 
       <H2>Listing and metadata</H2>
 
