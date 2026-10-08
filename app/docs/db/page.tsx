@@ -316,6 +316,33 @@ const posts = db.posts.findMany({
 db.sql.exec("VACUUM;");`}
       />
 
+      <H2>Schema changes</H2>
+
+      <P>
+        Tables are created and new columns added on open, without a migration step. Two
+        cases are worth knowing about because they are not uniform:
+      </P>
+
+      <UL>
+        <LI>
+          A column with a <em>constant</em> default is added with{" "}
+          <code>ALTER TABLE ADD COLUMN</code> and existing rows get that value.
+        </LI>
+        <LI>
+          A <code>col.createdAt()</code> or <code>col.updatedAt()</code> added to a
+          table that already has rows needs the table rebuilt, because SQLite refuses an
+          expression default on an existing populated table. Yatta does this
+          automatically, backfilling every row.
+        </LI>
+      </UL>
+
+      <P>
+        The rebuild preserves what it should: the AUTOINCREMENT counter (so ids do not
+        restart), indexes and triggers on the table, columns the schema no longer
+        mentions, and other tables&apos; foreign keys. It runs inside the same{" "}
+        <code>BEGIN IMMEDIATE</code> as the rest of the sync, so it is all-or-nothing.
+      </P>
+
       <H2>Backups</H2>
 
       <CodeBlock
@@ -325,6 +352,26 @@ await db.backup("Database/backups/app.db");
 // Restore, with rollback on failure
 await db.restore("Database/backups/app.db");`}
       />
+
+      <P>
+        <code>restore</code> validates before it replaces anything, and rejects more
+        than corruption: a file that is not SQLite, a truncated file, and an{" "}
+        <strong>empty</strong> one. The last case is the one worth calling out, because
+        it is not obvious from SQLite&apos;s own behaviour — a zero-length file is a
+        valid empty database, so <code>PRAGMA quick_check</code> answers{" "}
+        <code>ok</code> for it. Validating on integrity alone meant such a restore
+        reported success and left you with no tables at all, and{" "}
+        <code>checkIntegrity()</code> still said <code>true</code> afterwards. A backup
+        must therefore contain a schema; one with tables and no rows is still a
+        legitimate backup and restores normally.
+      </P>
+
+      <Callout>
+        Worth testing in your own recovery drill: <code>restore</code> reopens the file
+        but does not re-run the schema sync, so restoring a snapshot taken before a
+        schema change leaves the live database at the older shape until something
+        recreates the difference.
+      </Callout>
 
       <H2>Multi-process safety</H2>
 

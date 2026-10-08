@@ -6392,6 +6392,42 @@
       "returns": ""
      },
      {
+      "name": "needsExpressionDefault",
+      "kind": "method",
+      "signature": "needsExpressionDefault(def: ColumnDefinition): boolean",
+      "headline": false,
+      "summary": "Whether a column's SQL default is an expression rather than a literal.",
+      "note": "`CURRENT_TIMESTAMP` is rendered as a strftime call so the stored format matches\nevery other write path — see  — which makes it the one default\nSQLite will not accept on `ALTER TABLE ADD COLUMN` against a non-empty table.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "rowCount",
+      "kind": "method",
+      "signature": "rowCount(tableName: string): number",
+      "headline": false,
+      "summary": "Current number of rows in a table, or 0 if it does not exist yet.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "rebuildTableWithColumn",
+      "kind": "method",
+      "signature": "rebuildTableWithColumn(tableName: string, colName: string, def: ColumnDefinition): void",
+      "headline": false,
+      "summary": "Adds a column to a populated table by rebuilding it.",
+      "note": "Called only for the case `ALTER TABLE ADD COLUMN` cannot express. The original\nCREATE TABLE is read back from `sqlite_master` rather than regenerated from the\ncurrent schema, so columns that exist in the database but not in the schema — and\nconstraints declared by hand — survive.\n\nRuns inside the caller's transaction. `legacy_alter_table` is toggled because\nrenaming a table with it off makes SQLite rewrite references to that name in every\nother table, which would turn other tables' foreign keys into dangling text.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "migrate",
       "kind": "method",
       "signature": "migrate(migrations: Migration[]): Promise<{ applied: string[]; }>",
