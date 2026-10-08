@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "bun run lint && bun run typecheck && bun run check:api",
+    "check": "bun run lint && bun run build",
     "extract:api": "node scripts/extract-api.mjs /home/psrockstar/Documents/code/Yatta lib/api-surface.json",
     "check:api": "node scripts/check-api.mjs /home/psrockstar/Documents/code/Yatta"
   },

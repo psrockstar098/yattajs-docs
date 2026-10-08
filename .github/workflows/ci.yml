@@ -14,8 +14,7 @@ jobs:
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
-      # `check` is lint + tsc + api-surface drift. All three run before the build on
-      # purpose: `next build` does typecheck, but only after a full production compile,
-      # so a missing import in a docs page survived every quick local gate until CI.
+      # One command that is the real gate: lint, then build (which runs check:api and
+      # typechecks). `bun run typecheck` alone cannot be the gate — Next's global types
+      # come from the gitignored next-env.d.ts, which only a build generates.
       - run: bun run check
-      - run: bun run build
