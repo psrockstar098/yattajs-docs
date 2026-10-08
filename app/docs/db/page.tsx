@@ -233,7 +233,7 @@ const feed = db.posts.cursorPaginate({ limit: 15, cursor: lastCursor });
         anything that is not a non-negative integer with a{" "}
         <Code>YattaError</Code> naming the field. Previously a non-numeric offset
         produced SQLite&apos;s own error — &ldquo;no such column: NaN&rdquo; for{" "}
-        <Code>"abc"</Code>, &ldquo;datatype mismatch&rdquo; plus the whole
+        <Code>&quot;abc&quot;</Code>, &ldquo;datatype mismatch&rdquo; plus the whole
         statement for <Code>1.7</Code> — and a negative one was read as{" "}
         <code>0</code>, silently returning from the start.{" "}
         <Code>take: -1</Code> stays legal: it is SQLite&apos;s own unbounded

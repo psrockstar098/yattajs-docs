@@ -14,5 +14,8 @@ jobs:
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
-      - run: bun run lint
+      # `check` is lint + tsc + api-surface drift. All three run before the build on
+      # purpose: `next build` does typecheck, but only after a full production compile,
+      # so a missing import in a docs page survived every quick local gate until CI.
+      - run: bun run check
       - run: bun run build
