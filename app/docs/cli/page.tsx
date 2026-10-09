@@ -3,6 +3,7 @@ import { CodeBlock } from "@/components/docs/code-block";
 import {
   H1,
   H2,
+  H3,
   P,
   UL,
   LI,
@@ -94,6 +95,28 @@ yatta db:restore <file>  Restore from backup`}
         <em>does</em> install, because you are in a project that is expected to work
         when it finishes.
       </P>
+
+      <H3>What init does about the dependency</H3>
+
+      <P>
+        <Code>yatta init</Code> connects the framework <em>first</em>, and only then
+        installs. If a local checkout is registered — see <Code>yatta link</Code> — it
+        is linked in, and no dependency is declared at all, because{" "}
+        <code>bun link</code> creates <code>node_modules/yatta.js</code> on its own.
+        That is the whole reason the order is what it is.
+      </P>
+
+      <Callout kind="warn">
+        <Code>yatta init</Code> used to do the opposite: it declared{" "}
+        <code>&quot;yatta.js&quot;: &quot;*&quot;</code> and installed first. That name is not on the
+        registry, so <code>bun install</code> answered{" "}
+        <code>404</code> — and the entry stayed in <code>package.json</code>, so every
+        later install failed too, for a package that could only ever come from a link.
+        The <Code>bun link</Code> call also used a hardcoded <code>yatta</code> while
+        the package is <code>yatta.js</code>, so it linked a directory nothing imported.
+        Both are covered by a test that runs the real CLI in a{" "}
+        <Code>bun init</Code> project and typechecks the result.
+      </Callout>
 
       <Callout kind="warn">
         <Code>yatta new</Code> used to write the entrypoint to{" "}
