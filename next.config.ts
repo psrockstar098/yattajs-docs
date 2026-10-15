@@ -6,6 +6,19 @@ const nextConfig: NextConfig = {
   // cacheComponents: true,
   async redirects() {
     return [
+      // Canonical host consolidation (2026-10-15) — Search Console flagged
+      // "Duplicate without user-selected canonical" on the yattajs-docs.vercel.app
+      // property. The deployment URL and yatta.js.org serve identical content, so
+      // send every request on the deployment host to the launch domain and let
+      // Google consolidate indexing under yatta.js.org. Preview deployments use
+      // unique hashed hosts (*.vercel.app) and are unaffected by the exact match.
+      // Kept first so it wins over the path rules below.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "yattajs-docs.vercel.app" }],
+        destination: "https://yatta.js.org/:path*",
+        permanent: true,
+      },
       // Removed in the v1.0 backend-first refactor (2026-10-07) — Google flagged both as 404s in Search Console.
       // Send visitors to the nearest surviving page instead of a dead end.
       {
