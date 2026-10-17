@@ -328,6 +328,24 @@ export default function Home() {
         <section data-page-section className="relative">
           <Render_5 />
         </section>
+
+        {/* FOOTER */}
+        <footer className="relative flex flex-col items-center gap-4 border-t border-[#f3eed7]/10 px-6 py-10">
+          <a
+            href="https://fazier.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=featured&theme=light"
+              width={180}
+              alt="Featured on Fazier"
+            />
+          </a>
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#f3eed7]/30">
+            Yatta JS — MIT Licensed
+          </p>
+        </footer>
       </div>
     </main>
   );
