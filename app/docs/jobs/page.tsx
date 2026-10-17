@@ -137,6 +137,26 @@ const stats = await jobs.metrics("default");
 // { queued, delayed, running, completed, dead }`}
       />
 
+      <H2>Release — when a job stopped for a reason that was not the job</H2>
+
+      <P>
+        A worker that shuts down, or loses its lease, hands a running job back
+        to the queue with <code>release</code>. It is different from a failure:
+        no attempt is consumed and no backoff applied, so a job on its last
+        attempt does not land in the DLQ just because a deploy happened — that
+        routing would make every restart expensive for exactly the jobs that
+        have no room left to retry.
+      </P>
+
+      <Note>
+        <code>release</code> only moves a job that is currently{" "}
+        <code>running</code> to <code>queued</code>. It will not resurrect a{" "}
+        <code>completed</code> or <code>dead</code> job — that path ran a job
+        whose work had already succeeded a second time, and re-queued dead jobs
+        without the attempt reset or error cleanup that a replay does. Replaying
+        dead work is what the DLQ API above is for.
+      </Note>
+
       <H2>Cron</H2>
 
       <CodeBlock
