@@ -493,7 +493,9 @@ observer.evaluateSlos();
       <P>
         Destructive operations are previewed before they run, require
         confirmation, and require an idempotency key so a double-click cannot
-        purge twice.
+        purge twice. A key deduplicates its own action only: the same key reused
+        for a different action kind runs again as that action, so one key can
+        never report an operation that never happened.
       </P>
 
       <CodeBlock

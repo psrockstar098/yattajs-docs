@@ -24039,7 +24039,7 @@
       "signature": "progress(percent: number, message?: string, extra?: Record<string, unknown>): this",
       "headline": false,
       "summary": "Updates the job's progress percentage and optional status message.",
-      "note": "",
+      "note": "`completed` is included even though the old guard checked two of the three\nterminal states: ticking a finished job set it back to `running`, dropped its\nstored result, and the second `done()` then ran the terminal callback again —\none decrement too many on the job gauge, and a second GC timer.",
       "example": "",
       "examples": [],
       "params": [
