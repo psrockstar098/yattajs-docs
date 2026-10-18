@@ -20307,6 +20307,17 @@
       "examples": [],
       "params": [],
       "returns": ""
+     },
+     {
+      "name": "publicReads",
+      "kind": "property",
+      "signature": "publicReads?: boolean",
+      "summary": "Acknowledgement that the default world-readable reads are intended, which",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
      }
     ]
    },
