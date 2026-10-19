@@ -237,6 +237,22 @@ api.onError(async (err, ctx) => {
 });`}
       />
 
+      <p>
+        An error that carries no HTTP status is answered with a default 500, and
+        the answer is reported — the report goes to <code>console.error</code>
+        unless the router is given somewhere else to put it. <code>errorLog</code>
+        changes only where the report goes, never the response:
+      </p>
+
+      <CodeBlock
+        title="routing the 500 report"
+        code={`import { createAPI } from "yatta.js/api";
+
+const api = createAPI({
+  errorLog: (error) => sentry.captureException(error),
+});`}
+      />
+
       <H2>CORS</H2>
 
       <CodeBlock

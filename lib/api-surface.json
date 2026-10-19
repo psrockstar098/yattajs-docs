@@ -255,6 +255,18 @@
     "members": []
    },
    {
+    "name": "APIOptions",
+    "kind": "unknown",
+    "signature": "APIOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "Context",
     "kind": "unknown",
     "signature": "Context",
