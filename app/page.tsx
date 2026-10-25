@@ -342,6 +342,14 @@ export default function Home() {
               alt="Featured on Fazier"
             />
           </a>
+          <a
+            href="https://ko-fi.com/yattajs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#f3eed7]/30 underline-offset-4 hover:underline"
+          >
+            Support Yatta JS on Ko-fi
+          </a>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#f3eed7]/30">
             Yatta JS — MIT Licensed
           </p>
