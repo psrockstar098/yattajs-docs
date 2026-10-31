@@ -276,6 +276,12 @@ export const docsNav: NavSection[] = [
         blurb: "Discovery, ID tokens, JWKS, userinfo.",
         icon: LuShieldCheck,
       },
+      {
+        title: "MCP server",
+        href: "/docs/protocols/mcp",
+        blurb: "Tools from your collections and functions, on /mcp.",
+        icon: LuWorkflow,
+      },
     ],
   },
   {

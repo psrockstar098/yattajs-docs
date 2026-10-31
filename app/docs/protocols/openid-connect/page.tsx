@@ -88,6 +88,7 @@ curl http://localhost:4000/oauth/userinfo \\
 
       <DocFooter
         prev={{ href: "/docs/protocols/oauth-server", title: "OAuth 2.0 server" }}
+        next={{ href: "/docs/protocols/mcp", title: "MCP server" }}
       />
     </article>
   );
