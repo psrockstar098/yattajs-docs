@@ -30,6 +30,32 @@ export default function WebDAVDocsPage() {
         engine sees.
       </P>
 
+      <Callout kind="warn">
+        <Code>/dav</Code> is mounted with <strong>no authentication</strong>.
+        Anyone who can reach the URL can read, write and delete the whole tree.
+        The handler does not decide who may use it — that is deliberate, so it
+        can sit behind whatever you already run. Pass <Code>authenticate</Code>{" "}
+        when you mount it yourself, or keep the path off the public internet.
+      </Callout>
+
+      <P>
+        Mount the handler yourself to add a check:
+      </P>
+
+      <CodeBlock
+        title="authenticated mount"
+        code={`import { createWebDAVHandler, createStorageDavStore } from "yatta.js/webdav";
+import { storage } from "../storage";
+import { auth } from "../auth";
+
+export const dav = createWebDAVHandler(createStorageDavStore(storage.disk()), {
+  basePath: "/dav",
+  // Runs for every method, OPTIONS included. true allows, false is a
+  // 401, and a Response of your own is sent as-is.
+  authenticate: async (req) => (await auth.getUser(req)) !== null,
+});`}
+      />
+
       <H2>Upload and download</H2>
 
       <P>
