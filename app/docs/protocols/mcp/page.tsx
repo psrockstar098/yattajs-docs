@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, P, Note, DocFooter, Code, Breadcrumb,
+import { H1, H2, H3, P, Note, Callout, Props, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -31,37 +31,13 @@ export default function McpDocsPage() {
         your app itself — you write nothing extra.
       </P>
 
-      <H2>What tools does my app get?</H2>
+      <H2>List tools</H2>
 
       <P>
-        One tool per database collection, and one tool per function
-        you register:
-      </P>
-
-      <CodeBlock
-        title="Tools from a posts collection"
-        code={`list_posts    # list rows (limit at most 100)
-get_posts     # one row by id
-create_posts  # create a row
-update_posts  # change a row by id
-delete_posts  # delete a row by id
-
-say_hello     # your own function, by its own name`}
-      />
-
-      <P>
-        Tool names use the collection name as-is. A function whose
-        name collides with a collection tool is skipped, so every
-        tool name stays unique.
-      </P>
-
-      <H2>Point a client at it</H2>
-
-      <P>
-        Any MCP client that speaks streamable HTTP works. The client
-        needs no session id — every request stands on its own — and
-        it must be signed in (see below). One short example with
-        curl:
+        The caller must be signed in — a Yatta session, or an OAuth
+        access token from this same server. Without that, the answer
+        is 401, and the caller learns nothing, not even the tool
+        names.
       </P>
 
       <CodeBlock
@@ -81,32 +57,137 @@ say_hello     # your own function, by its own name`}
 }`}
       />
 
-      <P>
-        To call a tool, send <Code>tools/call</Code> with the tool
-        name and its arguments. The answer comes back as text, and
-        a tool that fails answers with <Code>isError: true</Code>{" "}
-        instead of crashing the server.
-      </P>
-
-      <H2>Auth</H2>
+      <H2>The five collection tools</H2>
 
       <P>
-        The endpoint uses the same auth as the rest of your app. The
-        caller must be signed in — a Yatta session, or an OAuth
-        access token from this same server. A caller who is not
-        signed in gets a 401 and learns nothing, not even the tool
-        names.
+        Every collection becomes five tools, named after the
+        collection itself. A collection called{" "}
+        <Code>posts</Code> becomes <Code>list_posts</Code>,{" "}
+        <Code>get_posts</Code>, and so on.
       </P>
+
+      <Props
+        items={[
+          { name: "list_<name>", desc: "List rows. Arguments: limit (default 50, at most 100), offset (default 0)." },
+          { name: "get_<name>", desc: "One row by id. Argument: id (string or number)." },
+          { name: "create_<name>", desc: "Create a row. Argument: fields, the row to create." },
+          { name: "update_<name>", desc: "Change a row by id. Arguments: id, fields. Answers { updated: true/false }." },
+          { name: "delete_<name>", desc: "Delete a row by id. Argument: id. Answers { deleted: true/false }." },
+        ]}
+      />
+
+      <H2>Call a tool</H2>
+
+      <P>
+        Send <Code>tools/call</Code> with the tool name and its
+        arguments. The answer comes back as text. A tool that fails
+        answers with <Code>isError: true</Code> instead of crashing
+        the server.
+      </P>
+
+      <CodeBlock
+        title="Create a post, then read it back"
+        code={`curl http://localhost:4000/mcp \\
+  -H "Authorization: Bearer ACCESS_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",
+       "params":{"name":"create_posts",
+       "arguments":{"fields":{"title":"Hello","body":"First post"}}}}'
+
+# Answer (shortened)
+{
+  "jsonrpc": "2.0", "id": 2,
+  "result": { "content": [{ "type": "text",
+    "text": "{\\"id\\":1,\\"title\\":\\"Hello\\",\\"body\\":\\"First post\\"}" }] }
+}`}
+      />
+
+      <H2>Your own functions</H2>
+
+      <P>
+        A function you register becomes one tool under its own name,
+        and it receives the caller’s user id — so it can enforce its
+        own rules, like “only touch your own rows”. A function whose
+        name collides with a collection tool is skipped, so every
+        tool name stays unique.
+      </P>
+
+      <CodeBlock
+        title="Call a function tool"
+        code={`curl http://localhost:4000/mcp \\
+  -H "Authorization: Bearer ACCESS_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",
+       "params":{"name":"my_function","arguments":{"text":"hello"}}}'`}
+      />
+
+      <H2>Start a session</H2>
+
+      <P>
+        There is no session id to keep. Every request stands on its
+        own. Say hello with <Code>initialize</Code>, and check the
+        connection with <Code>ping</Code>.
+      </P>
+
+      <CodeBlock
+        title="Initialize and ping"
+        code={`curl http://localhost:4000/mcp \\
+  -H "Authorization: Bearer ACCESS_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","id":4,"method":"initialize",
+       "params":{"protocolVersion":"2025-06-18"}}'
+
+# Answer
+{
+  "jsonrpc": "2.0", "id": 4,
+  "result": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": { "tools": {} },
+    "serverInfo": { "name": "yatta", "version": "1.0.5" }
+  }
+}
+
+# Ping — answers an empty result
+# {"jsonrpc":"2.0","id":5,"method":"ping"} -> {"jsonrpc":"2.0","id":5,"result":{}}`}
+      />
+
+      <P>
+        A request without an id is a notification: it answers 202
+        with an empty body. You can also send several requests at
+        once, as a JSON array, and get several answers back.
+      </P>
+
+      <H2>Errors</H2>
+
+      <Props
+        items={[
+          { name: "-32700 (HTTP 400)", desc: "The body is not JSON." },
+          { name: "-32600", desc: "Not a JSON-RPC 2.0 request, or no method." },
+          { name: "-32601", desc: "Unknown method." },
+          { name: "-32602", desc: "Unknown tool, or no tool name given." },
+          { name: "isError: true", desc: "The tool itself failed. The message is in the answer text; the server stays up." },
+          { name: "HTTP 405", desc: "Anything that is not a POST." },
+        ]}
+      />
+
+      <H2>Turn it off</H2>
+
+      <P>
+        The endpoint is on by default. One line turns it off.
+      </P>
+
+      <CodeBlock
+        title="Disable the MCP endpoint"
+        code={`MCP_ENABLED=0`}
+      />
 
       <Note kind="warn">
         Auth tables are never turned into tools: users, sessions,
-        api keys, and friends are always left out, even if you ask
-        for them. One honest limit: any signed-in user can use the
-        exposed collection tools. If a row should only be touched by
-        its owner, put that rule in a registered function — it gets
-        the user id and can say no. If your app must not expose its
-        data to every signed-in user, turn the endpoint off with one
-        line: <Code>MCP_ENABLED=0</Code>.
+        identities, verificationTokens, passkeys, and apiKeys are
+        always left out, even if you ask for them. One honest limit:
+        any signed-in user can use the exposed collection tools. If
+        a row should only be touched by its owner, put that rule in
+        a registered function — it gets the user id and can say no.
       </Note>
 
       <DocFooter
