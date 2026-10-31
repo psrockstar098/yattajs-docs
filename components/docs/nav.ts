@@ -252,6 +252,12 @@ export const docsNav: NavSection[] = [
         blurb: "Browser calls with protobuf framing.",
         icon: LuWorkflow,
       },
+      {
+        title: "DNS over HTTPS",
+        href: "/docs/protocols/doh",
+        blurb: "DNS questions over HTTPS.",
+        icon: LuServer,
+      },
     ],
   },
   {
