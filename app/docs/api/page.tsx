@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/docs/code-block";
-import { H1, H2, H3, P, Note, Callout, DocFooter, Code, Breadcrumb,
+import { H1, H2, H3, P, Note, Callout, Props, DocFooter, Code, Breadcrumb,
 } from "@/components/docs/prose";
 
 export const metadata: Metadata = {
@@ -293,6 +293,82 @@ api.all(handler);   // every method`}
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 });`}
+      />
+
+      <H2>Built-in endpoints</H2>
+
+      <P>
+        Besides your own routes, the server answers these endpoints on its own.
+        No setup is needed — they are on by default.
+      </P>
+
+      <Props
+        items={[
+          {
+            name: "/dav",
+            desc: (
+              <>
+                <a href="/docs/protocols/webdav" className="underline underline-offset-4">WebDAV</a>{" "}
+                — files over HTTP, backed by the storage engine.
+              </>
+            ),
+          },
+          {
+            name: "/grpc-web/<Service>/<Method>",
+            desc: (
+              <>
+                <a href="/docs/protocols/grpc-web" className="underline underline-offset-4">gRPC-Web</a>{" "}
+                — unary calls with protobuf framing.
+              </>
+            ),
+          },
+          {
+            name: "/dns-query",
+            desc: (
+              <>
+                <a href="/docs/protocols/doh" className="underline underline-offset-4">DNS over HTTPS</a>{" "}
+                — JSON and wire-format DNS answers.
+              </>
+            ),
+          },
+          {
+            name: "/.well-known/webfinger",
+            desc: (
+              <>
+                <a href="/docs/protocols/webfinger" className="underline underline-offset-4">WebFinger</a>{" "}
+                — look up an account by address.
+              </>
+            ),
+          },
+          {
+            name: "/oauth/*",
+            desc: (
+              <>
+                <a href="/docs/protocols/oauth-server" className="underline underline-offset-4">OAuth 2.0 server</a>{" "}
+                — authorize, token and revoke.
+              </>
+            ),
+          },
+          {
+            name: "/.well-known/openid-configuration",
+            desc: (
+              <>
+                <a href="/docs/protocols/openid-connect" className="underline underline-offset-4">OpenID Connect</a>{" "}
+                — discovery, JWKS and userinfo.
+              </>
+            ),
+          },
+          {
+            name: "/mcp",
+            desc: (
+              <>
+                <a href="/docs/protocols/mcp" className="underline underline-offset-4">MCP</a>{" "}
+                — your collections and functions as AI tools. Set{" "}
+                <Code>MCP_ENABLED=0</Code> to turn it off.
+              </>
+            ),
+          },
+        ]}
       />
 
       <DocFooter
