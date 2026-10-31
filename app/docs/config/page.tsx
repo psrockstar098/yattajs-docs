@@ -62,7 +62,17 @@ export default function ConfigDocsPage() {
           {
             name: "APP_URL",
             type: "string",
-            desc: "Used in verification links and the WebAuthn origin.",
+            desc: "Used in verification links and the WebAuthn origin. Also the OAuth issuer and the WebFinger app URL.",
+          },
+          {
+            name: "OAUTH_CLIENTS",
+            type: "string",
+            desc: "JSON list of OAuth clients, each with id, redirectUris, and optionally secret and name. Omit secret for public clients, which must use PKCE. See the OAuth 2.0 server page.",
+          },
+          {
+            name: "MCP_ENABLED",
+            type: "string",
+            desc: "Set to 0 to turn off the built-in MCP endpoint. On by default.",
           },
         ]}
       />
