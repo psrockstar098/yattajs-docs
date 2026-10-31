@@ -52,6 +52,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/docs/protocols/grpc-web", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/protocols/doh", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/protocols/webfinger", priority: 0.7, frequency: "monthly" as const },
+    { path: "/docs/protocols/oauth-server", priority: 0.7, frequency: "monthly" as const },
+    { path: "/docs/protocols/openid-connect", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/types", priority: 0.6, frequency: "monthly" as const },
     { path: "/docs/config", priority: 0.6, frequency: "monthly" as const },
     { path: "/docs/deployment", priority: 0.6, frequency: "monthly" as const },

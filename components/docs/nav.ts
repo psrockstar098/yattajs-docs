@@ -264,6 +264,18 @@ export const docsNav: NavSection[] = [
         blurb: "acct: lookups with JRD answers.",
         icon: LuCompass,
       },
+      {
+        title: "OAuth 2.0 server",
+        href: "/docs/protocols/oauth-server",
+        blurb: "Be the login server: code, PKCE, refresh tokens.",
+        icon: LuKeyRound,
+      },
+      {
+        title: "OpenID Connect",
+        href: "/docs/protocols/openid-connect",
+        blurb: "Discovery, ID tokens, JWKS, userinfo.",
+        icon: LuShieldCheck,
+      },
     ],
   },
   {
