@@ -385,6 +385,37 @@ api.get(async (ctx) => {
 export default api;`}
       />
 
+      <H2>Yatta as a login server</H2>
+
+      <P>
+        The same user store can also log people into other apps. Yatta ships
+        an OAuth 2.0 server and OpenID Connect, so another app can send its
+        users to your Yatta app to sign in.
+      </P>
+
+      <CodeBlock
+        title="the authorize step"
+        lang="text"
+        code={`GET /oauth/authorize?response_type=code
+  &client_id=my-app
+  &redirect_uri=https://my-app.example.com/callback
+  &scope=openid%20profile
+  &state=random-string
+
+  → 302 to the redirect_uri with ?code=...&state=...`}
+      />
+
+      <P>
+        Clients are listed in the <Code>OAUTH_CLIENTS</Code> environment
+        variable, and tokens live in memory. See{" "}
+        <a href="/docs/protocols/oauth-server" className="underline underline-offset-4">OAuth 2.0 server</a>{" "}
+        and{" "}
+        <a href="/docs/protocols/openid-connect" className="underline underline-offset-4">OpenID Connect</a>{" "}
+        for the full flow. This is the other direction from{" "}
+        <a href="/docs/guides/oauth" className="underline underline-offset-4">signing in with Google &amp; GitHub</a>,
+        where Yatta is the client, not the server.
+      </P>
+
       <DocFooter
         prev={{ href: "/docs/db", title: "Database" }}
         next={{ href: "/docs/jobs", title: "Jobs & events" }}
