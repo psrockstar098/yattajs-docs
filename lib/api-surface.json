@@ -8212,6 +8212,17 @@
     "returns": "",
     "members": [
      {
+      "name": "shortSecretWarned",
+      "kind": "property",
+      "signature": "shortSecretWarned: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
       "name": "encKey",
       "kind": "property",
       "signature": "encKey: Buffer",
@@ -20918,6 +20929,18 @@
     "members": []
    },
    {
+    "name": "SingleDiskStorageConfig",
+    "kind": "type",
+    "signature": "type SingleDiskStorageConfig = DriverConfig & { authorize?: StorageAuthorizer; security?: StorageSecurityConfig; secret?: string; publicReads?: boolean; }",
+    "summary": "Single-disk configuration: a driver config plus the manager-level options",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
     "name": "StorageAction",
     "kind": "type",
     "signature": "type StorageAction = \"read\" | \"write\" | \"delete\" | \"list\" | \"sign\"",
@@ -20944,7 +20967,7 @@
    {
     "name": "StorageConfig",
     "kind": "type",
-    "signature": "type StorageConfig = DriverConfig | (MultiDiskStorageConfig & { driver?: never; })",
+    "signature": "type StorageConfig = DriverConfig | SingleDiskStorageConfig | (MultiDiskStorageConfig & { driver?: never; })",
     "summary": "Combined configuration accepted by `createStorage`.",
     "note": "",
     "example": "",
@@ -26878,6 +26901,2622 @@
     "kind": "type",
     "signature": "type RegisteredEvents = RealtimeRegister extends { events: infer E extends Record<string, unknown>; } ? E : Record<string, unknown>",
     "summary": "Extracts the registered events map from , or falls back to a generic event map.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/grpcweb": {
+  "label": "yatta/grpcweb",
+  "file": "src/func/grpcweb.ts",
+  "entries": [
+   {
+    "name": "concat",
+    "kind": "function",
+    "signature": "concat(...parts: Uint8Array[]): Uint8Array",
+    "summary": "Join byte arrays in order. The result is a copy, so it is safe to keep.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createGrpcWebHandler",
+    "kind": "function",
+    "signature": "createGrpcWebHandler(services?: GrpcServices, options?: GrpcWebOptions): (req: Request) => Promise<Response>",
+    "summary": "Build the HTTP handler for gRPC-Web unary calls.",
+    "note": "Mount it on `options.basePath` and give it a service map. Anything that\nis not a `POST` to `<basePath>/<Service>/<Method>` is answered before a\nservice is consulted.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "services",
+      "text": "The methods to expose. Defaults to the health check and\nan echo, which are useful for a smoke test and harmless otherwise."
+     }
+    ],
+    "returns": "A `(req) => Promise<Response>` to hand to a router or `Bun.serve`.",
+    "members": []
+   },
+   {
+    "name": "decodeFrames",
+    "kind": "function",
+    "signature": "decodeFrames(data: Uint8Array, maxFrameBytes?: ): GrpcFrame[]",
+    "summary": "Split a gRPC-Web body into its frames.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "maxFrameBytes",
+      "text": "Refuse a frame above this size before reading it.\nThe length comes from the caller, so a 5-byte header can otherwise\nannounce four gigabytes and have the server try to find them."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "decodeMessage",
+    "kind": "function",
+    "signature": "decodeMessage(data: Uint8Array): ProtoField[]",
+    "summary": "Split one encoded message into its fields, in wire order.",
+    "note": "Every length is checked against the bytes actually present before it is\nused, so a truncated message is an error rather than a short read.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "decodeVarint",
+    "kind": "function",
+    "signature": "decodeVarint(data: Uint8Array, offset: number): { value: bigint; next: number; }",
+    "summary": "Read one varint that starts at `offset`.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "`value`, and `next` — the offset just past the varint, so a\ncaller can keep walking a message.",
+    "members": []
+   },
+   {
+    "name": "decodeZigZag",
+    "kind": "function",
+    "signature": "decodeZigZag(n: bigint): bigint",
+    "summary": "Undo .",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeBooleanField",
+    "kind": "function",
+    "signature": "encodeBooleanField(field: number, value: boolean): Uint8Array",
+    "summary": "Wire type 0 with 1 or 0. Protobuf has no boolean on the wire.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeBytesField",
+    "kind": "function",
+    "signature": "encodeBytesField(field: number, body: Uint8Array): Uint8Array",
+    "summary": "Wire type 2: tag, length, then the bytes untouched.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeDoubleField",
+    "kind": "function",
+    "signature": "encodeDoubleField(field: number, value: number): Uint8Array",
+    "summary": "Wire type 1: eight bytes, little-endian.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeFloatField",
+    "kind": "function",
+    "signature": "encodeFloatField(field: number, value: number): Uint8Array",
+    "summary": "Wire type 5: four bytes, little-endian, as protobuf requires.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeFrame",
+    "kind": "function",
+    "signature": "encodeFrame(data: Uint8Array, trailer?: ): Uint8Array",
+    "summary": "Frame a payload: one flag byte, a 4-byte big-endian length, then the bytes.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeMessageField",
+    "kind": "function",
+    "signature": "encodeMessageField(field: number, messageBytes: Uint8Array): Uint8Array",
+    "summary": "Wire type 2 with a message the caller has already encoded.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeStringField",
+    "kind": "function",
+    "signature": "encodeStringField(field: number, value: string): Uint8Array",
+    "summary": "Wire type 2, with the string encoded as UTF-8.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeVarint",
+    "kind": "function",
+    "signature": "encodeVarint(value: bigint | number): Uint8Array",
+    "summary": "Encode an integer as a base-128 varint.",
+    "note": "A negative value becomes its 64-bit two's complement, which is how\nprotobuf writes `int64` — ten bytes every time. Use\n for `sint*` fields to avoid that.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeVarintField",
+    "kind": "function",
+    "signature": "encodeVarintField(field: number, value: number | bigint): Uint8Array",
+    "summary": "Wire type 0: tag then varint.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeZigZag",
+    "kind": "function",
+    "signature": "encodeZigZag(n: bigint | number): bigint",
+    "summary": "ZigZag-encode a signed value for a `sint32`/`sint64` field.",
+    "note": "Without it a small negative number is ten bytes of sign extension;\nwith it, -1 is one byte.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldBoolean",
+    "kind": "function",
+    "signature": "fieldBoolean(fields: ProtoField[], field: number): boolean | null",
+    "summary": "A varint field read as a boolean: anything other than 0 is true.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldBytes",
+    "kind": "function",
+    "signature": "fieldBytes(fields: ProtoField[], field: number): Uint8Array | null",
+    "summary": "The last length-delimited field with this number, as raw bytes.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "null when the field is absent. The bytes are a view into the\ndecoded message, so copy them before keeping them.",
+    "members": []
+   },
+   {
+    "name": "fieldDouble",
+    "kind": "function",
+    "signature": "fieldDouble(fields: ProtoField[], field: number): number | null",
+    "summary": "A 64-bit float field (wire type 1). Null when absent or the wrong width.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldFloat",
+    "kind": "function",
+    "signature": "fieldFloat(fields: ProtoField[], field: number): number | null",
+    "summary": "A 32-bit float field (wire type 5). Null when absent or the wrong width.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldMessage",
+    "kind": "function",
+    "signature": "fieldMessage(fields: ProtoField[], field: number): ProtoField[] | null",
+    "summary": "A nested message, already decoded. Null when the field is absent.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldNumber",
+    "kind": "function",
+    "signature": "fieldNumber(fields: ProtoField[], field: number): number | null",
+    "summary": "as a JavaScript number.",
+    "note": "Loses precision past 2^53, so read ids and timestamps with\n instead.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldRepeatedBytes",
+    "kind": "function",
+    "signature": "fieldRepeatedBytes(fields: ProtoField[], field: number): Uint8Array[]",
+    "summary": "Every value of a repeated bytes field, in order.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldRepeatedMessage",
+    "kind": "function",
+    "signature": "fieldRepeatedMessage(fields: ProtoField[], field: number): ProtoField[][]",
+    "summary": "Every value of a repeated message field, decoded.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldRepeatedString",
+    "kind": "function",
+    "signature": "fieldRepeatedString(fields: ProtoField[], field: number): string[]",
+    "summary": "Every value of a repeated string field, in order.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldRepeatedVarint",
+    "kind": "function",
+    "signature": "fieldRepeatedVarint(fields: ProtoField[], field: number): bigint[]",
+    "summary": "Every value of a repeated varint field, in order.",
+    "note": "Proto3 packs them into one length-delimited field (wire type 2) and\nproto2 repeats the tag (wire type 0). Both appear in real traffic, so\nboth are read rather than assuming the sender's proto version.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "fieldString",
+    "kind": "function",
+    "signature": "fieldString(fields: ProtoField[], field: number): string | null",
+    "summary": "The last length-delimited field with this number, read as text.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "null when the field is absent — an absent field and an empty\nstring are different answers, and callers rely on that.",
+    "members": []
+   },
+   {
+    "name": "fieldVarint",
+    "kind": "function",
+    "signature": "fieldVarint(fields: ProtoField[], field: number): bigint | null",
+    "summary": "The last varint field with this number.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "null when absent, so a legitimate 0 is not mistaken for \"no field\".",
+    "members": []
+   },
+   {
+    "name": "grpcWebCall",
+    "kind": "async function",
+    "signature": "grpcWebCall(endpoint: string, service: string, method: string, message: Uint8Array, options?: GrpcWebCallOptions): Promise<Uint8Array>",
+    "summary": "Call a unary gRPC-Web method and return the raw reply message.",
+    "note": "Works in a browser and in Bun/Node, because it goes through `fetch`.\nThe reply is unwrapped for you: trailers are parsed and the message\nbytes are returned.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "endpoint",
+      "text": "Base URL, like `\"https://api.example.com/grpc-web\"`."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "GrpcError",
+    "kind": "class",
+    "signature": "class GrpcError extends Error",
+    "summary": "An error carrying a gRPC status code.",
+    "note": "Throw one from a service to choose what the client sees. Anything else\nis logged and answered as `INTERNAL`, so an unexpected failure does not\nput its message on the wire.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "code",
+      "kind": "property",
+      "signature": "code: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "grpcStatus",
+      "kind": "getter",
+      "signature": "grpcStatus: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "GrpcContext",
+    "kind": "interface",
+    "signature": "interface GrpcContext",
+    "summary": "What a service gets besides the request message.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "req",
+      "kind": "property",
+      "signature": "req: Request",
+      "summary": "The original HTTP request: headers, cookies, and the caller's identity.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "signal",
+      "kind": "property",
+      "signature": "signal?: AbortSignal",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "GrpcFrame",
+    "kind": "interface",
+    "signature": "interface GrpcFrame",
+    "summary": "One frame of a gRPC-Web body.",
+    "note": "`trailer` marks the final frame, which carries `grpc-status` as text\ninstead of a message. `compressed` is the flag this server never sets:\nit negotiates no compression, and refusing the flag is clearer than\nsilently handing back bytes nobody decompressed.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "trailer",
+      "kind": "property",
+      "signature": "trailer: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "compressed",
+      "kind": "property",
+      "signature": "compressed: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "data",
+      "kind": "property",
+      "signature": "data: Uint8Array",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "GrpcWebCallOptions",
+    "kind": "interface",
+    "signature": "interface GrpcWebCallOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "headers",
+      "kind": "property",
+      "signature": "headers?: Record<string, string>",
+      "summary": "Extra headers, for example `{ authorization: \"Bearer …\" }`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "signal",
+      "kind": "property",
+      "signature": "signal?: AbortSignal",
+      "summary": "Abort the call from the caller's side.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "format",
+      "kind": "property",
+      "signature": "format?: \"binary\" | \"text\"",
+      "summary": "`\"text\"` sends base64 over `application/grpc-web-text`, which is what",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "timeoutMs",
+      "kind": "property",
+      "signature": "timeoutMs?: number",
+      "summary": "Sent as a `grpc-timeout` header. The server is free to ignore it.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "GrpcWebOptions",
+    "kind": "interface",
+    "signature": "interface GrpcWebOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "basePath",
+      "kind": "property",
+      "signature": "basePath?: string",
+      "summary": "Where the handler is mounted. Default `/grpc-web`; a trailing slash is ignored.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "maxMessageBytes",
+      "kind": "property",
+      "signature": "maxMessageBytes?: number",
+      "summary": "Largest message accepted, in bytes. Default 4 MB. A reply is not",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "corsOrigins",
+      "kind": "property",
+      "signature": "corsOrigins?: string[]",
+      "summary": "Browser origins allowed to call this endpoint, like",
+      "note": "Unset means no CORS headers, so a browser on another origin is\nrefused by the browser itself. An `OPTIONS` from an origin not on\nthe list gets a 403 rather than a permissive preflight.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "ProtoField",
+    "kind": "interface",
+    "signature": "interface ProtoField",
+    "summary": "One decoded protobuf field.",
+    "note": "`varint` is set for wire type 0, `bytes` for 1 (fixed64), 2\n(length-delimited) and 5 (fixed32). Values are `bigint`, not `number`,\nso a real 64-bit id survives the round trip.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "field",
+      "kind": "property",
+      "signature": "field: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "wireType",
+      "kind": "property",
+      "signature": "wireType: 0 | 1 | 2 | 5",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "varint",
+      "kind": "property",
+      "signature": "varint?: bigint",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "bytes",
+      "kind": "property",
+      "signature": "bytes?: Uint8Array",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "GrpcServiceFn",
+    "kind": "type",
+    "signature": "type GrpcServiceFn = (request: Uint8Array, ctx: GrpcContext) => Promise<Uint8Array> | Uint8Array",
+    "summary": "One unary method: request message in, reply message out.",
+    "note": "Return bytes, not a `Response` — framing, trailers and status codes are\nthe handler's job. Throw  to pick the status code.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "GrpcServices",
+    "kind": "type",
+    "signature": "type GrpcServices = Record<string, GrpcServiceFn>",
+    "summary": "Methods keyed `\"package.Service/Method\"`, the same string the client",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "GrpcStatusCode",
+    "kind": "type",
+    "signature": "type GrpcStatusCode = (typeof GrpcStatus)[keyof typeof GrpcStatus]",
+    "summary": "Any of the numeric values in .",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/webdav": {
+  "label": "yatta/webdav",
+  "file": "src/func/webdav.ts",
+  "entries": [
+   {
+    "name": "createStorageDavStore",
+    "kind": "function",
+    "signature": "createStorageDavStore(storage: { upload(key: string, data: Uint8Array, options?: { contentType?: string; }): Promise<unknown>; download(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer>; contentType: string; lastModified: Date; }>; head(key: string): Promise<{ size: number; contentType: string; lastModified: Date; }>; delete(key: string): Promise<void>; copy(src: string, dst: string): Promise<unknown>; move(src: string, dst: string): Promise<unknown>; exists(key: string): Promise<boolean>; list(options?: { prefix?: string; }): Promise<Array<{ path: string; size: number; contentType: string; lastModified: Date; }>>; }): DavStore",
+    "summary": "Back WebDAV with the Yatta storage engine.",
+    "note": "A key-value store has no real folders, so a collection is recorded as a\nmarker file, `<path>/.dav-collection`. The name is reserved: a client\ncannot create, read, overwrite or list it as an ordinary file.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "storage",
+      "text": "Anything shaped like `yatta.js/storage`'s engine — the\nsame object, not an adapter around it."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createWebDAVHandler",
+    "kind": "function",
+    "signature": "createWebDAVHandler(store: DavStore, options?: WebDAVOptions): (req: Request) => Promise<Response>",
+    "summary": "Build the WebDAV handler for a store.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "store",
+      "text": "Where the bytes live. Use `createStorageDavStore(storage)`\nto back it with the Yatta storage engine, or your own for tests."
+     }
+    ],
+    "returns": "A `(req) => Promise<Response>` for a router or `Bun.serve`.",
+    "members": []
+   },
+   {
+    "name": "DavError",
+    "kind": "class",
+    "signature": "class DavError extends Error",
+    "summary": "An error with an HTTP status, for a store that needs to say no.",
+    "note": "`throw new DavError(403, \"reserved name\")` reaches the client as that\nstatus and message. Any other thrown error is logged and answered 500,\nso an internal detail never becomes the response body.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "status",
+      "kind": "property",
+      "signature": "status: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DavEntry",
+    "kind": "interface",
+    "signature": "interface DavEntry",
+    "summary": "One path in the tree, with the metadata PROPFIND reports.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "path",
+      "kind": "property",
+      "signature": "path: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "isCollection",
+      "kind": "property",
+      "signature": "isCollection: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "size",
+      "kind": "property",
+      "signature": "size: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "lastModified",
+      "kind": "property",
+      "signature": "lastModified: Date",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "contentType",
+      "kind": "property",
+      "signature": "contentType?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DavFile",
+    "kind": "interface",
+    "signature": "interface DavFile",
+    "summary": "A file as the store returns it: the bytes plus what a browser needs.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "body",
+      "kind": "property",
+      "signature": "body: Uint8Array",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "contentType",
+      "kind": "property",
+      "signature": "contentType: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "lastModified",
+      "kind": "property",
+      "signature": "lastModified: Date",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DavStore",
+    "kind": "interface",
+    "signature": "interface DavStore",
+    "summary": "The small surface the handler needs from a backing store.",
+    "note": "Paths never start with \"/\" and the root collection is `\"\"`. Copy and\nmove a whole collection only turn up as a `mkdir` plus per-file calls,\nexcept `move` on a single file, so a store that can rename cheaply\nshould — reading a large file into memory to move it is the handler's\nfallback, not a requirement.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "get",
+      "kind": "method",
+      "signature": "get(path: string): Promise<DavFile | null>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "put",
+      "kind": "method",
+      "signature": "put(path: string, body: Uint8Array, contentType?: string): Promise<void>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "delete",
+      "kind": "method",
+      "signature": "delete(path: string): Promise<boolean>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "exists",
+      "kind": "method",
+      "signature": "exists(path: string): Promise<boolean>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "isCollection",
+      "kind": "method",
+      "signature": "isCollection(path: string): Promise<boolean>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "list",
+      "kind": "method",
+      "signature": "list(path: string): Promise<DavEntry[]>",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "mkdir",
+      "kind": "method",
+      "signature": "mkdir(path: string): Promise<void>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "copy",
+      "kind": "method",
+      "signature": "copy(src: string, dst: string): Promise<void>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "move",
+      "kind": "method",
+      "signature": "move(src: string, dst: string): Promise<void>",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "stat",
+      "kind": "method",
+      "signature": "stat(path: string): Promise<DavEntry | null>?",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "WebDAVOptions",
+    "kind": "interface",
+    "signature": "interface WebDAVOptions",
+    "summary": "How the handler behaves. Everything is optional; the defaults are a",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "basePath",
+      "kind": "property",
+      "signature": "basePath?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "defaultLockMs",
+      "kind": "property",
+      "signature": "defaultLockMs?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "authenticate",
+      "kind": "property",
+      "signature": "authenticate?: (req: Request) => Promise<boolean | Response> | boolean | Response",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "readOnly",
+      "kind": "property",
+      "signature": "readOnly?: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "maxBodyBytes",
+      "kind": "property",
+      "signature": "maxBodyBytes?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   }
+  ]
+ },
+ "yatta/webfinger": {
+  "label": "yatta/webfinger",
+  "file": "src/func/webfinger.ts",
+  "entries": [
+   {
+    "name": "createUserWebFingerLookup",
+    "kind": "function",
+    "signature": "createUserWebFingerLookup(deps: { findUserByEmail(email: string): Promise<{ id: string; email: string; } | null>; appUrl: string; hosts?: string[]; }): WebFingerLookup",
+    "summary": "A lookup that answers from the auth store.",
+    "note": "Best-effort pre-filled: `profile-page` points at the app URL and `self`\nat this same endpoint. Add a real `acct:` discovery result if clients\nshould be able to resolve the address from another server.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createWebFingerHandler",
+    "kind": "function",
+    "signature": "createWebFingerHandler(lookup: WebFingerLookup, options?: { path?: string; }): (req: Request) => Promise<Response>",
+    "summary": "Build the WebFinger handler.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "lookup",
+      "text": "Your discovery logic. Returning null is a plain 404 — say\nnothing rather than guess."
+     }
+    ],
+    "returns": "A `(req) => Promise<Response>` for a router or `Bun.serve`.",
+    "members": []
+   },
+   {
+    "name": "WebFingerLink",
+    "kind": "interface",
+    "signature": "interface WebFingerLink",
+    "summary": "One link in a JRD document, keyed by `rel`.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "rel",
+      "kind": "property",
+      "signature": "rel: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "type",
+      "kind": "property",
+      "signature": "type?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "href",
+      "kind": "property",
+      "signature": "href?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "template",
+      "kind": "property",
+      "signature": "template?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "WebFingerSubject",
+    "kind": "interface",
+    "signature": "interface WebFingerSubject",
+    "summary": "What a lookup knows about a resource: its canonical name and its links.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "subject",
+      "kind": "property",
+      "signature": "subject: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "aliases",
+      "kind": "property",
+      "signature": "aliases?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "links",
+      "kind": "property",
+      "signature": "links: WebFingerLink[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "WebFingerLookup",
+    "kind": "type",
+    "signature": "type WebFingerLookup = (resource: string) => Promise<WebFingerSubject | null>",
+    "summary": "Returns what is known about a resource, or null.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "resource",
+      "text": "The URI the client asked about, like\n`\"acct:ada@example.com\"`. It arrives decoded; validate it as you see fit."
+     }
+    ],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/doh": {
+  "label": "yatta/doh",
+  "file": "src/func/doh.ts",
+  "entries": [
+   {
+    "name": "createDoHHandler",
+    "kind": "function",
+    "signature": "createDoHHandler(resolver?: DnsResolver, options?: { path?: string; }): (req: Request) => Promise<Response>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "decodeQuery",
+    "kind": "function",
+    "signature": "decodeQuery(data: Uint8Array): DnsQuery",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "decodeResponse",
+    "kind": "function",
+    "signature": "decodeResponse(data: Uint8Array): DecodedResponse",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeQuery",
+    "kind": "function",
+    "signature": "encodeQuery(id: number, name: string, type: number): Uint8Array",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "encodeResponse",
+    "kind": "function",
+    "signature": "encodeResponse(query: DnsQuery, rcode: number, answers: DnsAnswer[]): Uint8Array",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "resolveDoH",
+    "kind": "async function",
+    "signature": "resolveDoH(endpoint: string, name: string, type?: DnsRecordType): Promise<DnsAnswer[]>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "DecodedResponse",
+    "kind": "interface",
+    "signature": "interface DecodedResponse",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "id",
+      "kind": "property",
+      "signature": "id: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "rcode",
+      "kind": "property",
+      "signature": "rcode: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "answers",
+      "kind": "property",
+      "signature": "answers: DnsAnswer[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DnsAnswer",
+    "kind": "interface",
+    "signature": "interface DnsAnswer",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "type",
+      "kind": "property",
+      "signature": "type: DnsRecordType",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "ttl",
+      "kind": "property",
+      "signature": "ttl: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "address",
+      "kind": "property",
+      "signature": "address: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DnsQuery",
+    "kind": "interface",
+    "signature": "interface DnsQuery",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "id",
+      "kind": "property",
+      "signature": "id: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "type",
+      "kind": "property",
+      "signature": "type: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "DnsRecordType",
+    "kind": "type",
+    "signature": "type DnsRecordType = \"A\" | \"AAAA\"",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "DnsResolver",
+    "kind": "type",
+    "signature": "type DnsResolver = (name: string, type: DnsRecordType) => Promise<DnsAnswer[]>",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/oauth": {
+  "label": "yatta/oauth",
+  "file": "src/func/oauth.ts",
+  "entries": [
+   {
+    "name": "clientsFromEnv",
+    "kind": "function",
+    "signature": "clientsFromEnv(env: Record<string, string | undefined>): OAuthClientInput[]",
+    "summary": "Read `OAUTH_CLIENTS` — a JSON list — into client inputs.",
+    "note": "A bad entry is skipped with a warning instead of taking the process\ndown: one mistyped redirect URI used to discard the good clients next\nto it, and the failure surfaced only as \"invalid_client\" at runtime.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "env",
+      "text": "Usually `process.env`."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "createOAuthServer",
+    "kind": "function",
+    "signature": "createOAuthServer(options: OAuthServerOptions)",
+    "summary": "Build an OAuth 2.0 authorization server.",
+    "note": "Mount the three handlers on `/oauth/authorize`, `/oauth/token` and\n`/oauth/revoke`. The wire format is plain form-encoded HTTP, so the\nhandlers take and return `Request`/`Response` directly.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "MemoryOAuthStore",
+    "kind": "class",
+    "signature": "class MemoryOAuthStore implements OAuthStore",
+    "summary": "In-memory store. Fine for one server, and for tests.",
+    "note": "Nothing survives a restart: issued tokens stop working and registered\nclients have to be registered again. Pass your own `store` to change\nthat, and keep the write in that store out of the check-then-write\nwindow.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "clients",
+      "kind": "property",
+      "signature": "clients: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "codes",
+      "kind": "property",
+      "signature": "codes: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "tokens",
+      "kind": "property",
+      "signature": "tokens: ",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "saveClient",
+      "kind": "method",
+      "signature": "saveClient(client: OAuthClient): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getClient",
+      "kind": "method",
+      "signature": "getClient(id: string): OAuthClient | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "saveCode",
+      "kind": "method",
+      "signature": "saveCode(code: AuthCode): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getCode",
+      "kind": "method",
+      "signature": "getCode(codeHash: string): AuthCode | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "saveToken",
+      "kind": "method",
+      "signature": "saveToken(token: OAuthTokenRecord): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getToken",
+      "kind": "method",
+      "signature": "getToken(tokenHash: string): OAuthTokenRecord | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "sweep",
+      "kind": "method",
+      "signature": "sweep(now: number): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "IdTokenIssuer",
+    "kind": "interface",
+    "signature": "interface IdTokenIssuer",
+    "summary": "Builds the OIDC ID token for a token reply.",
+    "note": "Return null when there is no identity to sign (the user is gone, or the\nscope has no \"openid\"). `createOIDC` supplies one of these; a code\nexchange fails if it throws, and a refresh leaves the token out rather\nthan stranding a grant whose old refresh token is already spent.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "[call]",
+      "kind": "call",
+      "signature": "(args: { clientId: string; userId: string; scope: string[]; nonce?: string; }): Promise<string | null> | string | null",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthClient",
+    "kind": "interface",
+    "signature": "interface OAuthClient",
+    "summary": "A registered OAuth client.",
+    "note": "`secretHash` is empty for a public client — a mobile or browser app\nthat cannot keep a secret. Public clients must use PKCE, because\nnothing else proves the code came back to whoever started the flow.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "id",
+      "kind": "property",
+      "signature": "id: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "secretHash",
+      "kind": "property",
+      "signature": "secretHash: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "redirectUris",
+      "kind": "property",
+      "signature": "redirectUris: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "allowedScopes",
+      "kind": "property",
+      "signature": "allowedScopes?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthClientInput",
+    "kind": "interface",
+    "signature": "interface OAuthClientInput",
+    "summary": "What `registerClient` takes.",
+    "note": "The secret is handed over in the clear exactly once, here; only its\nSHA-256 hash is kept. There is no way to read it back, which is why\nregistering a client is a startup job rather than an API.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "id",
+      "kind": "property",
+      "signature": "id: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "secret",
+      "kind": "property",
+      "signature": "secret?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "redirectUris",
+      "kind": "property",
+      "signature": "redirectUris: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "allowedScopes",
+      "kind": "property",
+      "signature": "allowedScopes?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthServerOptions",
+    "kind": "interface",
+    "signature": "interface OAuthServerOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "issuer",
+      "kind": "property",
+      "signature": "issuer: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "store",
+      "kind": "property",
+      "signature": "store?: OAuthStore",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "clients",
+      "kind": "property",
+      "signature": "clients?: OAuthClientInput[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "resolveUser",
+      "kind": "property",
+      "signature": "resolveUser?: (req: Request) => Promise<string | null>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "accessTokenTtlSec",
+      "kind": "property",
+      "signature": "accessTokenTtlSec?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "refreshTokenTtlSec",
+      "kind": "property",
+      "signature": "refreshTokenTtlSec?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "codeTtlSec",
+      "kind": "property",
+      "signature": "codeTtlSec?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "issueIdToken",
+      "kind": "property",
+      "signature": "issueIdToken?: IdTokenIssuer",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "scopes",
+      "kind": "property",
+      "signature": "scopes?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "requirePkce",
+      "kind": "property",
+      "signature": "requirePkce?: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "allowPlainPkce",
+      "kind": "property",
+      "signature": "allowPlainPkce?: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "approve",
+      "kind": "property",
+      "signature": "approve?: (info: { userId: string; client: OAuthClient; scope: string[]; }) => Promise<boolean> | boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthStore",
+    "kind": "interface",
+    "signature": "interface OAuthStore",
+    "summary": "Where clients, codes and tokens live.",
+    "note": "Every method is synchronous by design: a check and its matching write\nmust not be separated by an `await`, or two simultaneous requests can\nboth spend the same code. A persistent store should therefore keep its\nstate in memory and write through, not read from disk on each call.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "saveClient",
+      "kind": "method",
+      "signature": "saveClient(client: OAuthClient): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getClient",
+      "kind": "method",
+      "signature": "getClient(id: string): OAuthClient | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "saveCode",
+      "kind": "method",
+      "signature": "saveCode(code: AuthCode): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getCode",
+      "kind": "method",
+      "signature": "getCode(codeHash: string): AuthCode | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "saveToken",
+      "kind": "method",
+      "signature": "saveToken(token: OAuthTokenRecord): void",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getToken",
+      "kind": "method",
+      "signature": "getToken(tokenHash: string): OAuthTokenRecord | undefined",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "sweep",
+      "kind": "method",
+      "signature": "sweep(now: number): void?",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthTokenInfo",
+    "kind": "interface",
+    "signature": "interface OAuthTokenInfo",
+    "summary": "What `getAccessToken` returns for a live token.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "userId",
+      "kind": "property",
+      "signature": "userId: string | null",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "clientId",
+      "kind": "property",
+      "signature": "clientId: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "scope",
+      "kind": "property",
+      "signature": "scope: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OAuthServer",
+    "kind": "type",
+    "signature": "type OAuthServer = ReturnType<typeof createOAuthServer>",
+    "summary": "The object `createOAuthServer` returns.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/oidc": {
+  "label": "yatta/oidc",
+  "file": "src/func/oidc.ts",
+  "entries": [
+   {
+    "name": "createOIDC",
+    "kind": "function",
+    "signature": "createOIDC(options: OidcOptions)",
+    "summary": "Build the OpenID Connect endpoints over an existing OAuth server.",
+    "note": "Mount `handleDiscovery` on `/.well-known/openid-configuration`,\n`handleJWKS` on `/oauth/jwks` and `handleUserinfo` on `/oauth/userinfo`,\nthen hand `issueIdToken` to the OAuth server with `setIdTokenIssuer`, so\na token reply carries an ID token.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "`issueIdToken`, plus the three HTTP handlers.",
+    "members": []
+   },
+   {
+    "name": "OidcOptions",
+    "kind": "interface",
+    "signature": "interface OidcOptions",
+    "summary": "What the OIDC layer needs from the app.",
+    "note": "It adds three endpoints on top of the OAuth server — discovery, JWKS and\nuserinfo — and one method, `issueIdToken`, that the OAuth server calls\nwhen a code is exchanged. Both objects share the same reading of who the\nuser is; neither keeps its own copy.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "issuer",
+      "kind": "property",
+      "signature": "issuer: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "oauth",
+      "kind": "property",
+      "signature": "oauth: { getAccessToken(token: string): AccessTokenInfo | null | Promise<AccessTokenInfo | null>; }",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "findUser",
+      "kind": "property",
+      "signature": "findUser: (id: string) => Promise<OidcUser | null>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "privateKeyPem",
+      "kind": "property",
+      "signature": "privateKeyPem?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "idTokenTtlSeconds",
+      "kind": "property",
+      "signature": "idTokenTtlSeconds?: number",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "grantTypes",
+      "kind": "property",
+      "signature": "grantTypes?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "codeChallengeMethods",
+      "kind": "property",
+      "signature": "codeChallengeMethods?: string[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OidcUser",
+    "kind": "interface",
+    "signature": "interface OidcUser",
+    "summary": "The parts of a user an ID token can carry.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "id",
+      "kind": "property",
+      "signature": "id: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "email",
+      "kind": "property",
+      "signature": "email?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "emailVerified",
+      "kind": "property",
+      "signature": "emailVerified?: boolean",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "OIDC",
+    "kind": "type",
+    "signature": "type OIDC = ReturnType<typeof createOIDC>",
+    "summary": "The object `createOIDC` returns.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   }
+  ]
+ },
+ "yatta/mcp": {
+  "label": "yatta/mcp",
+  "file": "src/func/mcp.ts",
+  "entries": [
+   {
+    "name": "createMCPHandler",
+    "kind": "function",
+    "signature": "createMCPHandler(options: McpOptions)",
+    "summary": "Build the HTTP handler for the MCP endpoint.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "A `(req) => Promise<Response>` for a router or `Bun.serve`.",
+    "members": []
+   },
+   {
+    "name": "isSensitiveCollection",
+    "kind": "function",
+    "signature": "isSensitiveCollection(name: string): boolean",
+    "summary": "Whether a collection name is on the never-expose list.",
+    "note": "Case and punctuation are ignored, so `verification_tokens` is refused\nfor the same reason `verificationTokens` is.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "surfaceFromTables",
+    "kind": "function",
+    "signature": "surfaceFromTables(tables: Record<string, McpTable>, functions?: McpFunction[]): McpSurface",
+    "summary": "Build a surface from raw collections, leaving the sensitive ones out.",
+    "note": "This is the safe default: a table not named here cannot be exposed by\naccident, because exposure is opt-in per collection rather than a filter\napplied afterwards.",
+    "example": "",
+    "examples": [],
+    "params": [
+     {
+      "name": "functions",
+      "text": "Tools to add alongside the generated collection tools."
+     }
+    ],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "McpFunction",
+    "kind": "interface",
+    "signature": "interface McpFunction",
+    "summary": "A tool you write yourself.",
+    "note": "Use one when a collection tool is too blunt: a function gets the caller's\nuser id, so it can enforce who may see what.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "name",
+      "kind": "property",
+      "signature": "name: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "description",
+      "kind": "property",
+      "signature": "description: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "inputSchema",
+      "kind": "property",
+      "signature": "inputSchema: Record<string, unknown>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "call",
+      "kind": "property",
+      "signature": "call: (args: Record<string, unknown>, ctx: { userId: string; }) => Promise<unknown> | unknown",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "McpOptions",
+    "kind": "interface",
+    "signature": "interface McpOptions",
+    "summary": "",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "resolveUser",
+      "kind": "property",
+      "signature": "resolveUser: (req: Request) => Promise<string | null>",
+      "summary": "Finds the signed-in user for a request, or null when nobody is signed",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "getSurface",
+      "kind": "property",
+      "signature": "getSurface: () => Promise<McpSurface> | McpSurface",
+      "summary": "The app surface, read fresh on every request, so a collection added",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "authorize",
+      "kind": "property",
+      "signature": "authorize?: (info: { userId: string; collection: string; action: CollectionAction; }) => Promise<boolean> | boolean",
+      "summary": "Decide per call whether this user may do this to this collection.",
+      "note": "This is the only place row-level rules can live; the generated tools\nthemselves have no idea who owns what.",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "allowedOrigins",
+      "kind": "property",
+      "signature": "allowedOrigins?: string[]",
+      "summary": "Browser origins allowed to call /mcp, like `[\"https://app.example.com\"]`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "path",
+      "kind": "property",
+      "signature": "path?: string",
+      "summary": "Where the handler is mounted. Default `/mcp`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "serverName",
+      "kind": "property",
+      "signature": "serverName?: string",
+      "summary": "Reported to clients in `initialize`. Default `yatta`.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "serverVersion",
+      "kind": "property",
+      "signature": "serverVersion?: string",
+      "summary": "Reported to clients in `initialize`. Default is the framework version.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "instructions",
+      "kind": "property",
+      "signature": "instructions?: string",
+      "summary": "Sent to clients in `initialize`, and worth using: a sentence about what the tools are for.",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "McpSurface",
+    "kind": "interface",
+    "signature": "interface McpSurface",
+    "summary": "Everything this app exposes to MCP: collections plus hand-written tools.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "tables",
+      "kind": "property",
+      "signature": "tables: Record<string, McpTable>",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "functions",
+      "kind": "property",
+      "signature": "functions: McpFunction[]",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "McpTable",
+    "kind": "interface",
+    "signature": "interface McpTable",
+    "summary": "The slice of a database collection MCP needs.",
+    "note": "Yatta's own collections satisfy this as they are; anything else with the\nsame five methods can be exposed. Nothing here is called unless a client\ninvokes the matching tool.",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": [
+     {
+      "name": "primaryKeyColumn",
+      "kind": "property",
+      "signature": "primaryKeyColumn?: string",
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "findMany",
+      "kind": "method",
+      "signature": "findMany(options: { take?: number; skip?: number; }): Promise<unknown[]> | unknown[]",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "findFirst",
+      "kind": "method",
+      "signature": "findFirst(options: { where: Record<string, unknown>; }): Promise<unknown | null> | unknown | null",
+      "headline": false,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "insert",
+      "kind": "method",
+      "signature": "insert(data: Record<string, unknown>): Promise<unknown> | unknown",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "update",
+      "kind": "method",
+      "signature": "update(options: { where: Record<string, unknown>; data: Record<string, unknown>; }): Promise<{ changes: number; }> | { changes: number; }",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     },
+     {
+      "name": "delete",
+      "kind": "method",
+      "signature": "delete(options: { where: Record<string, unknown>; }): Promise<{ changes: number; }> | { changes: number; }",
+      "headline": true,
+      "summary": "",
+      "note": "",
+      "example": "",
+      "examples": [],
+      "params": [],
+      "returns": ""
+     }
+    ]
+   },
+   {
+    "name": "CollectionAction",
+    "kind": "type",
+    "signature": "type CollectionAction = \"list\" | \"get\" | \"create\" | \"update\" | \"delete\"",
+    "summary": "The five operations a collection gets, as seen by `authorize`.",
+    "note": "",
+    "example": "",
+    "examples": [],
+    "params": [],
+    "returns": "",
+    "members": []
+   },
+   {
+    "name": "MCPHandler",
+    "kind": "type",
+    "signature": "type MCPHandler = ReturnType<typeof createMCPHandler>",
+    "summary": "The handler `createMCPHandler` returns.",
     "note": "",
     "example": "",
     "examples": [],

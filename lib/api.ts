@@ -100,6 +100,34 @@ const META: Record<string, { slug: string; blurb: string }> = {
     slug: "realtime",
     blurb: "WebSockets, SSE, rooms, pub/sub and AI streaming.",
   },
+  "yatta/grpcweb": {
+    slug: "grpcweb",
+    blurb: "gRPC-Web unary calls: protobuf codec, framing, handler, client.",
+  },
+  "yatta/webdav": {
+    slug: "webdav",
+    blurb: "WebDAV over any store: methods, locks, PROPFIND, downloads.",
+  },
+  "yatta/webfinger": {
+    slug: "webfinger",
+    blurb: "WebFinger discovery: a lookup in, a JRD document out.",
+  },
+  "yatta/doh": {
+    slug: "doh",
+    blurb: "DNS over HTTPS: wire and JSON shapes, plus a client.",
+  },
+  "yatta/oauth": {
+    slug: "oauth",
+    blurb: "OAuth 2.0: code + PKCE, client credentials, rotating refresh.",
+  },
+  "yatta/oidc": {
+    slug: "oidc",
+    blurb: "OpenID Connect: ID tokens, discovery, JWKS, userinfo.",
+  },
+  "yatta/mcp": {
+    slug: "mcp",
+    blurb: "An MCP server whose tools come from your collections.",
+  },
 };
 
 /*

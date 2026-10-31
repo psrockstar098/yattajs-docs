@@ -30,6 +30,16 @@ const MODULES = [
   { id: "yatta/storage", label: "yatta/storage", file: "src/types/storage.ts" },
   { id: "yatta/mail", label: "yatta/mail", file: "src/types/mail.ts" },
   { id: "yatta/realtime", label: "yatta/realtime", file: "src/types/realtime.ts" },
+  // Protocol handlers. Each one is an export path of its own, so it can be
+  // mounted by hand with its own options; the defaults are what the router
+  // wires up on /grpc-web, /dav, /dns-query, /.well-known/webfinger and /mcp.
+  { id: "yatta/grpcweb", label: "yatta/grpcweb", file: "src/func/grpcweb.ts" },
+  { id: "yatta/webdav", label: "yatta/webdav", file: "src/func/webdav.ts" },
+  { id: "yatta/webfinger", label: "yatta/webfinger", file: "src/func/webfinger.ts" },
+  { id: "yatta/doh", label: "yatta/doh", file: "src/func/doh.ts" },
+  { id: "yatta/oauth", label: "yatta/oauth", file: "src/func/oauth.ts" },
+  { id: "yatta/oidc", label: "yatta/oidc", file: "src/func/oidc.ts" },
+  { id: "yatta/mcp", label: "yatta/mcp", file: "src/func/mcp.ts" },
 ];
 
 /**
