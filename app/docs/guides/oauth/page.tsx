@@ -348,6 +348,20 @@ export default api;`}
         for using the session.
       </P>
 
+      <Callout kind="note">
+        Direction matters. This guide signs users in{" "}
+        <em>with</em> Google and GitHub — Yatta is the client. To let other
+        apps sign in <em>through</em> Yatta instead, see{" "}
+        <Link href="/docs/protocols/oauth-server" className="underline underline-offset-4">
+          OAuth 2.0 server
+        </Link>{" "}
+        and{" "}
+        <Link href="/docs/protocols/openid-connect" className="underline underline-offset-4">
+          OpenID Connect
+        </Link>
+        .
+      </Callout>
+
       <DocFooter
         prev={{ href: "/docs/guides/email", title: "Send real email" }}
         next={{ href: "/docs/guides/auth-middleware", title: "Protect a route" }}
