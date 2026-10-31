@@ -238,6 +238,17 @@ export const docsNav: NavSection[] = [
     ],
   },
   {
+    title: "Protocols",
+    items: [
+      {
+        title: "WebDAV",
+        href: "/docs/protocols/webdav",
+        blurb: "File operations over HTTP, backed by storage.",
+        icon: LuHardDrive,
+      },
+    ],
+  },
+  {
     title: "Extending",
     items: [
       {
