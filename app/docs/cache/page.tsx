@@ -167,7 +167,7 @@ const v = await Cache.get("k");`}
       </Note>
 
       <DocFooter
-        prev={{ href: "/docs/jobs", title: "Jobs & events" }}
+        prev={{ href: "/docs/events", title: "Events" }}
         next={{ href: "/docs/storage", title: "Storage" }}
       />
     </article>
