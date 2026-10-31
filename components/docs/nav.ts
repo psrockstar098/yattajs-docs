@@ -258,6 +258,12 @@ export const docsNav: NavSection[] = [
         blurb: "DNS questions over HTTPS.",
         icon: LuServer,
       },
+      {
+        title: "WebFinger",
+        href: "/docs/protocols/webfinger",
+        blurb: "acct: lookups with JRD answers.",
+        icon: LuCompass,
+      },
     ],
   },
   {
