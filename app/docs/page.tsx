@@ -258,6 +258,13 @@ export const jobs = createJobs({
           </Link>{" "}
           — supervision, deadlines, draining
         </LI>
+        <LI>
+          <Link href="/docs/protocols/webdav" className="underline underline-offset-4">
+            Protocols
+          </Link>{" "}
+          — WebDAV, gRPC-Web, DNS over HTTPS, WebFinger, OAuth 2.0, OpenID
+          Connect and MCP, all built in
+        </LI>
       </UL>
     </article>
   );
