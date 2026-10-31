@@ -57,7 +57,11 @@ curl -X MOVE -H "Destination: http://localhost:4000/dav/docs/report.pdf" \\
         OPTIONS, GET, HEAD, PUT, MKCOL, DELETE, MOVE, COPY, LOCK, UNLOCK,
         and PROPFIND (Depth 0 and 1). Locks are exclusive write locks:
         a locked file refuses changes until the lock token is shown or
-        the lock is released.
+        the lock is released. A lock on a collection covers everything
+        under it, and deleting or moving a collection is refused while
+        anything inside it is locked. The root collection itself cannot
+        be deleted, moved, or copied, and a COPY or MOVE destination
+        must be on this same server and under <Code>/dav</Code>.
       </P>
 
       <Note kind="warn">

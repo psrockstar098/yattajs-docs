@@ -91,7 +91,9 @@ curl -X POST http://localhost:4000/oauth/token \\
         Client secrets live in the environment, never in code. Codes and
         tokens live in memory: they do not survive a restart, and each
         server node holds its own. For more than one node, give each
-        node its own clients for now.
+        node its own clients for now. And if a rotated-out refresh token
+        is ever shown again, the whole token family is revoked at once:
+        that is a sign the token may have been stolen.
       </Note>
 
       <DocFooter

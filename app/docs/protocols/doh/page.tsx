@@ -53,6 +53,13 @@ console.log(answers[0].address); // "93.184.215.14"`}
         base64url message in <Code>?dns=...</Code>.
       </P>
 
+      <P>
+        Only A and AAAA are answered. A type name the server does not
+        know is answered “not supported”, never silently as A. And if
+        the resolver hands back a broken address, the reply is a clean
+        server failure, not a crash.
+      </P>
+
       <Note kind="warn">
         A public DoH endpoint can be used to map your network. Only
         expose <Code>/dns-query</Code> publicly if you mean to run a

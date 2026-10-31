@@ -51,7 +51,9 @@ export default function WebFingerDocsPage() {
 
       <P>
         Only users who exist in Yatta’s auth store get an answer.
-        Unknown accounts get a 404. Add{" "}
+        Unknown accounts get a 404. The lookup uses the full address
+        (<Code>acct:ada@example.com</Code>), not just the name before
+        the @. Add{" "}
         <Code>?rel=self</Code> to keep only links with that relation.
       </P>
 

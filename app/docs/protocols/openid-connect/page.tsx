@@ -52,6 +52,12 @@ curl http://localhost:4000/oauth/userinfo \\
   -H "Authorization: Bearer ACCESS_TOKEN"`}
       />
 
+      <P>
+        userinfo only answers tokens that carry the <Code>openid</Code>{" "}
+        scope. A plain API token without it gets a 403, even if the
+        token itself is valid.
+      </P>
+
       <H2>Discovery</H2>
 
       <P>
