@@ -323,7 +323,7 @@ yatta migrate:status`}
       />
 
       <DocFooter
-        prev={{ href: "/docs", title: "Introduction" }}
+        prev={{ href: "/docs/quickstart", title: "Quickstart" }}
         next={{ href: "/docs/layout", title: "Project layout" }}
       />
     </article>
