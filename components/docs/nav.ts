@@ -69,6 +69,13 @@ const MODULE_ICONS: Record<string, IconType> = {
   storage: LuHardDrive,
   mail: LuMail,
   realtime: LuRadio,
+  grpcweb: LuWorkflow,
+  webdav: LuHardDrive,
+  webfinger: LuCompass,
+  doh: LuServer,
+  oauth: LuKeyRound,
+  oidc: LuShieldCheck,
+  mcp: LuWorkflow,
 };
 
 export const docsNav: NavSection[] = [
@@ -240,6 +247,12 @@ export const docsNav: NavSection[] = [
   {
     title: "Protocols",
     items: [
+      {
+        title: "Overview",
+        href: "/docs/protocols",
+        blurb: "Six protocols already listening, and what each one refuses.",
+        icon: LuLayers,
+      },
       {
         title: "WebDAV",
         href: "/docs/protocols/webdav",

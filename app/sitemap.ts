@@ -48,6 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/docs/mail", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/realtime", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/api", priority: 0.8, frequency: "monthly" as const },
+    { path: "/docs/protocols", priority: 0.8, frequency: "monthly" as const },
     { path: "/docs/protocols/webdav", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/protocols/grpc-web", priority: 0.7, frequency: "monthly" as const },
     { path: "/docs/protocols/doh", priority: 0.7, frequency: "monthly" as const },
