@@ -246,6 +246,12 @@ export const docsNav: NavSection[] = [
         blurb: "File operations over HTTP, backed by storage.",
         icon: LuHardDrive,
       },
+      {
+        title: "gRPC-Web",
+        href: "/docs/protocols/grpc-web",
+        blurb: "Browser calls with protobuf framing.",
+        icon: LuWorkflow,
+      },
     ],
   },
   {
