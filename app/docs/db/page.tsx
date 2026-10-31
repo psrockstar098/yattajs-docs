@@ -396,7 +396,7 @@ PRAGMA foreign_keys = ON;`}
       </Note>
 
       <DocFooter
-        prev={{ href: "/docs/jobs", title: "Jobs & events" }}
+        prev={{ href: "/docs/observe", title: "Observability" }}
         next={{ href: "/docs/auth", title: "Authentication" }}
       />
     </article>
