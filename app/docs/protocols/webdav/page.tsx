@@ -232,7 +232,7 @@ curl -X UNLOCK -H "Lock-Token: <opaquelocktoken:abc123>" \\
       </Note>
 
       <DocFooter
-        prev={{ href: "/docs/api", title: "HTTP API" }}
+        prev={{ href: "/docs/raft", title: "Raft consensus" }}
         next={{ href: "/docs/protocols/grpc-web", title: "gRPC-Web" }}
       />
     </article>

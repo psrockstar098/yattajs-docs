@@ -259,6 +259,13 @@ export const jobs = createJobs({
           — supervision, deadlines, draining
         </LI>
         <LI>
+          <Link href="/docs/rate-limit" className="underline underline-offset-4">
+            Roadmap
+          </Link>{" "}
+          — the fourteen new features: rate limiting, vector search,
+          replication, Raft, and more
+        </LI>
+        <LI>
           <Link href="/docs/protocols/webdav" className="underline underline-offset-4">
             Protocols
           </Link>{" "}

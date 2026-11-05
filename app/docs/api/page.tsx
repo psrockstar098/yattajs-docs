@@ -373,7 +373,7 @@ api.all(handler);   // every method`}
 
       <DocFooter
         prev={{ href: "/docs/realtime", title: "Realtime" }}
-        next={{ href: "/docs/types", title: "Typed keys" }}
+        next={{ href: "/docs/rate-limit", title: "Rate limiting" }}
       />
     </article>
   );

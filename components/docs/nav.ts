@@ -245,6 +245,107 @@ export const docsNav: NavSection[] = [
     ],
   },
   {
+    title: "Roadmap",
+    items: [
+      {
+        title: "Rate limiting",
+        href: "/docs/rate-limit",
+        blurb: "Per-key limits with a sliding window, enforced in middleware.",
+        icon: LuGauge,
+      },
+      {
+        title: "Cache decorator & edge purge",
+        href: "/docs/cache-decorator",
+        blurb: "Cache a function result and purge it from the edge.",
+        icon: LuZap,
+      },
+      {
+        title: "Auto-migrations",
+        href: "/docs/migrate-generate",
+        blurb: "Generate migrations from your schema diff.",
+        icon: LuDatabase,
+      },
+      {
+        title: "Transactional outbox",
+        href: "/docs/outbox",
+        blurb: "Reliable delivery: write the event in the same transaction.",
+        icon: LuWaypoints,
+      },
+      {
+        title: "Shared change log",
+        href: "/docs/shared-change-log",
+        blurb: "One ordered log every feature reads from.",
+        icon: LuListTodo,
+      },
+      {
+        title: "Full-text search",
+        href: "/docs/full-text-search",
+        blurb: "FTS5 search with ranking and snippets.",
+        icon: LuCompass,
+      },
+      {
+        title: "Time series",
+        href: "/docs/time-series",
+        blurb: "Append-only measurements with rollups.",
+        icon: LuActivity,
+      },
+      {
+        title: "Standalone binary",
+        href: "/docs/standalone-build",
+        blurb: "Ship one binary with no Bun installed.",
+        icon: LuPackage,
+      },
+      {
+        title: "Cloud backups",
+        href: "/docs/cloud-backups",
+        blurb: "Encrypted, scheduled backups to object storage.",
+        icon: LuHardDrive,
+      },
+      {
+        title: "Storage tiering",
+        href: "/docs/storage-tiering",
+        blurb: "Move cold files to cheap storage automatically.",
+        icon: LuLayers,
+      },
+      {
+        title: "Vector search",
+        href: "/docs/vector-search",
+        blurb: "Similarity search over embeddings, with a SQL fallback.",
+        icon: LuBraces,
+      },
+      {
+        title: "Profiler",
+        href: "/docs/profiler",
+        blurb: "A sampling profiler for hot paths.",
+        icon: LuCpu,
+      },
+      {
+        title: "Message bus",
+        href: "/docs/message-bus",
+        blurb: "Durable delivery across a cluster of nodes.",
+        icon: LuRadio,
+      },
+      {
+        title: "Time-travel replay",
+        href: "/docs/time-travel-replay",
+        blurb: "Rewind dev state to any snapshot.",
+        icon: LuClock,
+      },
+      {
+        title: "Replication",
+        href: "/docs/replication",
+        blurb: "Primary plus async read replicas.",
+        icon: LuBoxes,
+      },
+      {
+        title: "Raft consensus",
+        href: "/docs/raft",
+        blurb: "Leader election and log consistency.",
+        icon: LuShieldCheck,
+      },
+    ],
+  },
+  {
     title: "Protocols",
     items: [
       {
